@@ -58,13 +58,19 @@ export default function Home() {
     <div
       style={{
         display: "flex",
-        justifyContent: isMobile ? "flex-start" : "center",
+        justifyContent: "center",
         flexDirection: "row",
         width: "100vw",
       }}
     >
       {!openObra && (
-        <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
           <CardNew />
           <Cards
             clientes={arrayClientes}

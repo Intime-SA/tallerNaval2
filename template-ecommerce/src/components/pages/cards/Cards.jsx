@@ -26,9 +26,9 @@ export default function Cards({
         <Card
           key={cliente.id}
           sx={{
-            maxWidth: 350,
+            maxWidth: 300,
             marginBottom: 20,
-            margin: 2,
+            marginBottom: 2,
             border: "1px solid #e0e0e0",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             borderRadius: 8,
