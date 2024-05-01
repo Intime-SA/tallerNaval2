@@ -44,7 +44,7 @@ const CustomAvatar = styled(Avatar)(({ theme }) => ({
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
-  width: "350px",
+  width: "320px",
 }));
 
 export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
@@ -154,12 +154,12 @@ export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, maxWidth: 450 }}>
+    <Box sx={{ flexGrow: 1, maxWidth: 300 }}>
       <Grid item xs={12} md={6}>
         <Demo>
           <List dense={dense}>
             {arrayEmpleados.map((empleado) => (
-              <ListItem key={empleado.id}>
+              <ListItem sx={{ maxWidth: 300 }} key={empleado.id}>
                 <ListItemAvatar>
                   <img
                     src={empleado.imagen}
@@ -172,13 +172,12 @@ export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  style={{ fontSize: "1px" }}
                   secondary={`${empleado.nombre} ${empleado.apellido}`}
                   /* secondary={secondary ? empleado.telefono : null} */
                 />
                 <ListItemSecondaryAction
                   style={{
-                    width: "150px",
+                    width: "100px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",

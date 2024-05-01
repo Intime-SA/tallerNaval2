@@ -81,9 +81,17 @@ export default function Home() {
           />
         </div>
       )}
-      {openObra && (
-        <Obra idObra={idObra} obras={arrayObras} idCliente={idCliente} />
-      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        {openObra && (
+          <Obra idObra={idObra} obras={arrayObras} idCliente={idCliente} />
+        )}
+      </div>
     </div>
   );
 }

@@ -17,20 +17,20 @@ export default function Actions() {
         height: "2rem",
       }}
     >
-      <Button style={{ fontSize: "70%" }} variant="text">
+      <Button style={{ fontSize: "60%" }} variant="text">
         <span style={{ margin: "0.5rem" }} class="material-symbols-outlined">
           person_add
         </span>
         Empleado
       </Button>
-      <Button style={{ fontSize: "70%" }} variant="text">
+      <Button style={{ fontSize: "60%" }} variant="text">
         <span style={{ margin: "0.5rem" }} class="material-symbols-outlined">
           add_circle
         </span>
         Gasto
       </Button>
       <Button
-        style={{ fontSize: "70%", padding: "5px" }}
+        style={{ fontSize: "60%", padding: "5px" }}
         color="success"
         variant="outlined"
       >
