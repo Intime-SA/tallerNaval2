@@ -32,7 +32,13 @@ export default function Dashboard({ idObra, obras, idCliente }) {
       <Grid
         container
         spacing={2}
-        style={{ flexDirection: isMobile ? "column" : "row", width: "100vw" }}
+        justifyContent="center"
+        style={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          width: "95vw",
+          justifyContent: "center",
+        }}
       >
         <Grid
           item

@@ -30,7 +30,14 @@ export default function Actions() {
         Gasto
       </Button>
       <Button
-        style={{ fontSize: "60%", padding: "5px" }}
+        style={{
+          fontSize: "60%",
+          padding: "5px",
+          minWidth: "100px",
+          display: "flex",
+          justifyContent: "center",
+          paddingRight: "1rem",
+        }}
         color="success"
         variant="outlined"
       >
