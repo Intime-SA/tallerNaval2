@@ -3,6 +3,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { useEffect, useState } from "react";
 import Obra from "../obra/Obra";
+import CardNew from "../cards/CardNew";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export default function Home() {
   const [arrayClientes, setArrayClientes] = useState([]);
@@ -50,23 +52,28 @@ export default function Home() {
     consultaObras();
   }, []);
 
+  const isMobile = useMediaQuery("(max-width:760px)");
+
   return (
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        justifyContent: isMobile ? "flex-start" : "center",
         flexDirection: "row",
         width: "100vw",
       }}
     >
       {!openObra && (
-        <Cards
-          clientes={arrayClientes}
-          obras={arrayObras}
-          setOpenObra={setOpenObra}
-          setIdObra={setIdObra}
-          setIdCliente={setIdCliente}
-        />
+        <div>
+          <CardNew />
+          <Cards
+            clientes={arrayClientes}
+            obras={arrayObras}
+            setOpenObra={setOpenObra}
+            setIdObra={setIdObra}
+            setIdCliente={setIdCliente}
+          />
+        </div>
       )}
       {openObra && (
         <Obra idObra={idObra} obras={arrayObras} idCliente={idCliente} />

@@ -5,6 +5,10 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import ListEmpleado from "../listEmpleado/ListEmpleado";
 import ObraDetail from "../obraDetail/ObraDetail";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import ObrasGastos from "../obraGastos/ObraGastos";
+import Actions from "../actions/Actions";
+import Chart from "../charts/Chart";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -17,25 +21,59 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Dashboard({ idObra, obras, idCliente }) {
   const [cambioHoras, setCambioHoras] = React.useState(false);
 
+  const isMobile = useMediaQuery("(max-width:760px)");
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0); // Hace scroll hacia arriba al renderizar el componente
+  }, []);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={4}>
+      <Grid
+        container
+        spacing={2}
+        style={{ flexDirection: isMobile ? "column" : "row", width: "100vw" }}
+      >
+        <Grid
+          item
+          xs={4}
+          sx={{
+            margin: "0px",
+            padding: "0px",
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
+          <Actions />
+        </Grid>
+        <Grid
+          item
+          xs={4}
+          sx={{
+            margin: "0px",
+            padding: "0px",
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
           <ListEmpleado
             idObra={idObra}
             setCambioHoras={setCambioHoras}
             idCliente={idCliente}
           />
         </Grid>
-        <Grid item xs={8}>
+        <Grid xs={isMobile ? 10 : 8}>
           <ObraDetail idObra={idObra} cambioHoras={cambioHoras} />
         </Grid>
-        {/*         <Grid item xs={8}>
-          <Item>xs=4</Item>
+        <Grid xs={isMobile ? 10 : 7.5}>
+          <ObrasGastos />
         </Grid>
-        <Grid item xs={4}>
-          <Item>xs=8</Item>
-        </Grid> */}
+        <Grid
+          xs={isMobile ? 10 : 7.5}
+          sx={{ display: "flex", justifyContent: "center" }}
+        >
+          <Chart />
+        </Grid>
       </Grid>
     </Box>
   );

@@ -8,9 +8,12 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export default function ObraDetail({ idObra, cambioHoras }) {
   const [horasObra, setHorasObra] = React.useState(0);
+
+  const isMobile = useMediaQuery("(max-width:760px)");
 
   const TAX_RATE = 0.3;
 
@@ -70,41 +73,41 @@ export default function ObraDetail({ idObra, cambioHoras }) {
   }, [idObra, cambioHoras]);
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="spanning table">
+    <TableContainer
+      sx={{ width: isMobile ? "90vw" : 500, margin: "1rem" }}
+      component={Paper}
+    >
+      <Table
+        sx={{ width: isMobile ? "100% " : 500 }}
+        aria-label="spanning table"
+      >
         <TableHead>
           <TableRow>
-            <TableCell align="left" colSpan={3}>
-              Conceptos de Gasto
-            </TableCell>
-            <TableCell align="right">Acumulados</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Categoria</TableCell>
-            <TableCell align="right">Cantidad</TableCell>
-            <TableCell align="right">Precio</TableCell>
+            <TableCell align="left">Cantidad</TableCell>
+            {isMobile ? (
+              <TableCell></TableCell>
+            ) : (
+              <TableCell align="left">Precio</TableCell>
+            )}
             <TableCell align="right">Suma Total</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow key={row.desc}>
-              <TableCell>{row.desc}</TableCell>
-              <TableCell align="right">{row.qty}</TableCell>
-              <TableCell align="right">{ccyFormat(row.unit)}</TableCell>
+              <TableCell align="left">{row.qty}</TableCell>
+              {isMobile ? (
+                <TableCell></TableCell>
+              ) : (
+                <TableCell align="left">{ccyFormat(row.unit)}</TableCell>
+              )}
+
               <TableCell align="right">{ccyFormat(row.price)}</TableCell>
             </TableRow>
           ))}
           <TableRow>
-            <TableCell rowSpan={3} />
-            <TableCell colSpan={2}>Subtotal</TableCell>
-            <TableCell align="right">{ccyFormat(invoiceSubtotal)}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Agregado %</TableCell>
-            <TableCell align="right">{`${(TAX_RATE * 100).toFixed(
-              0
-            )} %`}</TableCell>
+            <TableCell>{`${(TAX_RATE * 100).toFixed()} %`}</TableCell>
+            <TableCell align="right"> </TableCell>
             <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
           </TableRow>
           <TableRow>
