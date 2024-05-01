@@ -78,10 +78,12 @@ export default function ObraDetail({ idObra, cambioHoras }) {
       component={Paper}
     >
       <Table
-        sx={{ width: isMobile ? "100% " : 500 }}
+        sx={{
+          width: isMobile ? "100% " : 500,
+        }}
         aria-label="spanning table"
       >
-        <TableHead>
+        <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>
           <TableRow>
             <TableCell align="left">Cantidad</TableCell>
             {isMobile ? (
@@ -110,7 +112,7 @@ export default function ObraDetail({ idObra, cambioHoras }) {
             <TableCell align="right"> </TableCell>
             <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
           </TableRow>
-          <TableRow>
+          <TableRow sx={{ backgroundColor: "rgba(0, 142, 124, 0.8)" }}>
             <TableCell colSpan={2} style={{ fontWeight: "900" }}>
               Total
             </TableCell>

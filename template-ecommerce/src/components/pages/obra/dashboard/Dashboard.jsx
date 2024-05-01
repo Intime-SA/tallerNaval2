@@ -72,13 +72,13 @@ export default function Dashboard({ idObra, obras, idCliente }) {
           <ObraDetail idObra={idObra} cambioHoras={cambioHoras} />
         </Grid>
         <Grid xs={isMobile ? 10 : 7.5}>
-          <ObrasGastos />
+          <ObrasGastos idObra={idObra} />
         </Grid>
         <Grid
           xs={isMobile ? 10 : 7.5}
           sx={{ display: "flex", justifyContent: "center" }}
         >
-          <Chart />
+          <Chart idObra={idObra} />
         </Grid>
       </Grid>
     </Box>

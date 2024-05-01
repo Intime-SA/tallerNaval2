@@ -14,6 +14,8 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../../firebaseConfig";
 
 function createData(name, calories, fat, carbs, protein, price) {
   return {
@@ -48,12 +50,31 @@ function ccyFormat(num) {
 function Row(props) {
   const isMobile = useMediaQuery("(max-width:760px)");
 
-  const { row } = props;
+  const { row, nombrePropiedad, valorPropiedad, index } = props;
   const [open, setOpen] = React.useState(false);
+
+  const colors = [
+    "#FFC0CB",
+    "#87CEEB",
+    "#90EE90",
+    "#FFD700",
+    "#FFA07A",
+    "#BA55D3",
+  ]; // Lista de colores
+
+  // Función para obtener el color de fondo de la fila
+  const getRowBackgroundColor = (index) => {
+    return colors[index % colors.length]; // Utiliza el operador módulo para alternar entre los colores
+  };
 
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow
+        sx={{
+          backgroundColor: getRowBackgroundColor(index),
+          "& > *": { borderBottom: "unset" },
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -64,16 +85,18 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {nombrePropiedad}
         </TableCell>
-        <TableCell align="right">{ccyFormat(row.calories)}</TableCell>
+        <TableCell align="right">{ccyFormat(valorPropiedad)}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Table size="small" aria-label="purchases">
-                <TableHead>
+                <TableHead
+                  sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}
+                >
                   <TableRow>
                     <TableCell style={{ fontSize: "90%" }}>Fecha</TableCell>
                     <TableCell style={{ fontSize: "90%" }}>Proveedor</TableCell>
@@ -85,7 +108,7 @@ function Row(props) {
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                {/* <TableBody>
                   {row.history.map((historyRow) => (
                     <TableRow key={historyRow.date}>
                       <TableCell
@@ -108,7 +131,7 @@ function Row(props) {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
+                </TableBody> */}
               </Table>
             </Box>
           </Collapse>
@@ -144,8 +167,32 @@ const rows = [
   createData("Engrasantes", 35886, 16.0, 49, 3.9, 1.5),
 ];
 
-export default function ObrasGastos() {
+export default function ObrasGastos({ idObra }) {
+  const [gastos, setGastos] = React.useState();
   const isMobile = useMediaQuery("(max-width:760px)");
+  React.useEffect(() => {
+    const consultaObra = async () => {
+      try {
+        const obraRef = doc(db, "obras", idObra); // Referencia a la obra específica
+        const obraSnapshot = await getDoc(obraRef);
+
+        if (obraSnapshot.exists()) {
+          const gastos = obraSnapshot.data().gastos;
+
+          // Sumar los valores numéricos de las horas del empleado de la obra específica
+
+          setGastos(gastos);
+          console.log(gastos);
+        } else {
+          console.error("No existe la obra con el ID especificado.");
+        }
+      } catch (error) {
+        console.error("Error fetching Obra:", error);
+      }
+    };
+
+    consultaObra();
+  }, [idObra]);
 
   return (
     <TableContainer
@@ -153,21 +200,23 @@ export default function ObrasGastos() {
       sx={{ width: isMobile ? "90vw" : 500, margin: "1rem" }}
     >
       <Table aria-label="collapsible table">
-        <TableHead>
+        <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>
           <TableRow>
             <TableCell />
             <TableCell>Categoria</TableCell>
             <TableCell align="right">TOTAL</TableCell>
-
-            {/* <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
+          {gastos &&
+            Object.entries(gastos).map(([nombre, valor], index) => (
+              <Row
+                key={nombre}
+                nombrePropiedad={nombre}
+                valorPropiedad={valor}
+                index={index}
+              />
+            ))}
         </TableBody>
       </Table>
     </TableContainer>
