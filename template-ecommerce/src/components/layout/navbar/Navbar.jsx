@@ -75,7 +75,12 @@ function Navbar(props) {
         }}
       >
         <Toolbar
-          sx={{ gap: "20px", display: "flex", justifyContent: "space-between" }}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginLeft: "0px",
+            marginRight: "0px",
+          }}
         >
           <Link to="/">
             <img

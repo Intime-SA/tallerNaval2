@@ -60,7 +60,7 @@ export default function Home() {
         display: "flex",
         justifyContent: "center",
         flexDirection: "row",
-        width: "100vw",
+        width: "90vw",
       }}
     >
       {!openObra && (
