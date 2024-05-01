@@ -53,24 +53,10 @@ function Row(props) {
   const { row, nombrePropiedad, valorPropiedad, index } = props;
   const [open, setOpen] = React.useState(false);
 
-  const propertyColors = {
-    comida: "rgba(184, 0, 216, 1)",
-    gastosCapital: "rgba(96, 0, 155, 1)",
-    impuestos: "rgba(46, 150, 255, 1)",
-    mercaderia: "rgba(2, 178, 175, 1)",
-    viaticos: "rgba(39, 49, 200, 1)",
-  };
-
-  // Función para obtener el color de fondo de la fila según el nombre de la propiedad
-  const getRowBackgroundColor = (nombrePropiedad) => {
-    return propertyColors[nombrePropiedad] || "rgba(0, 0, 0, 0)"; // Si no hay color definido, devuelve un color transparente
-  };
-
   return (
     <React.Fragment>
       <TableRow
         sx={{
-          backgroundColor: getRowBackgroundColor(nombrePropiedad),
           "& > *": { borderBottom: "unset" },
         }}
       >

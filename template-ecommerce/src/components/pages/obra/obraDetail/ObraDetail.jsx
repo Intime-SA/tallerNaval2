@@ -112,7 +112,7 @@ export default function ObraDetail({ idObra, cambioHoras }) {
             <TableCell align="right"> </TableCell>
             <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
           </TableRow>
-          <TableRow sx={{ backgroundColor: "rgba(0, 142, 124, 0.8)" }}>
+          <TableRow>
             <TableCell colSpan={2} style={{ fontWeight: "900" }}>
               Total
             </TableCell>
