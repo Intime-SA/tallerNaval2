@@ -26,6 +26,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
@@ -50,6 +51,8 @@ const CustomAvatar = styled(Avatar)(({ theme }) => ({
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   width: "320px",
+  display: "flex",
+  flexDirection: isMobile ? "column" : "row",
 }));
 
 export default function ListEmpleado({
@@ -68,6 +71,8 @@ export default function ListEmpleado({
   const [arrayObras, setArrayObras] = useState([]);
   const [sumaHoras, setSumarHoras] = useState(false);
   const [loadingEmpleados, setLoadingEmpleados] = useState({});
+
+  const isMobile = useMediaQuery("(max-width:760px)");
 
   useEffect(() => {
     const consultaEmpleados = async () => {
@@ -218,9 +223,14 @@ export default function ListEmpleado({
   };
 
   return (
-    <Box sx={{ flexGrow: 1, maxWidth: 300 }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        maxWidth: 300,
+      }}
+    >
       <Grid item xs={12} md={6}>
-        <Demo>
+        <Box>
           <List dense={dense}>
             {arrayEmpleados.map((empleado) => (
               <ListItem
@@ -258,7 +268,7 @@ export default function ListEmpleado({
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginTop: "2rem",
+                    marginTop: "1rem",
                     marginRight: "1rem",
                   }}
                 >
@@ -308,7 +318,7 @@ export default function ListEmpleado({
               </ListItem>
             ))}
           </List>
-        </Demo>
+        </Box>
       </Grid>
     </Box>
   );

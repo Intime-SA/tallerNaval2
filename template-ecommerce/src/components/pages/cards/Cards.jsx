@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Button, CardActionArea } from "@mui/material";
+import { CardActionArea } from "@mui/material";
 
 export default function Cards({
   clientes,
@@ -17,7 +17,7 @@ export default function Cards({
     setIdObra(idObra);
     setIdCliente(clienteId);
     console.log(idObra);
-    console.log(clienteId); // Esto imprimirá el ID del cliente, no el ID de la obra
+    console.log(clienteId);
   };
 
   return (
@@ -31,24 +31,29 @@ export default function Cards({
             marginBottom: 2,
             border: "1px solid #e0e0e0",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            borderRadius: 8,
+            borderRadius: 8, // Ajusta el valor según tus preferencias
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", // Agrega una sombra
+            backgroundColor: "#f5f5f5", // Color de fondo sutil
           }}
         >
-          <CardActionArea>
-            <CardMedia
-              component="img"
-              height="120"
-              image={cliente.imagen}
-              alt="Cliente Image"
-            />
-            <CardContent style={{ minHeight: 150 }}>
-              <Typography gutterBottom variant="h5" component="div">
-                {cliente.nombre}
-              </Typography>
-              {obras
-                .filter((obra) => obra.cliente === cliente.id)
-                .map((obra) => (
-                  <div key={obra.id}>
+          {obras &&
+            obras
+              .filter((obra) => obra.cliente === cliente.id)
+              .map((obra) => (
+                <CardActionArea
+                  key={obra.id}
+                  onClick={() => openObra(obra.id, cliente.id)}
+                >
+                  <CardMedia
+                    component="img"
+                    height="120"
+                    image={cliente.imagen}
+                    alt="Cliente Image"
+                  />
+                  <CardContent style={{ minHeight: 150 }}>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {cliente.nombre}
+                    </Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
@@ -75,40 +80,10 @@ export default function Cards({
                         display: "flex",
                         justifyContent: "space-around   ",
                       }}
-                    >
-                      <button
-                        onClick={() => openObra(obra.id, cliente.id)}
-                        style={{
-                          marginTop: 10,
-                          padding: "8px 16px",
-                          backgroundColor: "#007bff",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: 4,
-                          cursor: "pointer",
-                        }}
-                      >
-                        Abrir Obra
-                      </button>{" "}
-                      <Button
-                        onClick={() => openObra(obra.id, cliente.id)}
-                        variant="contained"
-                        color="error"
-                        style={{
-                          marginTop: 10,
-                          padding: "8px 16px",
-                          border: "none",
-                          borderRadius: 4,
-                          cursor: "pointer",
-                        }}
-                      >
-                        Finalizar
-                      </Button>{" "}
-                    </div>
-                  </div>
-                ))}
-            </CardContent>
-          </CardActionArea>
+                    ></div>
+                  </CardContent>
+                </CardActionArea>
+              ))}
         </Card>
       ))}
     </>

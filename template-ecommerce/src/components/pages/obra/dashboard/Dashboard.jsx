@@ -69,12 +69,12 @@ export default function Dashboard({ idObra, obras, idCliente }) {
         </Grid>
         <Grid
           item
-          xs={4}
+          xs={12}
           sx={{
             margin: "0px",
             padding: "0px",
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "center",
           }}
         >
           <ListEmpleado
