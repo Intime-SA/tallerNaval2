@@ -12,7 +12,7 @@ import {
   Typography,
   Grid,
   CircularProgress,
-  Switch,
+  Divider,
 } from "@mui/material";
 import { AddCircleOutlined, Delete as DeleteIcon } from "@mui/icons-material";
 import { db } from "../../../../firebaseConfig";
@@ -26,7 +26,9 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import CircularProgre from "../dashboard/CircularProgre";
+
+import AddIcon from "@mui/icons-material/Add";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 function generate(element) {
   return [0, 1, 2].map((value) =>
@@ -66,55 +68,6 @@ export default function ListEmpleado({
   const [arrayObras, setArrayObras] = useState([]);
   const [sumaHoras, setSumarHoras] = useState(false);
   const [loadingEmpleados, setLoadingEmpleados] = useState({});
-
-  const [checked, setChecked] = React.useState(true);
-
-  const [checkedEmpleados, setCheckedEmpleados] = useState({});
-
-  useEffect(() => {
-    const initialCheckedEmpleados = {};
-    arrayEmpleados.forEach((empleado) => {
-      // Verificar si el empleado tiene la obra activa
-      const tieneObraActiva =
-        empleado.obrasActivas && empleado.obrasActivas.includes(idObra);
-      // Establecer el estado del empleado en función de si tiene la obra activa o no
-      initialCheckedEmpleados[empleado.id] = tieneObraActiva;
-    });
-    setCheckedEmpleados(initialCheckedEmpleados);
-  }, [arrayEmpleados, idObra]);
-
-  const handleChange = async (event, empleadoId) => {
-    const newCheckedEmpleados = {
-      ...checkedEmpleados,
-      [empleadoId]: event.target.checked,
-    };
-    setCheckedEmpleados(newCheckedEmpleados);
-    setOpenProgress(true); // Activar progreso cuando se cambia el estado
-    try {
-      const empleadoRef = doc(db, "empleados", empleadoId);
-      const empleadoDoc = await getDoc(empleadoRef);
-      const obrasActivas = empleadoDoc.data().obrasActivas || []; // Obtener las obras activas o inicializar como un array vacío si no existe
-
-      // Verificar si el idObra está presente en el array obrasActivas
-      const index = obrasActivas.indexOf(idObra);
-
-      if (event.target.checked && index === -1) {
-        // Si el Switch está activado y el idObra no está presente, agregar el idObra al array obrasActivas
-        obrasActivas.push(idObra);
-      } else if (!event.target.checked && index !== -1) {
-        // Si el Switch está desactivado y el idObra está presente, eliminar el idObra del array obrasActivas
-        obrasActivas.splice(index, 1);
-      }
-
-      // Actualizar el documento del empleado con las nuevas obras activas
-      await updateDoc(empleadoRef, { obrasActivas });
-
-      console.log(obrasActivas);
-    } catch (error) {
-      console.error("Error al cambiar estado del empleado:", error);
-    }
-    setOpenProgress(false); // Desactivar progreso después de completar el cambio de estado
-  };
 
   useEffect(() => {
     const consultaEmpleados = async () => {
@@ -182,7 +135,7 @@ export default function ListEmpleado({
     return 0;
   };
 
-  const sumarHoras = async (idObra, empleadoId) => {
+  const sumarHoras = async (idObra, empleadoId, horas) => {
     setLoadingEmpleados((prevLoadingEmpleados) => ({
       ...prevLoadingEmpleados,
       [empleadoId]: true,
@@ -200,7 +153,7 @@ export default function ListEmpleado({
       console.log(obraData);
 
       // Sumar horas al empleado
-      obraData[empleadoId] = (obraData[empleadoId] || 0) + 8;
+      obraData[empleadoId] = (obraData[empleadoId] || 0) + horas;
       console.log(obraData);
 
       // Actualizar los datos de la obra en la base de datos
@@ -214,10 +167,51 @@ export default function ListEmpleado({
         obraId: idObra,
         fechaCarga: serverTimestamp(),
         fechaHora: serverTimestamp(),
-        horas: 8, // O cambiar esto según sea necesario
+        horas: horas, // O cambiar esto según sea necesario
       });
     } catch (error) {
       console.error("Error al sumar horas:", error);
+    }
+    setOpenProgress(false);
+    setLoadingEmpleados(false);
+  };
+
+  const restarHoras = async (idObra, empleadoId, horas) => {
+    setLoadingEmpleados((prevLoadingEmpleados) => ({
+      ...prevLoadingEmpleados,
+      [empleadoId]: true,
+    }));
+
+    setOpenProgress(true);
+    console.log(idCliente);
+    try {
+      // Obtener la referencia de la obra específica
+      const obraRef = doc(db, "obras", idObra);
+      const obraSnapshot = await getDoc(obraRef);
+      const obraData = obraSnapshot.data().horasEmpleado;
+
+      // Verificar si la obra tiene un objeto horasEmpleado
+      console.log(obraData);
+
+      // Restar horas al empleado
+      obraData[empleadoId] = (obraData[empleadoId] || 0) - horas; // Resta las horas
+      console.log(obraData);
+
+      // Actualizar los datos de la obra en la base de datos
+      await updateDoc(obraRef, { horasEmpleado: obraData });
+      setRestarHoras(true); // Establecer la señal de restar horas a true
+      setCambioHoras(true);
+
+      await addDoc(collection(db, "horas"), {
+        clienteId: idCliente, // Reemplazar con el ID real del cliente
+        empleadoId: empleadoId,
+        obraId: idObra,
+        fechaCarga: serverTimestamp(),
+        fechaHora: serverTimestamp(),
+        horas: -horas, // Usar un valor negativo para restar horas
+      });
+    } catch (error) {
+      console.error("Error al restar horas:", error);
     }
     setOpenProgress(false);
     setLoadingEmpleados(false);
@@ -229,8 +223,19 @@ export default function ListEmpleado({
         <Demo>
           <List dense={dense}>
             {arrayEmpleados.map((empleado) => (
-              <ListItem sx={{ maxWidth: 300 }} key={empleado.id}>
-                <ListItemAvatar>
+              <ListItem
+                sx={{
+                  padding: "1rem",
+                  maxWidth: "95vw",
+                  maxHeight: "200px",
+                  borderRadius: 8, // Ajusta el valor según tus preferencias
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", // Agrega una sombra
+                  backgroundColor: "#f5f5f5", // Color de fondo sutil
+                  marginBottom: "1rem",
+                }}
+                key={empleado.id}
+              >
+                <ListItemAvatar sx={{ paddingBottom: "5rem" }}>
                   <img
                     src={empleado.imagen}
                     alt=""
@@ -241,38 +246,36 @@ export default function ListEmpleado({
                     }}
                   />
                 </ListItemAvatar>
+                <Divider />
                 <ListItemText
-                  secondary={`${empleado.nombre} ${empleado.apellido}`}
-                  /* secondary={secondary ? empleado.telefono : null} */
+                  style={{ paddingBottom: "5rem" }}
+                  primary={`${empleado.nombre} ${empleado.apellido}`}
+                  secondary={secondary ? empleado.telefono : null}
                 />
                 <ListItemSecondaryAction
                   style={{
-                    width: "100px",
+                    width: "200px",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginLeft: "1rem",
+                    marginTop: "2rem",
+                    marginRight: "1rem",
                   }}
                 >
-                  <IconButton edge="end" aria-label="delete">
-                    <Switch
-                      checked={checkedEmpleados[empleado.id]}
-                      onChange={(e) => handleChange(e, empleado.id)}
-                      inputProps={{ "aria-label": "controlled" }}
-                    />
+                  <IconButton
+                    onClick={() => sumarHoras(idObra, empleado.id, 1)}
+                    edge="end"
+                    aria-label="delete"
+                  >
+                    <span class="material-symbols-outlined">
+                      exposure_plus_1
+                    </span>
                   </IconButton>
 
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={() => sumarHoras(idObra, empleado.id)}
-                    style={{
-                      display:
-                        empleado.obrasActivas &&
-                        empleado.obrasActivas.includes(idObra)
-                          ? "inline-flex"
-                          : "none",
-                    }}
+                    onClick={() => sumarHoras(idObra, empleado.id, 8)}
                   >
                     <AddCircleOutlined />
                   </IconButton>
@@ -284,6 +287,22 @@ export default function ListEmpleado({
                         primary={consultaHoras(idObra, empleado.id)}
                       />
                     )}
+                  </IconButton>
+                  <IconButton
+                    onClick={() => restarHoras(idObra, empleado.id, 8)}
+                    edge="end"
+                    aria-label="delete"
+                  >
+                    <RemoveCircleOutlineIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => restarHoras(idObra, empleado.id, 1)}
+                    edge="end"
+                    aria-label="delete"
+                  >
+                    <span class="material-symbols-outlined">
+                      exposure_neg_1
+                    </span>
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>
