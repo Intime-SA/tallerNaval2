@@ -268,7 +268,7 @@ export default function ListEmpleado({
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginTop: "1rem",
+                    marginTop: "3.5rem",
                     marginRight: "1rem",
                   }}
                 >
