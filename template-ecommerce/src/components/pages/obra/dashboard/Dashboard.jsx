@@ -9,6 +9,8 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import ObrasGastos from "../obraGastos/ObraGastos";
 import Actions from "../actions/Actions";
 import Chart from "../charts/Chart";
+import ModalComponent from "../actions/ModalComponent";
+import CircularProgre from "./CircularProgre";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -20,6 +22,10 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Dashboard({ idObra, obras, idCliente }) {
   const [cambioHoras, setCambioHoras] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [arrayEmpleados, setArrayEmpleados] = React.useState([]);
+  const [actualizarEmpleados, setActualizarEmpleados] = React.useState(false);
+  const [openProgress, setOpenProgress] = React.useState(false);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -29,6 +35,15 @@ export default function Dashboard({ idObra, obras, idCliente }) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      {openModal && (
+        <ModalComponent
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          arrayEmpleados={arrayEmpleados}
+          idObra={idObra}
+          setActualizarEmpleados={setActualizarEmpleados}
+        />
+      )}
       <Grid
         container
         spacing={2}
@@ -50,7 +65,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             justifyContent: "flex-start",
           }}
         >
-          <Actions />
+          <Actions setOpenModal={setOpenModal} idObra={idObra} />
         </Grid>
         <Grid
           item
@@ -66,6 +81,11 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             idObra={idObra}
             setCambioHoras={setCambioHoras}
             idCliente={idCliente}
+            setArrayEmpleados={setArrayEmpleados}
+            arrayEmpleados={arrayEmpleados}
+            actualizarEmpleados={actualizarEmpleados}
+            setOpenProgress={setOpenProgress}
+            openProgress={openProgress}
           />
         </Grid>
         <Grid xs={isMobile ? 10 : 8}>

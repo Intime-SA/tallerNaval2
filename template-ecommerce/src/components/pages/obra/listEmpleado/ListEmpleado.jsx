@@ -11,6 +11,8 @@ import {
   IconButton,
   Typography,
   Grid,
+  CircularProgress,
+  Switch,
 } from "@mui/material";
 import { AddCircleOutlined, Delete as DeleteIcon } from "@mui/icons-material";
 import { db } from "../../../../firebaseConfig";
@@ -24,6 +26,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
+import CircularProgre from "../dashboard/CircularProgre";
 
 function generate(element) {
   return [0, 1, 2].map((value) =>
@@ -47,12 +50,71 @@ const Demo = styled("div")(({ theme }) => ({
   width: "320px",
 }));
 
-export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
+export default function ListEmpleado({
+  idObra,
+  setCambioHoras,
+  idCliente,
+  arrayEmpleados,
+  setArrayEmpleados,
+  actualizarEmpleados,
+  setOpenProgress,
+  openProgress,
+}) {
   const [dense, setDense] = useState(false);
   const [secondary, setSecondary] = useState(true);
-  const [arrayEmpleados, setArrayEmpleados] = useState([]);
+
   const [arrayObras, setArrayObras] = useState([]);
   const [sumaHoras, setSumarHoras] = useState(false);
+  const [loadingEmpleados, setLoadingEmpleados] = useState({});
+
+  const [checked, setChecked] = React.useState(true);
+
+  const [checkedEmpleados, setCheckedEmpleados] = useState({});
+
+  useEffect(() => {
+    const initialCheckedEmpleados = {};
+    arrayEmpleados.forEach((empleado) => {
+      // Verificar si el empleado tiene la obra activa
+      const tieneObraActiva =
+        empleado.obrasActivas && empleado.obrasActivas.includes(idObra);
+      // Establecer el estado del empleado en función de si tiene la obra activa o no
+      initialCheckedEmpleados[empleado.id] = tieneObraActiva;
+    });
+    setCheckedEmpleados(initialCheckedEmpleados);
+  }, [arrayEmpleados, idObra]);
+
+  const handleChange = async (event, empleadoId) => {
+    const newCheckedEmpleados = {
+      ...checkedEmpleados,
+      [empleadoId]: event.target.checked,
+    };
+    setCheckedEmpleados(newCheckedEmpleados);
+    setOpenProgress(true); // Activar progreso cuando se cambia el estado
+    try {
+      const empleadoRef = doc(db, "empleados", empleadoId);
+      const empleadoDoc = await getDoc(empleadoRef);
+      const obrasActivas = empleadoDoc.data().obrasActivas || []; // Obtener las obras activas o inicializar como un array vacío si no existe
+
+      // Verificar si el idObra está presente en el array obrasActivas
+      const index = obrasActivas.indexOf(idObra);
+
+      if (event.target.checked && index === -1) {
+        // Si el Switch está activado y el idObra no está presente, agregar el idObra al array obrasActivas
+        obrasActivas.push(idObra);
+      } else if (!event.target.checked && index !== -1) {
+        // Si el Switch está desactivado y el idObra está presente, eliminar el idObra del array obrasActivas
+        obrasActivas.splice(index, 1);
+      }
+
+      // Actualizar el documento del empleado con las nuevas obras activas
+      await updateDoc(empleadoRef, { obrasActivas });
+
+      console.log(obrasActivas);
+    } catch (error) {
+      console.error("Error al cambiar estado del empleado:", error);
+    }
+    setOpenProgress(false); // Desactivar progreso después de completar el cambio de estado
+  };
 
   useEffect(() => {
     const consultaEmpleados = async () => {
@@ -81,7 +143,7 @@ export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
     };
 
     consultaEmpleados();
-  }, []);
+  }, [actualizarEmpleados]);
 
   useEffect(() => {
     const consultaObra = async () => {
@@ -110,17 +172,23 @@ export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
     };
 
     consultaObra();
-  }, [sumaHoras]);
+  }, [sumaHoras, openProgress]);
 
   const consultaHoras = (idObra, empleadoId) => {
     const obra = arrayObras.find((obra) => obra.id === idObra);
     if (obra && obra.horasEmpleado && obra.horasEmpleado[empleadoId]) {
       return obra.horasEmpleado[empleadoId];
     }
-    return null;
+    return 0;
   };
 
   const sumarHoras = async (idObra, empleadoId) => {
+    setLoadingEmpleados((prevLoadingEmpleados) => ({
+      ...prevLoadingEmpleados,
+      [empleadoId]: true,
+    }));
+
+    setOpenProgress(true);
     console.log(idCliente);
     try {
       // Obtener la referencia de la obra específica
@@ -151,6 +219,8 @@ export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
     } catch (error) {
       console.error("Error al sumar horas:", error);
     }
+    setOpenProgress(false);
+    setLoadingEmpleados(false);
   };
 
   return (
@@ -185,19 +255,35 @@ export default function ListEmpleado({ idObra, setCambioHoras, idCliente }) {
                   }}
                 >
                   <IconButton edge="end" aria-label="delete">
-                    <DeleteIcon />
+                    <Switch
+                      checked={checkedEmpleados[empleado.id]}
+                      onChange={(e) => handleChange(e, empleado.id)}
+                      inputProps={{ "aria-label": "controlled" }}
+                    />
                   </IconButton>
+
                   <IconButton
                     edge="end"
                     aria-label="delete"
                     onClick={() => sumarHoras(idObra, empleado.id)}
+                    style={{
+                      display:
+                        empleado.obrasActivas &&
+                        empleado.obrasActivas.includes(idObra)
+                          ? "inline-flex"
+                          : "none",
+                    }}
                   >
                     <AddCircleOutlined />
                   </IconButton>
                   <IconButton edge="end" aria-label="delete">
-                    <ListItemText
-                      primary={consultaHoras(idObra, empleado.id)}
-                    />
+                    {loadingEmpleados[empleado.id] ? (
+                      <CircularProgress />
+                    ) : (
+                      <ListItemText
+                        primary={consultaHoras(idObra, empleado.id)}
+                      />
+                    )}
                   </IconButton>
                 </ListItemSecondaryAction>
               </ListItem>

@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export default function Actions() {
+export default function Actions({ setOpenModal }) {
   const isMobile = useMediaQuery("(max-width:760px)");
 
   return (
@@ -17,7 +17,13 @@ export default function Actions() {
         height: "2rem",
       }}
     >
-      <Button style={{ fontSize: "60%" }} variant="text">
+      <Button
+        onClick={() => {
+          setOpenModal(true);
+        }}
+        style={{ fontSize: "60%" }}
+        variant="text"
+      >
         <span style={{ margin: "0.5rem" }} class="material-symbols-outlined">
           person_add
         </span>

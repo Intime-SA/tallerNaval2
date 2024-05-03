@@ -85,7 +85,7 @@ export default function ObraDetail({ idObra, cambioHoras }) {
       >
         <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>
           <TableRow>
-            <TableCell align="left">Cantidad</TableCell>
+            <TableCell align="left">Horas</TableCell>
             {isMobile ? (
               <TableCell></TableCell>
             ) : (
