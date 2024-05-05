@@ -204,7 +204,7 @@ export default function ListEmpleado({
 
       // Actualizar los datos de la obra en la base de datos
       await updateDoc(obraRef, { horasEmpleado: obraData });
-      setRestarHoras(true); // Establecer la señal de restar horas a true
+      setSumarHoras(true); // Establecer la señal de restar horas a true
       setCambioHoras(true);
 
       await addDoc(collection(db, "horas"), {

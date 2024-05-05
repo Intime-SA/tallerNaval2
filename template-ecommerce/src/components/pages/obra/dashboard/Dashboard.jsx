@@ -11,6 +11,7 @@ import Actions from "../actions/Actions";
 import Chart from "../charts/Chart";
 import ModalComponent from "../actions/ModalComponent";
 import CircularProgre from "./CircularProgre";
+import ModalComponentGasto from "../actions/ModalComponentGasto";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -26,6 +27,8 @@ export default function Dashboard({ idObra, obras, idCliente }) {
   const [arrayEmpleados, setArrayEmpleados] = React.useState([]);
   const [actualizarEmpleados, setActualizarEmpleados] = React.useState(false);
   const [openProgress, setOpenProgress] = React.useState(false);
+  const [openModalGasto, setOpenModalGasto] = React.useState(false);
+  const [cambioGastos, setCambioGastos] = React.useState(false);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -42,6 +45,15 @@ export default function Dashboard({ idObra, obras, idCliente }) {
           arrayEmpleados={arrayEmpleados}
           idObra={idObra}
           setActualizarEmpleados={setActualizarEmpleados}
+        />
+      )}
+      {openModalGasto && (
+        <ModalComponentGasto
+          openModalGasto={openModalGasto}
+          setOpenModalGasto={setOpenModalGasto}
+          idObra={idObra}
+          idCliente={idCliente}
+          setCambioGastos={setCambioGastos}
         />
       )}
       <Grid
@@ -65,7 +77,11 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             justifyContent: "flex-start",
           }}
         >
-          <Actions setOpenModal={setOpenModal} idObra={idObra} />
+          <Actions
+            setOpenModal={setOpenModal}
+            idObra={idObra}
+            setOpenModalGasto={setOpenModalGasto}
+          />
         </Grid>
         <Grid
           item
@@ -92,13 +108,17 @@ export default function Dashboard({ idObra, obras, idCliente }) {
           <ObraDetail idObra={idObra} cambioHoras={cambioHoras} />
         </Grid>
         <Grid xs={isMobile ? 10 : 7.5}>
-          <ObrasGastos idObra={idObra} />
+          <ObrasGastos idObra={idObra} cambioGastos={cambioGastos} />
         </Grid>
         <Grid
           xs={isMobile ? 10 : 7.5}
           sx={{ display: "flex", justifyContent: "center" }}
         >
-          <Chart idObra={idObra} />
+          <Chart
+            idObra={idObra}
+            cambioGastos={cambioGastos}
+            setCambioGastos={setCambioGastos}
+          />
         </Grid>
       </Grid>
     </Box>

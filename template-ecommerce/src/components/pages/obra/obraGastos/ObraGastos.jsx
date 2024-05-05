@@ -46,12 +46,44 @@ function ccyFormat(num) {
     currency: "ARS",
   });
 }
-
 function Row(props) {
   const isMobile = useMediaQuery("(max-width:760px)");
-
-  const { row, nombrePropiedad, valorPropiedad, index } = props;
+  const { nombrePropiedad, valorPropiedad } = props;
   const [open, setOpen] = React.useState(false);
+  const [gastoData, setGastoData] = React.useState(null);
+  const [totalImporte, setTotalImporte] = React.useState(0);
+
+  React.useEffect(() => {
+    const consultaGastos = async () => {
+      try {
+        let totalImporte = 0; // Variable para almacenar la suma de los importes
+        const gastosData = {}; // Objeto para almacenar los datos de los gastos
+
+        for (const id of Object.keys(valorPropiedad)) {
+          const reffGasto = doc(db, "gastos", valorPropiedad[id]);
+          const docGasto = await getDoc(reffGasto);
+          const gasto = docGasto.data();
+
+          // Agregar el gasto al objeto de datos de gastos
+          gastosData[id] = gasto;
+
+          // Sumar el importe al total
+          totalImporte += gasto.importe || 0;
+        }
+
+        // Establecer el estado con el objeto de datos de gastos y el total del importe
+        setGastoData(gastosData);
+        setTotalImporte(totalImporte);
+      } catch (error) {
+        console.error("Error fetching Gastos:", error);
+      }
+    };
+
+    consultaGastos();
+  }, [valorPropiedad]);
+
+  console.log(gastoData);
+  console.log(totalImporte);
 
   return (
     <React.Fragment>
@@ -72,7 +104,7 @@ function Row(props) {
         <TableCell component="th" scope="row" color="white">
           {nombrePropiedad}
         </TableCell>
-        <TableCell align="right">{ccyFormat(valorPropiedad)}</TableCell>
+        <TableCell align="right">{ccyFormat(totalImporte)}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -83,40 +115,35 @@ function Row(props) {
                   sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}
                 >
                   <TableRow>
-                    <TableCell style={{ fontSize: "90%" }}>Fecha</TableCell>
-                    <TableCell style={{ fontSize: "90%" }}>Proveedor</TableCell>
-                    <TableCell align="right" style={{ fontSize: "90%" }}>
-                      Cantidad
-                    </TableCell>
-                    <TableCell align="right" style={{ fontSize: "90%" }}>
+                    <TableCell style={{ fontSize: "80%" }}>Fecha</TableCell>
+                    <TableCell style={{ fontSize: "80%" }}>Proveedor</TableCell>
+                    <TableCell align="right" style={{ fontSize: "80%" }}>
                       Total
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                {/* <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        style={{ fontSize: "70%" }}
-                      >
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell style={{ fontSize: "70%" }}>
-                        {historyRow.customerId}
-                      </TableCell>
-                      <TableCell align="right" style={{ fontSize: "70%" }}>
-                        {historyRow.amount}
-                      </TableCell>
-                      <TableCell align="right" style={{ fontSize: "70%" }}>
-                        {ccyFormat(
-                          Math.round(historyRow.amount * row.price * 100) / 100
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody> */}
+                <TableBody>
+                  {gastoData &&
+                    Object.keys(gastoData).map((id) => (
+                      <TableRow key={id}>
+                        <TableCell style={{ fontSize: "70%" }}>
+                          {new Date(
+                            gastoData[id].fechaGasto.seconds * 1000
+                          ).toLocaleDateString()}{" "}
+                          {/* Renderiza la fecha en un formato legible */}
+                        </TableCell>
+                        <TableCell style={{ fontSize: "70%" }}>
+                          {gastoData[id].proveedorId}
+                        </TableCell>
+                        <TableCell align="right" style={{ fontSize: "70%" }}>
+                          {ccyFormat(gastoData[id].importe)}
+                        </TableCell>
+                        <TableCell align="right" style={{ fontSize: "70%" }}>
+                          {/* Aquí puedes renderizar cualquier otra propiedad de gastoData si es necesario */}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
               </Table>
             </Box>
           </Collapse>
@@ -144,7 +171,7 @@ Row.propTypes = {
   }).isRequired,
 };
 
-export default function ObrasGastos({ idObra }) {
+export default function ObrasGastos({ idObra, cambioGastos }) {
   const [gastos, setGastos] = React.useState();
   const isMobile = useMediaQuery("(max-width:760px)");
   React.useEffect(() => {
@@ -169,7 +196,9 @@ export default function ObrasGastos({ idObra }) {
     };
 
     consultaObra();
-  }, [idObra]);
+  }, [idObra, cambioGastos]);
+
+  console.log(gastos);
 
   return (
     <TableContainer

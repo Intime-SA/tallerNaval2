@@ -3,7 +3,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export default function Actions({ setOpenModal }) {
+export default function Actions({ setOpenModal, setOpenModalGasto }) {
   const isMobile = useMediaQuery("(max-width:760px)");
 
   return (
@@ -29,7 +29,11 @@ export default function Actions({ setOpenModal }) {
         </span>
         Empleado
       </Button>
-      <Button style={{ fontSize: "60%" }} variant="text">
+      <Button
+        onClick={() => setOpenModalGasto(true)}
+        style={{ fontSize: "60%" }}
+        variant="text"
+      >
         <span style={{ margin: "0.5rem" }} class="material-symbols-outlined">
           add_circle
         </span>
