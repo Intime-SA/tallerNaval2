@@ -58,9 +58,10 @@ export default function Home() {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        justifyContent: isMobile ? "center" : "flex-start",
         flexDirection: "row",
-        width: "90vw",
+        width: "95vw",
+        marginLeft: isMobile ? "0px" : "5rem",
       }}
     >
       {!openObra && (

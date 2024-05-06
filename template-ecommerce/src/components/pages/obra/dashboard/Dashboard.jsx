@@ -63,13 +63,14 @@ export default function Dashboard({ idObra, obras, idCliente }) {
         style={{
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
-          width: "95vw",
-          justifyContent: "center",
+          width: isMobile ? "95vw" : "100vw",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
         }}
       >
         <Grid
           item
-          xs={4}
+          xs={12}
           sx={{
             margin: "0px",
             padding: "0px",
@@ -85,12 +86,12 @@ export default function Dashboard({ idObra, obras, idCliente }) {
         </Grid>
         <Grid
           item
-          xs={12}
+          xs={isMobile ? 12 : 10} // Cambiado a 12 en móvil, 10 en escritorio
           sx={{
             margin: "0px",
             padding: "0px",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "flex-start",
           }}
         >
           <ListEmpleado
@@ -104,15 +105,18 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             openProgress={openProgress}
           />
         </Grid>
-        <Grid xs={isMobile ? 10 : 8}>
+        <Grid
+          xs={isMobile ? 12 : 3.5}
+          sx={{ marginLeft: isMobile ? 0 : "1rem" }}
+        >
           <ObraDetail idObra={idObra} cambioHoras={cambioHoras} />
         </Grid>
-        <Grid xs={isMobile ? 10 : 7.5}>
+        <Grid xs={isMobile ? 12 : 4}>
           <ObrasGastos idObra={idObra} cambioGastos={cambioGastos} />
         </Grid>
         <Grid
-          xs={isMobile ? 10 : 7.5}
-          sx={{ display: "flex", justifyContent: "center" }}
+          xs={isMobile ? 10 : 2}
+          sx={{ display: "flex", justifyContent: "center" }} // Cambiado a 12 en móvil, 12 en escritorio
         >
           <Chart
             idObra={idObra}

@@ -49,5 +49,5 @@ export default function Chart({ idObra, cambioGastos, setCambioGastos }) {
     setCambioGastos(false);
   }, [idObra, cambioGastos]);
 
-  return <PieChart series={[{ data: chartData }]} width={400} height={200} />;
+  return <PieChart series={[{ data: chartData }]} width={450} height={200} />;
 }

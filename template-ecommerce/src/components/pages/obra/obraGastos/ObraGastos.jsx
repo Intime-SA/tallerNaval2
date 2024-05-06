@@ -203,7 +203,7 @@ export default function ObrasGastos({ idObra, cambioGastos }) {
   return (
     <TableContainer
       component={Paper}
-      sx={{ width: isMobile ? "90vw" : 500, margin: "1rem" }}
+      sx={{ width: isMobile ? "90vw" : "100%", margin: "1rem" }}
     >
       <Table aria-label="collapsible table">
         <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>

@@ -17,7 +17,6 @@ import {
 import { AddCircleOutlined, Delete as DeleteIcon } from "@mui/icons-material";
 import { db } from "../../../../firebaseConfig";
 import {
-  Timestamp,
   addDoc,
   collection,
   doc,
@@ -27,8 +26,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
-import AddIcon from "@mui/icons-material/Add";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 function generate(element) {
@@ -230,18 +227,27 @@ export default function ListEmpleado({
       }}
     >
       <Grid item xs={12} md={6}>
-        <Box>
-          <List dense={dense}>
+        <Box sx={{ width: isMobile ? "95vw" : "80vw" }}>
+          <List
+            dense={dense}
+            sx={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              justifyContent: isMobile ? "center" : "space-around",
+            }}
+          >
             {arrayEmpleados.map((empleado) => (
               <ListItem
                 sx={{
+                  width: isMobile ? "100%" : "300px",
                   padding: "1rem",
-                  maxWidth: "95vw",
+                  maxWidth: "90vw",
                   maxHeight: "200px",
                   borderRadius: 8, // Ajusta el valor según tus preferencias
                   boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", // Agrega una sombra
                   backgroundColor: "#f5f5f5", // Color de fondo sutil
                   marginBottom: "1rem",
+                  marginLeft: isMobile ? "0px" : "1rem",
                 }}
                 key={empleado.id}
               >
