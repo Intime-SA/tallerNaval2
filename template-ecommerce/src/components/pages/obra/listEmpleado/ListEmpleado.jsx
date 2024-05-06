@@ -234,7 +234,7 @@ export default function ListEmpleado({
             sx={{
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
-              justifyContent: isMobile ? "center" : "space-around",
+              justifyContent: isMobile ? "center" : "flex-start",
             }}
           >
             {arrayEmpleados.map((empleado) => (
