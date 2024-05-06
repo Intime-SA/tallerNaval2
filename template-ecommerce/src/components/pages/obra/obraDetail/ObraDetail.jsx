@@ -10,12 +10,16 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export default function ObraDetail({ idObra, cambioHoras }) {
+export default function ObraDetail({
+  idObra,
+  cambioHoras,
+  setTotalHorasEmpleado,
+}) {
   const [horasObra, setHorasObra] = React.useState(0);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
-  const TAX_RATE = 0.3;
+  const TAX_RATE = 0;
 
   function ccyFormat(num) {
     return num.toLocaleString("es-AR", {
@@ -59,14 +63,15 @@ export default function ObraDetail({ idObra, cambioHoras }) {
           );
 
           // Guardar la suma de horas en horasObra (como un número, no un array)
+          setTotalHorasEmpleado(sumaHoras);
           setHorasObra(sumaHoras);
-          console.log(sumaHoras);
         } else {
           console.error("No existe la obra con el ID especificado.");
         }
       } catch (error) {
         console.error("Error fetching Obra:", error);
       }
+      console.log(horasObra);
     };
 
     consultaObra();
@@ -107,11 +112,11 @@ export default function ObraDetail({ idObra, cambioHoras }) {
               <TableCell align="right">{ccyFormat(row.price)}</TableCell>
             </TableRow>
           ))}
-          <TableRow>
+          {/* <TableRow>
             <TableCell>{`${(TAX_RATE * 100).toFixed()} %`}</TableCell>
             <TableCell align="right"> </TableCell>
             <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
-          </TableRow>
+          </TableRow> */}
           <TableRow>
             <TableCell colSpan={2} style={{ fontWeight: "900" }}>
               Total

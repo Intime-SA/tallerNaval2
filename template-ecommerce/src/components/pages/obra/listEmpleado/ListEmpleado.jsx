@@ -61,6 +61,7 @@ export default function ListEmpleado({
   actualizarEmpleados,
   setOpenProgress,
   openProgress,
+  setTotalHorasEmpleado,
 }) {
   const [dense, setDense] = useState(false);
   const [secondary, setSecondary] = useState(true);
