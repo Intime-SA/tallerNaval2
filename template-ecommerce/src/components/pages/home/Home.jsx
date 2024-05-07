@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import Obra from "../obra/Obra";
 import CardNew from "../cards/CardNew";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Modal } from "@mui/material";
+import ModalObra from "./ModalObra";
 
 export default function Home() {
   const [arrayClientes, setArrayClientes] = useState([]);
@@ -12,6 +14,8 @@ export default function Home() {
   const [openObra, setOpenObra] = useState(false);
   const [idObra, setIdObra] = useState("");
   const [idCliente, setIdCliente] = useState("");
+  const [openModalObra, setOpenModalObra] = useState(false);
+  const [actualizarObras, setActualizarObras] = useState(false);
 
   useEffect(() => {
     const consultaClientes = async () => {
@@ -32,7 +36,7 @@ export default function Home() {
     };
 
     consultaClientes();
-  }, []);
+  }, [actualizarObras]);
 
   useEffect(() => {
     const consultaObras = async () => {
@@ -50,7 +54,7 @@ export default function Home() {
     };
 
     consultaObras();
-  }, []);
+  }, [actualizarObras]);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -64,15 +68,22 @@ export default function Home() {
         marginLeft: isMobile ? "0px" : "5rem",
       }}
     >
+      <ModalObra
+        openModalObra={openModalObra}
+        idObra={idObra}
+        setOpenModalObra={setOpenModalObra}
+        setActualizarObras={setActualizarObras}
+      />
       {!openObra && (
         <div
           style={{
+            width: "80%",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            flexDirection: isMobile ? "column" : "row",
+            justifyContent: isMobile ? "center" : "space-around",
           }}
         >
-          <CardNew />
+          <CardNew setOpenModalObra={setOpenModalObra} />
           <Cards
             clientes={arrayClientes}
             obras={arrayObras}

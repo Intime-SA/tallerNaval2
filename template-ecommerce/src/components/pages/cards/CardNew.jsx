@@ -5,7 +5,10 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { CardActionArea } from "@mui/material";
 
-export default function ActionAreaCard() {
+export default function ActionAreaCard({ setOpenModalObra }) {
+  const handleCardClick = () => {
+    setOpenModalObra(true);
+  };
   return (
     <Card
       sx={{
@@ -18,7 +21,7 @@ export default function ActionAreaCard() {
         borderRadius: 8,
       }}
     >
-      <CardActionArea>
+      <CardActionArea onClick={handleCardClick}>
         <CardContent
           style={{
             height: "350px",

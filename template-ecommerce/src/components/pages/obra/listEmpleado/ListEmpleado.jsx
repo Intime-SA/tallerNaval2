@@ -62,6 +62,7 @@ export default function ListEmpleado({
   setOpenProgress,
   openProgress,
   setTotalHorasEmpleado,
+  setActualizarEmpleados,
 }) {
   const [dense, setDense] = useState(false);
   const [secondary, setSecondary] = useState(true);
@@ -99,6 +100,7 @@ export default function ListEmpleado({
     };
 
     consultaEmpleados();
+    setActualizarEmpleados(false);
   }, [actualizarEmpleados]);
 
   useEffect(() => {

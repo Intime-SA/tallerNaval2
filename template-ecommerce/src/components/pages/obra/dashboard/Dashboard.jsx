@@ -97,7 +97,8 @@ export default function Dashboard({ idObra, obras, idCliente }) {
     };
 
     consultaHoras();
-  }, []);
+  }, [cambioHoras]);
+
   React.useEffect(() => {
     const consultaGastos = async () => {
       try {
@@ -124,7 +125,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
     };
 
     consultaGastos();
-  }, []);
+  }, [cambioGastos]);
 
   React.useEffect(() => {
     setTotalObra(totalGastos);
@@ -277,7 +278,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
           <div
             style={{
               display: "flex",
-              justifyContent: isMobile ? "space-between" : "center",
+              justifyContent: isMobile ? "space-between" : "space-around",
               width: isMobile ? "90vw" : "85vw",
               alignItems: "flex-end",
               marginLeft: "1rem",
@@ -324,6 +325,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             setOpenProgress={setOpenProgress}
             openProgress={openProgress}
             setTotalHorasEmpleado={setTotalHorasEmpleado}
+            setActualizarEmpleados={setActualizarEmpleados}
           />
         </Grid>
         <Grid
