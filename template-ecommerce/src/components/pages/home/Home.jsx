@@ -64,7 +64,7 @@ export default function Home() {
         display: "flex",
         justifyContent: isMobile ? "center" : "flex-start",
         flexDirection: "row",
-        width: "95vw",
+        width: "100vw",
         marginLeft: isMobile ? "0px" : "5rem",
       }}
     >
@@ -77,7 +77,7 @@ export default function Home() {
       {!openObra && (
         <div
           style={{
-            width: "80%",
+            width: isMobile ? "100%" : "80%",
             display: "flex",
             flexDirection: isMobile ? "column" : "row",
             justifyContent: isMobile ? "center" : "space-around",
