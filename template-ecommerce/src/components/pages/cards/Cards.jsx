@@ -49,8 +49,8 @@ export default function Cards({
               <Card
                 key={obra.id}
                 sx={{
-                  minWidth: 300,
-                  maxWidth: 300,
+                  minWidth: 320,
+                  maxWidth: 320,
                   marginBottom: 20,
                   marginBottom: 2,
                   border: "1px solid #e0e0e0",

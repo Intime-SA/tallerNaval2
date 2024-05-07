@@ -382,6 +382,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
               /*               marginLeft: isMobile ? "1rem" : "0rem", */
               fontSize: "150%",
               margin: "1rem",
+              marginLeft: "0rem",
             }}
           >
             <p className="bebas-neue-regular">TOTAL GASTOS: </p>
