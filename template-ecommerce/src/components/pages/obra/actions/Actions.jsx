@@ -12,8 +12,7 @@ export default function Actions({ setOpenModal, setOpenModalGasto }) {
       direction="row"
       justifyContent="center"
       sx={{
-        width: isMobile ? "90vw" : 500,
-        marginRight: "1rem",
+        width: isMobile ? "85vw" : 500,
         height: "2rem",
       }}
     >

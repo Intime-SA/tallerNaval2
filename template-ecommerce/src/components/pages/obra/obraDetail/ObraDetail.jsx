@@ -79,7 +79,11 @@ export default function ObraDetail({
 
   return (
     <TableContainer
-      sx={{ width: isMobile ? "90vw" : 500, margin: "1rem" }}
+      sx={{
+        width: isMobile ? "90vw" : 500,
+        marginTop: "1rem",
+        marginBottom: "1rem",
+      }}
       component={Paper}
     >
       <Table

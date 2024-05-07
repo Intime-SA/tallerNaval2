@@ -281,7 +281,6 @@ export default function Dashboard({ idObra, obras, idCliente }) {
               justifyContent: isMobile ? "space-between" : "space-around",
               width: isMobile ? "90vw" : "85vw",
               alignItems: "flex-end",
-              marginLeft: "1rem",
               fontSize: "150%",
               margin: "1rem",
               backgroundColor: "#f7f7f7", // Color de fondo
@@ -330,7 +329,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
         </Grid>
         <Grid
           xs={isMobile ? 12 : 3.5}
-          sx={{ marginLeft: isMobile ? 0 : "1rem" }}
+          /* sx={{ marginLeft: isMobile ? 0 : "1rem" }} */
         >
           <div>
             <Button
@@ -338,11 +337,11 @@ export default function Dashboard({ idObra, obras, idCliente }) {
                 exportToExcel();
               }}
               variant="outlined"
-              style={{ marginLeft: "1rem" }}
+              /* style={{ marginLeft: "1rem" }} */
             >
               Detalle Horas{" "}
               <span
-                style={{ marginLeft: "1rem" }}
+                /* style={{ marginLeft: "1rem" }} */
                 class="material-symbols-outlined"
               >
                 print
@@ -362,11 +361,11 @@ export default function Dashboard({ idObra, obras, idCliente }) {
                 exportToExcelGasto();
               }}
               variant="outlined"
-              style={{ marginLeft: "1rem" }}
+              style={{ marginRight: "1rem" }}
             >
               Detalle Gastos{" "}
               <span
-                style={{ marginLeft: "1rem" }}
+                style={{ marginRight: "1rem" }}
                 class="material-symbols-outlined"
               >
                 print
@@ -380,7 +379,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
               justifyContent: isMobile ? "space-between" : "space-around",
               width: isMobile ? "90vw" : "40vw",
               alignItems: "flex-end",
-              marginLeft: isMobile ? "1rem" : "0rem",
+              /*               marginLeft: isMobile ? "1rem" : "0rem", */
               fontSize: "150%",
               margin: "1rem",
             }}

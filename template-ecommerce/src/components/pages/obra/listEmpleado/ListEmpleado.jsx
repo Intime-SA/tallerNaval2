@@ -225,18 +225,25 @@ export default function ListEmpleado({
   return (
     <Box
       sx={{
-        flexGrow: 1,
+        flexGrow: 0,
         maxWidth: 300,
       }}
     >
       <Grid item xs={12} md={6}>
-        <Box sx={{ width: isMobile ? "95vw" : "80vw" }}>
+        <Box
+          sx={{
+            width: isMobile ? "80vw" : "80vw",
+            paddingLeft: "0px",
+            marginLeft: "0px",
+          }}
+        >
           <List
             dense={dense}
             sx={{
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
               justifyContent: isMobile ? "center" : "flex-start",
+              paddingLeft: 0,
             }}
           >
             {arrayEmpleados.map((empleado) => (
@@ -244,6 +251,7 @@ export default function ListEmpleado({
                 sx={{
                   width: isMobile ? "100%" : "300px",
                   padding: "1rem",
+
                   maxWidth: "90vw",
                   maxHeight: "200px",
                   borderRadius: 8, // Ajusta el valor según tus preferencias
