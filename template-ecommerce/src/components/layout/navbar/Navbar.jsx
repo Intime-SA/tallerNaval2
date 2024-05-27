@@ -1,7 +1,6 @@
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -16,6 +15,8 @@ import "./Navbar.css";
 import { useState } from "react";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { menuItems } from "../../../router/navigation";
+import DrawerMenu from "../drawer/Drawer";
+import { Drawer } from "@mui/material";
 const drawerWidth = 200;
 
 function Navbar(props) {
@@ -27,7 +28,7 @@ function Navbar(props) {
   };
 
   const drawer = (
-    <div>
+    <div style={{ padding: "5rem", display: "flex", justifyContent: "center" }}>
       <Toolbar />
 
       <List>
@@ -65,7 +66,7 @@ function Navbar(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <div sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -120,22 +121,23 @@ function Navbar(props) {
         >
           {drawer}
         </Drawer>
+        <DrawerMenu />
       </Box>
-      <Box
+      <div
         component="main"
         sx={{
           flexGrow: 1,
-          py: 4,
+          display: "flex",
+          justifyContent: "center",
           width: "100%",
           minHeight: "100vh",
-          px: 2,
         }}
       >
         <Toolbar />
 
         <Outlet />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 

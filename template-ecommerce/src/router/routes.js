@@ -1,3 +1,4 @@
+import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
 import Home from "../components/pages/home/Home";
@@ -24,5 +25,10 @@ export const routes = [
     id: "proveedores",
     path: "/proveedores",
     Element: Proveedores,
+  },
+  {
+    id: "categorias",
+    path: "/categorias",
+    Element: Categorias,
   },
 ];

@@ -64,7 +64,7 @@ export default function Home() {
         display: "flex",
         justifyContent: isMobile ? "center" : "flex-start",
         flexDirection: "row",
-        width: "100vw",
+        width: "100%",
         marginLeft: isMobile ? "0px" : "5rem",
       }}
     >

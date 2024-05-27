@@ -168,7 +168,8 @@ function Row(props) {
     }
   }; */
 
-  console.log(row); /* */
+  console.log(row.subcategorias); /* */
+  const subcategoriesArray = Object.entries(row.subcategorias);
 
   return (
     <React.Fragment>
@@ -187,27 +188,9 @@ function Row(props) {
           component="th"
           scope="row"
         >
-          {row.nombre}
+          {row.id}
         </TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-          align="center"
-        >
-          {row.datosFiscales && row.datosFiscales.cuit
-            ? row.datosFiscales.cuit
-            : null}
-        </TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-          align="center"
-        >
-          {row.datosFiscales && row.datosFiscales.ciudad
-            ? row.datosFiscales.ciudad
-            : null}
-        </TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-        ></TableCell>
+        {/* */}
         <TableCell
           sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
           align="rigth"
@@ -260,19 +243,19 @@ function Row(props) {
                     <TableCell
                       sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
                     >
-                      Email
+                      Sub-Categorias
                     </TableCell>
                     {/*                     <TableCell
                       sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
                     >
                       Fecha Adhesion
                     </TableCell> */}
-                    <TableCell
+                    {/*                     <TableCell
                       sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
                       align="right"
                     >
                       Contacto
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 </TableHead>
 
@@ -283,7 +266,9 @@ function Row(props) {
                       component="th"
                       scope="row"
                     >
-                      {row.email}
+                      {subcategoriesArray.map(([key, value], index) => (
+                        <h5 key={index}>{value}</h5>
+                      ))}
                     </TableCell>
                     {/*                     <TableCell
                         sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
@@ -294,7 +279,7 @@ function Row(props) {
                       sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
                       align="right"
                     >
-                      <div
+                      {/*                       <div
                         style={{
                           display: "flex",
                           justifyContent: "flex-end",
@@ -312,7 +297,7 @@ function Row(props) {
                             alt="logowsp"
                           />
                         </Button>
-                      </div>
+                      </div> */}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -359,7 +344,7 @@ function Row(props) {
     }).isRequired,
   }; */
 
-function ClientListDetail({
+function CategoriasListDetail({
   customers,
   setStatusDelete,
   statusDelete,
@@ -379,18 +364,18 @@ function ClientListDetail({
     >
       <Table aria-label="collapsible table">
         <TableHead sx={{ fontFamily: "Roboto Condensed, sans-serif" }}>
-          <TableRow style={{ backgroundColor: "#1976D2" }}>
+          <TableRow style={{ backgroundColor: "#1976D2", color: "white" }}>
             <TableCell />
             <TableCell
               sx={{
                 fontFamily: "Roboto Condensed, sans-serif",
                 color: "white",
               }}
-              align="center"
+              align="left"
             >
-              Cliente
+              Categoria
             </TableCell>
-            <TableCell
+            {/*             <TableCell
               sx={{
                 fontFamily: "Roboto Condensed, sans-serif",
                 color: "white",
@@ -406,7 +391,7 @@ function ClientListDetail({
               }}
               align="center"
             >
-              Ciudad
+              Categoria
             </TableCell>
             <TableCell
               sx={{
@@ -414,7 +399,7 @@ function ClientListDetail({
                 color: "white",
               }}
               align="center"
-            ></TableCell>
+            ></TableCell> */}
             <TableCell
               sx={{
                 fontFamily: "Roboto Condensed, sans-serif",
@@ -447,8 +432,8 @@ function ClientListDetail({
   );
 }
 
-ClientListDetail.propTypes = {
+CategoriasListDetail.propTypes = {
   products: PropTypes.array.isRequired, // Definiendo las propTypes
 };
 
-export default ClientListDetail;
+export default CategoriasListDetail;

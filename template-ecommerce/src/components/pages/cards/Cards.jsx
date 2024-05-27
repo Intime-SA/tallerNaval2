@@ -63,7 +63,7 @@ export default function Cards({
                   <CardMedia
                     component="img"
                     height="120"
-                    image={cliente.imagen}
+                    image={cliente.imagen ? cliente.imagen : null}
                     alt="Cliente Image"
                   />
                   <div>{renderEstado(obra.estado)}</div>

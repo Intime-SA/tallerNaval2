@@ -193,7 +193,7 @@ function Row(props) {
           sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
           align="center"
         >
-          {row.cuit}
+          {row.datosFiscales.cuit}
         </TableCell>
         <TableCell
           sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
@@ -279,7 +279,7 @@ function Row(props) {
                       component="th"
                       scope="row"
                     >
-                      {row.mail}
+                      {row.email}
                     </TableCell>
                     {/*                     <TableCell
                         sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
@@ -375,33 +375,46 @@ function ProveedoresListDetail({
     >
       <Table aria-label="collapsible table">
         <TableHead sx={{ fontFamily: "Roboto Condensed, sans-serif" }}>
-          <TableRow style={{ backgroundColor: "rgba(249, 214, 224, 0.6)" }}>
+          <TableRow style={{ backgroundColor: "#1976D2", color: "white" }}>
             <TableCell />
             <TableCell
-              sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+              sx={{
+                fontFamily: "Roboto Condensed, sans-serif",
+                color: "white",
+              }}
               align="left"
             >
               Cliente
             </TableCell>
             <TableCell
-              sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+              sx={{
+                fontFamily: "Roboto Condensed, sans-serif",
+                color: "white",
+              }}
               align="center"
             >
               Cuit
             </TableCell>
             <TableCell
-              sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+              sx={{
+                fontFamily: "Roboto Condensed, sans-serif",
+                color: "white",
+              }}
               align="center"
             >
               Categoria
             </TableCell>
             <TableCell
-              sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+              sx={{
+                fontFamily: "Roboto Condensed, sans-serif",
+                color: "white",
+              }}
               align="center"
             ></TableCell>
             <TableCell
               sx={{
                 fontFamily: "Roboto Condensed, sans-serif",
+                color: "white",
                 textAlign: "center",
               }}
             >

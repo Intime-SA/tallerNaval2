@@ -8,7 +8,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
-const ProveedoresForm = ({ customers, setOpenForm, openForm }) => {
+const CategoriasForm = ({ customers, setOpenForm, openForm }) => {
   const [categorias, setCategorias] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
 
@@ -394,4 +394,4 @@ const ProveedoresForm = ({ customers, setOpenForm, openForm }) => {
   );
 };
 
-export default ProveedoresForm;
+export default CategoriasForm;

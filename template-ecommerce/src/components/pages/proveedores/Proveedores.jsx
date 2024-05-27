@@ -87,14 +87,14 @@ const Proveedores = () => {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
         flexDirection: "column",
         fontSize: "2rem",
         position: "relative",
-        width: "70vw",
-        marginLeft: "13vw",
-        marginRight: "13vw",
+        width: "70%",
+        marginLeft: "20vw",
+        marginRight: "20vw",
       }}
     >
       <Box>
@@ -102,7 +102,7 @@ const Proveedores = () => {
           <Button
             style={{ marginLeft: "1rem" }}
             variant="outlined"
-            color="error"
+            color="info"
             onClick={exportToExcel}
           >
             <span
@@ -116,7 +116,7 @@ const Proveedores = () => {
           <Button
             style={{ marginLeft: "1rem" }}
             variant="contained"
-            color="error"
+            color="info"
             onClick={() => setOpenForm(true)}
           >
             <span
@@ -130,7 +130,7 @@ const Proveedores = () => {
         </div>
         {/* Campo de filtro */}
       </Box>
-      <h6>Cantidad total de proveedores: {clients}</h6>
+
       <TextField
         label=""
         value={filterValue}

@@ -227,7 +227,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, marginLeft: "15vw" }}>
       {openModal && (
         <ModalComponent
           openModal={openModal}
@@ -253,14 +253,14 @@ export default function Dashboard({ idObra, obras, idCliente }) {
         style={{
           display: "flex",
           flexDirection: isMobile ? "column" : "row",
-          width: isMobile ? "95vw" : "100vw",
+          width: isMobile ? "95vw" : "90vw",
           justifyContent: "flex-start",
           alignItems: "flex-start",
         }}
       >
         <Grid
           item
-          xs={12}
+          xs={10}
           sx={{
             margin: "0px",
             padding: "0px",
@@ -274,12 +274,12 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             setOpenModalGasto={setOpenModalGasto}
           />
         </Grid>
-        <Grid xs={isMobile ? 12 : 4}>
+        <Grid xs={isMobile ? 12 : 8}>
           <div
             style={{
               display: "flex",
               justifyContent: isMobile ? "space-between" : "space-around",
-              width: isMobile ? "90vw" : "85vw",
+              width: isMobile ? "90vw" : "100%",
               alignItems: "flex-end",
               fontSize: "150%",
               margin: "1rem",
@@ -306,7 +306,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
 
         <Grid
           item
-          xs={isMobile ? 12 : 10} // Cambiado a 12 en móvil, 10 en escritorio
+          xs={isMobile ? 12 : 9} // Cambiado a 12 en móvil, 10 en escritorio
           sx={{
             margin: "0px",
             padding: "0px",
@@ -328,7 +328,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
           />
         </Grid>
         <Grid
-          xs={isMobile ? 12 : 3.5}
+          xs={isMobile ? 12 : 4}
           /* sx={{ marginLeft: isMobile ? 0 : "1rem" }} */
         >
           <div>
@@ -377,7 +377,7 @@ export default function Dashboard({ idObra, obras, idCliente }) {
             style={{
               display: "flex",
               justifyContent: isMobile ? "space-between" : "space-around",
-              width: isMobile ? "90vw" : "40vw",
+              width: isMobile ? "90vw" : "100%",
               alignItems: "flex-end",
               /*               marginLeft: isMobile ? "1rem" : "0rem", */
               fontSize: "150%",

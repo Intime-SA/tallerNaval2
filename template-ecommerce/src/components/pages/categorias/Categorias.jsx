@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
-import ClientListDetail from "./ClientListDetail";
+import CategoriasListDetail from "./CategoriasListDetail";
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
-import ClientForm from "./ClientForm";
+import CategoriasForm from "./CategoriasForm";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
 
-const Clients = () => {
+const Categorias = () => {
   const [customers, setCustomers] = useState([]);
   const [openForm, setOpenForm] = useState(false);
   const [statusDelete, setStatusDelete] = useState(false);
@@ -17,7 +17,7 @@ const Clients = () => {
   const [filterValue, setFilterValue] = useState(""); // Estado para almacenar el valor del filtro
 
   useEffect(() => {
-    let refCollection = collection(db, "clientes");
+    let refCollection = collection(db, "categorias");
     getDocs(refCollection)
       .then((querySnapshot) => {
         let newArray = [];
@@ -70,7 +70,7 @@ const Clients = () => {
 
   // Filtrar los clientes por el valor del campo de filtro
   const filteredCustomers = customers.filter((customer) =>
-    `${customer.nombre.toLowerCase()}`.includes(filterValue.toLowerCase())
+    `${customer.id.toLowerCase()}`.includes(filterValue.toLowerCase())
   );
 
   const currentCustomers = filteredCustomers.slice(
@@ -123,7 +123,7 @@ const Clients = () => {
             >
               person_add
             </span>
-            Nuevo Cliente
+            Nueva Categoria
           </Button>
         </div>
         {/* Campo de filtro */}
@@ -159,7 +159,7 @@ const Clients = () => {
       />
       <div style={{ width: "100%" }}>
         {!openForm ? (
-          <ClientListDetail
+          <CategoriasListDetail
             customers={currentCustomers}
             setStatusDelete={setStatusDelete}
             statusDelete={statusDelete}
@@ -168,7 +168,7 @@ const Clients = () => {
             statusEdit={statusEdit}
           />
         ) : (
-          <ClientForm
+          <CategoriasForm
             customers={customers}
             setOpenForm={setOpenForm}
             openForm={openForm}
@@ -201,4 +201,4 @@ const Clients = () => {
   );
 };
 
-export default Clients;
+export default Categorias;
