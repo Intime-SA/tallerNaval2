@@ -3,6 +3,7 @@ import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
 import Home from "../components/pages/home/Home";
 import Obra from "../components/pages/obra/Obra";
+import Obras from "../components/pages/obras/Obras";
 import Proveedores from "../components/pages/proveedores/Proveedores";
 
 export const routes = [
@@ -13,7 +14,7 @@ export const routes = [
   },
   {
     id: "obra",
-    path: "/",
+    path: "/obra/:id",
     Element: Obra,
   },
   {
@@ -30,5 +31,10 @@ export const routes = [
     id: "categorias",
     path: "/categorias",
     Element: Categorias,
+  },
+  {
+    id: "obras",
+    path: "/obras",
+    Element: Obras,
   },
 ];

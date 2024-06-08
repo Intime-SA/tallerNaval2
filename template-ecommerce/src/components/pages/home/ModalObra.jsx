@@ -6,7 +6,12 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { db } from "../../../firebaseConfig";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
 import { Height } from "@mui/icons-material";
 import "./ModalObra.css";
 
@@ -28,20 +33,36 @@ export default function ModalObra({
   setOpenModalObra,
   setActualizarObras,
 }) {
-  const handleClose = () => setOpenModalObra(false);
-
-  // Datos iniciales para el autocompletar de clientes (puedes reemplazarlos con los datos reales)
-  const clientes = [
-    { id: "Eg8yh40v1iI0I1RykvSu", nombre: "Cliente 1" },
-    // Agrega más clientes según sea necesario
-  ];
-
   // Estado para almacenar los valores del formulario
   const [cliente, setCliente] = React.useState(null);
+  const [clientes, setClientes] = React.useState([]);
   const [descripcion, setDescripcion] = React.useState("");
   const [lugar, setLugar] = React.useState("");
+  const distancias = [
+    { nombre: "Larga Distancia", value: "larga" },
+    { nombre: "Corta Distancia", value: "corta" },
+  ];
+
   const [presupuestoInicial, setPresupuestoInicial] = React.useState("");
-  const [presupuestoActual, setPresupuestoActual] = React.useState("");
+  const [distancia, setDistancia] = React.useState(distancias[1]);
+  const [presupuestoFormateado, setPresupuestoFormateado] = React.useState("");
+
+  const handleClose = () => setOpenModalObra(false);
+
+  React.useEffect(() => {
+    const fetchClients = async () => {
+      const collectionClientes = collection(db, "clientes");
+      const snapshotClientes = await getDocs(collectionClientes);
+      let arrayClients = [];
+      snapshotClientes.forEach((client) => {
+        arrayClients.push({ id: client.id, ...client.data() });
+      });
+      setClientes(arrayClients);
+    };
+    fetchClients();
+  }, []);
+
+  console.log(clientes);
 
   // Función para manejar el envío del formulario
   const handleSubmit = async (event) => {
@@ -58,6 +79,7 @@ export default function ModalObra({
         gastos: [],
         horasEmpleado: {},
         fechaInicio: serverTimestamp(),
+        distancia,
       };
 
       // Agregar la obra a la colección "obras" en Firestore
@@ -70,6 +92,23 @@ export default function ModalObra({
     } catch (error) {
       console.error("Error al agregar la obra:", error);
     }
+  };
+
+  const formatCurrency = (value) => {
+    if (value === "") return "";
+
+    // Eliminar todos los caracteres excepto los números y la coma decimal
+    value = value.replace(/[^\d]/g, "");
+
+    // Agregar puntos como separadores de miles
+    return "$" + value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  // Función para manejar el cambio en el campo de texto del presupuesto
+  const handlePresupuestoChange = (e) => {
+    const rawValue = e.target.value.replace(/[^\d]/g, ""); // Solo números
+    setPresupuestoInicial(rawValue); // Guardar el valor numérico en el estado
+    setPresupuestoFormateado(formatCurrency(rawValue)); // Guardar el valor formateado en el estado
   };
 
   return (
@@ -95,15 +134,19 @@ export default function ModalObra({
                 <TextField {...params} label="Cliente" fullWidth />
               )}
             />
+
             <TextField
               id="descripcion"
-              label="Descripción"
-              variant="outlined"
+              label="Descripcion"
+              multiline
+              rows={6}
+              defaultValue="Default Value"
               fullWidth
-              margin="normal"
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
+              margin="normal"
             />
+
             <TextField
               id="lugar"
               label="Lugar"
@@ -113,15 +156,27 @@ export default function ModalObra({
               value={lugar}
               onChange={(e) => setLugar(e.target.value)}
             />
+            <Autocomplete
+              id="distancia-autocomplete"
+              options={distancias}
+              label="Zona"
+              getOptionLabel={(option) => option.nombre}
+              value={distancia}
+              onChange={(event, newValue) => {
+                setDistancia(newValue ? newValue : "corta");
+              }}
+              renderInput={(params) => (
+                <TextField {...params} label="Zona" fullWidth />
+              )}
+            />
             <TextField
               id="presupuestoInicial"
               label="Presupuesto Inicial"
               variant="outlined"
               fullWidth
               margin="normal"
-              type="number"
-              value={presupuestoInicial}
-              onChange={(e) => setPresupuestoInicial(e.target.value)}
+              value={presupuestoFormateado}
+              onChange={handlePresupuestoChange}
             />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Button

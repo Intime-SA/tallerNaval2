@@ -26,7 +26,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function Dashboard({ idObra, obras, idCliente }) {
+export default function Dashboard({ idObra }) {
   const [cambioHoras, setCambioHoras] = React.useState(false);
   const [openModal, setOpenModal] = React.useState(false);
   const [arrayEmpleados, setArrayEmpleados] = React.useState([]);
@@ -39,12 +39,33 @@ export default function Dashboard({ idObra, obras, idCliente }) {
   const [totalObra, setTotalObra] = React.useState(0);
   const [arrayHoras, setArrayHoras] = React.useState([]);
   const [arrayGastos, setArrayGastos] = React.useState([]);
+  const [idCliente, setIdCliente] = React.useState("");
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
   React.useEffect(() => {
     window.scrollTo(0, 0); // Hace scroll hacia arriba al renderizar el componente
   }, []);
+
+  React.useEffect(() => {
+    const fetchObra = async () => {
+      try {
+        const obraDoc = await getDoc(doc(db, "obras", idObra));
+        if (obraDoc.exists()) {
+          const obraDataCliente = obraDoc.data().cliente;
+          setIdCliente(obraDataCliente);
+
+          // Realiza cualquier otra operación que necesites con los datos de la obra
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching obra:", error);
+      }
+    };
+
+    fetchObra();
+  }, [idObra]);
 
   React.useEffect(() => {
     const fetchObras = async () => {

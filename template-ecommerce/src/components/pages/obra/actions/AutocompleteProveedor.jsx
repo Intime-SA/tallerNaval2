@@ -38,7 +38,7 @@ export default function AutoCompleteProveedor({ setProveedor, proveedor }) {
   };
 
   return (
-    <Box sx={{ minWidth: 120 }}>
+    <Box sx={{ minWidth: 120, marginTop: "1rem" }}>
       <FormControl fullWidth>
         <Autocomplete
           id="proveedor-autocomplete"

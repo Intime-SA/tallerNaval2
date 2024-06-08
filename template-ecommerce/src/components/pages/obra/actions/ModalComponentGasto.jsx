@@ -13,12 +13,17 @@ import {
   getDoc,
   getDocs,
   serverTimestamp,
+  Timestamp,
   updateDoc,
 } from "firebase/firestore";
 import AutoCompleteCategory from "./AutocompleteCategory";
 import AutoCompleteProveedor from "./AutocompleteProveedor";
+import FedeMenu from "./FedeMenu";
 import { Height } from "@mui/icons-material";
 import { TextField } from "@mui/material";
+import DatePicker from "./DatePickerComponent";
+import DatePickerComponent from "./DatePickerComponent";
+import FadeMenuImpuestos from "./FadeMenuImpuestos";
 
 const style = {
   position: "absolute",
@@ -48,19 +53,45 @@ export default function ModalComponentGasto({
   const [categoria, setCategoria] = React.useState("");
   const [proveedor, setProveedor] = React.useState("");
   const [descripcion, setDescripcion] = React.useState("");
-  const [monto, setMonto] = React.useState(0);
+  const [monto, setMonto] = React.useState("$0,00");
+  const [impuesto, setImpuesto] = React.useState("$0,00");
+  const [tipoComprobante, setTipoComprobante] = React.useState("");
+  const [tipoImpuesto, setTipoImpuesto] = React.useState("");
+  const [numeroComprobante, setNumeroComprobante] = React.useState("");
+  const [numeroPuntoVenta, setNumeroPuntoVenta] = React.useState("");
+  const [selectedOption2, setSelectedOption2] = React.useState(null);
+  const [montoLimpio, setMontoLimpio] = React.useState(null);
+  const [montoLimpioImpuesto, setMontoLimpioImpuesto] = React.useState(null);
+  const [openImpuestos, setOpenImpuestos] = React.useState(null);
 
   console.log(idObra);
+
+  const convertirAFirestoreTimestamp = (selectedOption2) => {
+    if (selectedOption2) {
+      const fechaJavaScript = selectedOption2.$d;
+
+      // Crea un objeto Date de JavaScript a partir de la fecha extraída
+      const fechaDate = new Date(fechaJavaScript);
+
+      // Convierte el objeto Date en una marca de tiempo de Firestore
+      const timestamp = Timestamp.fromDate(fechaDate);
+
+      return timestamp;
+    }
+    // Extrae la fecha del objeto M2
+  };
+
+  // Obtener la marca de tiempo de Firestore a partir de selectedOption2
+  const timestampFirestore = convertirAFirestoreTimestamp(selectedOption2);
+
+  // Luego, puedes utilizar timestampFirestore para guardar la fecha en Firestore
+  // Por ejemplo, utilizando addDoc como se mostró en la respuesta anterior.
+
   // Función para cargar el empleado en la obra
   const cargaGastoObra = async () => {
     try {
       // Validar la existencia de las propiedades requeridas
-      if (
-        !categoria ||
-        !proveedor ||
-        !descripcion ||
-        isNaN(parseFloat(monto))
-      ) {
+      if (!categoria || !proveedor || !descripcion) {
         console.error("Faltan datos requeridos para cargar el gasto.");
         return;
       }
@@ -69,15 +100,19 @@ export default function ModalComponentGasto({
       const gasto = {
         obraId: idObra,
         fechaCarga: serverTimestamp(),
-        fechaGasto: serverTimestamp(),
+        fechaGasto: timestampFirestore,
         clienteId: idCliente,
         categoria: categoria,
         proveedorId: proveedor,
         descripcion: descripcion,
         gastoGlobal: false,
         gastoObra: true,
-        importe: parseFloat(monto),
+        importe: montoLimpio,
+        tipoComprobante: tipoComprobante,
+        numeroComprobante: numeroComprobante,
+        numeroPuntoVenta: numeroPuntoVenta,
       };
+      console.log(gasto);
 
       // Agregar el objeto de gasto a la colección de Firebase
       const gastoDocRef = await addDoc(collection(db, "gastos"), gasto);
@@ -98,43 +133,191 @@ export default function ModalComponentGasto({
       console.error("Error al cargar el gasto en la obra:", error);
     }
   };
+  function limpiarYConvertir(numeroConSigno) {
+    if (numeroConSigno) {
+      // Eliminar el signo de dólar y los puntos
+      const limpio = numeroConSigno.replace(/[$.]/g, "");
+      // Reemplazar comas por puntos para convertir en decimal
+      const limpioConPuntos = limpio.replace(",", ".");
+      // Convertir a número decimal
+      return parseFloat(limpioConPuntos);
+    }
+    return 0;
+  }
+
+  const handleMontoChangeImpuesto = (value) => {
+    // Formatea el valor mientras escribes para que tenga el formato deseado
+    const formattedValue = formatNumber(value);
+    // Actualiza el estado con el valor formateado
+    setImpuesto(formattedValue);
+    // Limpia y convierte el valor formateado
+    const cleanedValue = limpiarYConvertir(formattedValue);
+    // Actualiza el estado con el valor limpio y convertido
+    setMontoLimpio(cleanedValue);
+  };
+
+  const handleMontoChange = (value) => {
+    // Formatea el valor mientras escribes para que tenga el formato deseado
+    const formattedValue = formatNumber(value);
+    // Actualiza el estado con el valor formateado
+    setMonto(formattedValue);
+    // Limpia y convierte el valor formateado
+    const cleanedValue = limpiarYConvertir(formattedValue);
+    // Actualiza el estado con el valor limpio y convertido
+    setMontoLimpio(cleanedValue);
+  };
+
+  const formatNumber = (value) => {
+    // Si el valor está vacío, devuelve el formato predeterminado
+    if (!value) return "$0,00";
+
+    // Elimina cualquier caracter que no sea un número
+    const cleanValue = value.replace(/[^\d]/g, "");
+
+    // Convierte el valor a número
+    const numberValue = parseFloat(cleanValue);
+
+    // Formatea el valor como moneda
+    const formattedValue = new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 2,
+    }).format(numberValue / 100); // Dividimos por 100 para manejar los centavos correctamente
+
+    // Devuelve el valor formateado
+    return formattedValue;
+  };
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "90%", // Ajusta el ancho según tus necesidades
+    maxWidth: 600, // Limita el ancho máximo
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    borderRadius: "8px",
+  };
 
   return (
-    <div>
-      <Modal
-        open={openModalGasto}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <h5 style={{ margin: "1rem" }}>Crear gasto:</h5>
-          <AutoCompleteCategory
-            setCategoria={setCategoria}
-            categoria={categoria}
+    <Modal
+      open={openModalGasto}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Box sx={style}>
+        <Typography variant="h5" component="h2" sx={{ marginBottom: "1rem" }}>
+          Crear gasto
+        </Typography>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <FedeMenu
+            setTipoComprobante={setTipoComprobante}
+            tipoComprobante={tipoComprobante}
+            setOpenImpuestos={setOpenImpuestos}
           />
-          <AutoCompleteProveedor
-            setProveedor={setProveedor}
-            proveedor={proveedor}
+          <DatePickerComponent
+            setSelectedOption2={setSelectedOption2}
+            selectedOption2={selectedOption2}
           />
+        </div>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
           <TextField
-            id="standard-basic"
-            label="Descripción"
+            id="numeroPuntoVenta"
+            label="N° P.vta"
             variant="standard"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            value={numeroPuntoVenta}
+            onChange={(e) => setNumeroPuntoVenta(e.target.value)}
+            sx={{ width: "7rem" }}
           />
+          <span
+            className="material-symbols-outlined"
+            style={{ marginTop: "1rem" }}
+          >
+            remove
+          </span>
           <TextField
-            id="standard-basic"
-            label="Monto"
+            id="numeroComprobante"
+            label="N°Comprobante"
             variant="standard"
-            value={monto}
-            onChange={(e) => setMonto(e.target.value)}
+            value={numeroComprobante}
+            sx={{ width: "20rem" }}
+            onChange={(e) => setNumeroComprobante(e.target.value)}
           />
-          <Button onClick={() => cargaGastoObra()}>CARGAR GASTO</Button>
-          <Button onClick={handleClose}>CERRAR</Button>
         </Box>
-      </Modal>
-    </div>
+        <AutoCompleteCategory
+          setCategoria={setCategoria}
+          categoria={categoria}
+        />
+        <AutoCompleteProveedor
+          setProveedor={setProveedor}
+          proveedor={proveedor}
+        />
+        <TextField
+          multiline
+          rows={4}
+          id="descripcion"
+          label="Descripción"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          variant="outlined"
+          fullWidth
+          sx={{ marginBottom: "1rem", marginTop: "2rem" }}
+        />
+        {openImpuestos && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <FadeMenuImpuestos
+              setTipoImpuesto={setTipoImpuesto}
+              tipoImpuesto={tipoImpuesto}
+            />
+
+            <TextField
+              style={{ marginTop: "1rem" }}
+              id="impuesto"
+              variant="standard"
+              value={impuesto}
+              onChange={(e) => handleMontoChangeImpuesto(e.target.value)}
+            />
+          </div>
+        )}
+        <TextField
+          id="monto"
+          label="Monto Neto"
+          variant="standard"
+          value={monto}
+          onChange={(e) => handleMontoChange(e.target.value)}
+          sx={{ marginBottom: "1rem" }}
+        />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "1rem",
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => cargaGastoObra()}
+          >
+            Cargar Gasto
+          </Button>
+          <Button variant="outlined" onClick={handleClose}>
+            Cerrar
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
   );
 }

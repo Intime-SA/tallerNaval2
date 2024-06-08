@@ -4,6 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { Alert, CardActionArea } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function Cards({
   clientes,
@@ -11,6 +12,8 @@ export default function Cards({
   setOpenObra,
   setIdObra,
   setIdCliente,
+  idObra,
+  idCliente,
 }) {
   const openObra = (idObra, clienteId) => {
     setOpenObra(true);
@@ -37,6 +40,8 @@ export default function Cards({
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <>
       {clientes.map((cliente) => {
@@ -59,7 +64,7 @@ export default function Cards({
                   backgroundColor: "#f5f5f5",
                 }}
               >
-                <CardActionArea onClick={() => openObra(obra.id, cliente.id)}>
+                <CardActionArea onClick={() => navigate(`/obra/${obra.id}`)}>
                   <CardMedia
                     component="img"
                     height="120"

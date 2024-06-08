@@ -26,7 +26,7 @@ export default function DrawerMenu() {
         position="fixed"
         sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
       >
-        <Toolbar>
+        <Toolbar sx={{ backgroundColor: "#121621" }}>
           <Typography variant="h6" noWrap component="div">
             Taller Naval
           </Typography>
@@ -45,10 +45,6 @@ export default function DrawerMenu() {
         variant="permanent"
         anchor="left"
       >
-        <img
-          src="https://firebasestorage.googleapis.com/v0/b/tallernaval-d063d.appspot.com/o/naval%20workshop.png?alt=media&token=602de11a-51c6-46ca-9f72-8846cf19d922"
-          alt="logo"
-        />
         <Toolbar />
         <Divider />
         <List>

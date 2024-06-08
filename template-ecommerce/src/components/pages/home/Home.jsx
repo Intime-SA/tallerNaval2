@@ -63,8 +63,7 @@ export default function Home() {
       style={{
         display: "flex",
         justifyContent: isMobile ? "center" : "flex-start",
-        flexDirection: "row",
-        width: "100%",
+        width: "80%",
         marginLeft: isMobile ? "0px" : "5rem",
       }}
     >
@@ -77,10 +76,14 @@ export default function Home() {
       {!openObra && (
         <div
           style={{
-            width: isMobile ? "100%" : "80%",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: isMobile ? "center" : "space-around",
+            width: "80%",
+            display: "grid",
+            gridTemplateColumns: isMobile
+              ? "1fr"
+              : "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "1rem",
+            justifyContent: "center",
+            marginLeft: "15rem",
           }}
         >
           <CardNew setOpenModalObra={setOpenModalObra} />
@@ -90,6 +93,8 @@ export default function Home() {
             setOpenObra={setOpenObra}
             setIdObra={setIdObra}
             setIdCliente={setIdCliente}
+            idCliente={idCliente}
+            idObra={idObra}
           />
         </div>
       )}
@@ -100,9 +105,9 @@ export default function Home() {
           justifyContent: "center",
         }}
       >
-        {openObra && (
+        {/*         {openObra && (
           <Obra idObra={idObra} obras={arrayObras} idCliente={idCliente} />
-        )}
+        )} */}
       </div>
     </div>
   );
