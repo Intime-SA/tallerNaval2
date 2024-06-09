@@ -16,29 +16,12 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
-
-function createData(name, calories, fat, carbs, protein, price) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: "2020-01-05",
-        customerId: "11091700",
-        amount: 3,
-      },
-      {
-        date: "2020-01-02",
-        customerId: "Anonymous",
-        amount: 1,
-      },
-    ],
-  };
-}
+import {
+  TableContext,
+  TableContextComponent,
+} from "../../../context/TableContext";
+import { Button, Tooltip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function ccyFormat(num) {
   return num.toLocaleString("es-AR", {
@@ -52,6 +35,7 @@ function Row(props) {
   const [open, setOpen] = React.useState(false);
   const [gastoData, setGastoData] = React.useState(null);
   const [totalImporte, setTotalImporte] = React.useState(0);
+  const { proveedores, clientes, obras } = React.useContext(TableContext);
 
   React.useEffect(() => {
     const consultaGastos = async () => {
@@ -68,7 +52,7 @@ function Row(props) {
           gastosData[id] = gasto;
 
           // Sumar el importe al total
-          totalImporte += gasto.importe || 0;
+          totalImporte += gasto.montoTotal || 0;
         }
 
         // Establecer el estado con el objeto de datos de gastos y el total del importe
@@ -84,6 +68,14 @@ function Row(props) {
 
   console.log(gastoData);
   console.log(totalImporte);
+
+  const obtenerNombreProveedor = (proveedorId) => {
+    // Busca el proveedor con el proveedorId proporcionado
+    const proveedor = proveedores.find((prov) => prov.id === proveedorId);
+
+    // Si se encuentra el proveedor, devuelve su nombre, de lo contrario, devuelve un valor por defecto
+    return proveedor ? proveedor.nombreComercio : "Proveedor no encontrado";
+  };
 
   return (
     <React.Fragment>
@@ -118,7 +110,10 @@ function Row(props) {
                     <TableCell style={{ fontSize: "80%" }}>Fecha</TableCell>
                     <TableCell style={{ fontSize: "80%" }}>Proveedor</TableCell>
                     <TableCell align="right" style={{ fontSize: "80%" }}>
-                      Total
+                      Total Neto
+                    </TableCell>
+                    <TableCell align="right" style={{ fontSize: "80%" }}>
+                      Total Bruto
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -133,13 +128,13 @@ function Row(props) {
                           {/* Renderiza la fecha en un formato legible */}
                         </TableCell>
                         <TableCell style={{ fontSize: "70%" }}>
-                          {gastoData[id].proveedorId}
+                          {obtenerNombreProveedor(gastoData[id].proveedorId)}
                         </TableCell>
                         <TableCell align="right" style={{ fontSize: "70%" }}>
                           {ccyFormat(gastoData[id].importe)}
                         </TableCell>
                         <TableCell align="right" style={{ fontSize: "70%" }}>
-                          {/* Aquí puedes renderizar cualquier otra propiedad de gastoData si es necesario */}
+                          {ccyFormat(gastoData[id].montoTotal)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -174,6 +169,8 @@ Row.propTypes = {
 export default function ObrasGastos({ idObra, cambioGastos }) {
   const [gastos, setGastos] = React.useState();
   const isMobile = useMediaQuery("(max-width:760px)");
+  const navigate = useNavigate();
+
   React.useEffect(() => {
     const consultaObra = async () => {
       try {
@@ -212,7 +209,13 @@ export default function ObrasGastos({ idObra, cambioGastos }) {
       <Table aria-label="collapsible table">
         <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>
           <TableRow>
-            <TableCell />
+            <TableCell>
+              <Tooltip title="Abrir Detalle">
+                <Button onClick={() => navigate(`/gastosObraPage/${idObra}`)}>
+                  <span class="material-symbols-outlined">open_in_new</span>
+                </Button>
+              </Tooltip>
+            </TableCell>
             <TableCell>Categoria</TableCell>
             <TableCell align="right">TOTAL</TableCell>
           </TableRow>

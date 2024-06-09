@@ -17,6 +17,7 @@ import { db } from "../../../../firebaseConfig";
 import "./Dashboard.css";
 import { Button } from "@mui/material";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
+import { TableContext } from "../../../context/TableContext";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -40,6 +41,8 @@ export default function Dashboard({ idObra }) {
   const [arrayHoras, setArrayHoras] = React.useState([]);
   const [arrayGastos, setArrayGastos] = React.useState([]);
   const [idCliente, setIdCliente] = React.useState("");
+
+  const { proveedores, clientes, obras } = React.useContext(TableContext);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -77,7 +80,7 @@ export default function Dashboard({ idObra }) {
         gastoSnap.forEach((gasto) => {
           const gastoData = gasto.data();
           if (gastoData.obraId === idObra) {
-            total += gastoData.importe; // Suponiendo que "importe" es la propiedad que contiene el importe del gasto
+            total += gastoData.montoTotal; // Suponiendo que "importe" es la propiedad que contiene el importe del gasto
           }
         });
 
@@ -157,15 +160,32 @@ export default function Dashboard({ idObra }) {
     setCambioHoras(false);
   }, [totalGastos, totalHorasEmpleado, cambioHoras]);
 
+  const obtenerNombreProveedor = (proveedorId) => {
+    // Busca el proveedor con el proveedorId proporcionado
+    const proveedor = proveedores.find((prov) => prov.id === proveedorId);
+
+    // Si se encuentra el proveedor, devuelve su nombre, de lo contrario, devuelve un valor por defecto
+    return proveedor ? proveedor.nombreComercio : "Proveedor no encontrado";
+  };
+
+  const obtenerNombreClientes = (clientesId) => {
+    // Busca el clientes con el clientesId proporcionado
+    const cliente = clientes.find((client) => client.id === clientesId);
+
+    // Si se encuentra el clientes, devuelve su nombre, de lo contrario, devuelve un valor por defecto
+    return cliente ? cliente.nombre : "clientes no encontrado";
+  };
+
   const exportToExcelGasto = () => {
     // Construir los datos para cada gasto registrado
     const data = arrayGastos.map((gasto) => {
       return [
         gasto.obraId || "",
-        gasto.clienteId || "",
-        gasto.proveedorId || "",
+        obtenerNombreClientes(gasto.clienteId) || "",
+        obtenerNombreProveedor(gasto.proveedorId) || "",
         gasto.categoria || "",
         gasto.importe || "",
+        gasto.montoTotal || "",
         gasto.descripcion || "",
         gasto.gastoGlobal ? "Sí" : "No",
         gasto.gastoObra ? "Sí" : "No",
@@ -184,7 +204,8 @@ export default function Dashboard({ idObra }) {
       "ID Cliente",
       "ID Proveedor",
       "Categoría",
-      "Importe",
+      "Importe Neto",
+      "Importe Bruto",
       "Descripción",
       "¿Gasto Global?",
       "¿Gasto de Obra?",

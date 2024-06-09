@@ -24,6 +24,8 @@ import { TextField } from "@mui/material";
 import DatePicker from "./DatePickerComponent";
 import DatePickerComponent from "./DatePickerComponent";
 import FadeMenuImpuestos from "./FadeMenuImpuestos";
+import SpanningTable from "./SpanningTable";
+import "./ModalFont.css";
 
 const style = {
   position: "absolute",
@@ -54,9 +56,9 @@ export default function ModalComponentGasto({
   const [proveedor, setProveedor] = React.useState("");
   const [descripcion, setDescripcion] = React.useState("");
   const [monto, setMonto] = React.useState("$0,00");
-  const [impuesto, setImpuesto] = React.useState("$0,00");
+  const [impuesto, setImpuesto] = React.useState([]);
   const [tipoComprobante, setTipoComprobante] = React.useState("");
-  const [tipoImpuesto, setTipoImpuesto] = React.useState("");
+
   const [numeroComprobante, setNumeroComprobante] = React.useState("");
   const [numeroPuntoVenta, setNumeroPuntoVenta] = React.useState("");
   const [selectedOption2, setSelectedOption2] = React.useState(null);
@@ -84,6 +86,18 @@ export default function ModalComponentGasto({
   // Obtener la marca de tiempo de Firestore a partir de selectedOption2
   const timestampFirestore = convertirAFirestoreTimestamp(selectedOption2);
 
+  function calcularMontoTotal(importe, impuestos) {
+    // Suma los montos de todos los impuestos
+    const totalImpuestos = impuestos.reduce(
+      (total, impuesto) => total + impuesto.monto,
+      0
+    );
+
+    // Suma el importe con el total de los impuestos
+    const montoTotal = importe + totalImpuestos;
+
+    return montoTotal;
+  }
   // Luego, puedes utilizar timestampFirestore para guardar la fecha en Firestore
   // Por ejemplo, utilizando addDoc como se mostró en la respuesta anterior.
 
@@ -111,6 +125,8 @@ export default function ModalComponentGasto({
         tipoComprobante: tipoComprobante,
         numeroComprobante: numeroComprobante,
         numeroPuntoVenta: numeroPuntoVenta,
+        impuestos: impuesto,
+        montoTotal: calcularMontoTotal(montoLimpio, impuesto),
       };
       console.log(gasto);
 
@@ -144,17 +160,6 @@ export default function ModalComponentGasto({
     }
     return 0;
   }
-
-  const handleMontoChangeImpuesto = (value) => {
-    // Formatea el valor mientras escribes para que tenga el formato deseado
-    const formattedValue = formatNumber(value);
-    // Actualiza el estado con el valor formateado
-    setImpuesto(formattedValue);
-    // Limpia y convierte el valor formateado
-    const cleanedValue = limpiarYConvertir(formattedValue);
-    // Actualiza el estado con el valor limpio y convertido
-    setMontoLimpio(cleanedValue);
-  };
 
   const handleMontoChange = (value) => {
     // Formatea el valor mientras escribes para que tenga el formato deseado
@@ -202,6 +207,8 @@ export default function ModalComponentGasto({
     borderRadius: "8px",
   };
 
+  console.log(impuesto);
+
   return (
     <Modal
       open={openModalGasto}
@@ -210,9 +217,6 @@ export default function ModalComponentGasto({
       aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
-        <Typography variant="h5" component="h2" sx={{ marginBottom: "1rem" }}>
-          Crear gasto
-        </Typography>
         <div style={{ display: "flex", alignItems: "center" }}>
           <FedeMenu
             setTipoComprobante={setTipoComprobante}
@@ -275,30 +279,58 @@ export default function ModalComponentGasto({
           fullWidth
           sx={{ marginBottom: "1rem", marginTop: "2rem" }}
         />
-        {openImpuestos && (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <FadeMenuImpuestos
-              setTipoImpuesto={setTipoImpuesto}
-              tipoImpuesto={tipoImpuesto}
-            />
-
-            <TextField
-              style={{ marginTop: "1rem" }}
-              id="impuesto"
-              variant="standard"
-              value={impuesto}
-              onChange={(e) => handleMontoChangeImpuesto(e.target.value)}
-            />
-          </div>
-        )}
         <TextField
           id="monto"
-          label="Monto Neto"
+          label="Subtotal Neto"
           variant="standard"
           value={monto}
           onChange={(e) => handleMontoChange(e.target.value)}
           sx={{ marginBottom: "1rem" }}
         />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {openImpuestos && (
+            <FadeMenuImpuestos
+              setMontoLimpio={setMontoLimpio}
+              formatNumber={formatNumber}
+              limpiarYConvertir={limpiarYConvertir}
+              setImpuesto={setImpuesto}
+              impuesto={impuesto}
+            />
+          )}
+        </div>
+        <SpanningTable impuesto={impuesto} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+            fontSize: "150%",
+            margin: "1rem",
+            backgroundColor: "#f7f7f7", // Color de fondo
+            padding: "1rem",
+            borderRadius: "8px", // Bordes redondeados
+            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", // Sombra
+          }}
+        >
+          <p className="bebas-neue-regular" style={{ color: "green" }}>
+            TOTAL COMPROBANTE:{" "}
+          </p>
+          <p
+            className="bebas-neue-regular"
+            style={{ color: "green", fontWeight: "bold" }}
+          >
+            {calcularMontoTotal(montoLimpio, impuesto).toLocaleString("es-AR", {
+              style: "currency",
+              currency: "ARS",
+            })}
+          </p>
+        </div>
         <Box
           sx={{
             display: "flex",

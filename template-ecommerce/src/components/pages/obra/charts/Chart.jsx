@@ -24,9 +24,9 @@ export default function Chart({ idObra, cambioGastos, setCambioGastos }) {
         const categoriasTotales = {};
         arrayGastosObra.forEach((gasto) => {
           if (gasto.categoria in categoriasTotales) {
-            categoriasTotales[gasto.categoria] += gasto.importe;
+            categoriasTotales[gasto.categoria] += gasto.montoTotal;
           } else {
-            categoriasTotales[gasto.categoria] = gasto.importe;
+            categoriasTotales[gasto.categoria] = gasto.montoTotal;
           }
         });
 

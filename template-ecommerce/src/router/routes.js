@@ -1,6 +1,7 @@
 import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
+import GastosObraPage from "../components/pages/gastos/GastosObraPage";
 import Home from "../components/pages/home/Home";
 import Obra from "../components/pages/obra/Obra";
 import Obras from "../components/pages/obras/Obras";
@@ -36,5 +37,10 @@ export const routes = [
     id: "obras",
     path: "/obras",
     Element: Obras,
+  },
+  {
+    id: "gastosObraPage",
+    path: "/gastosObraPage/:id",
+    Element: GastosObraPage,
   },
 ];

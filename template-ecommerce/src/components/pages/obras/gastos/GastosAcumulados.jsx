@@ -21,7 +21,7 @@ const GastosAcumulados = ({ obraId }) => {
         let totalGastos = 0;
         querySnapshot.forEach((doc) => {
           console.log(doc.data());
-          totalGastos += doc.data().importe; // Suponiendo que el gasto está en el campo 'monto'
+          totalGastos += doc.data().montoTotal; // Suponiendo que el gasto está en el campo 'monto'
         });
 
         setGastosAcumulados(totalGastos);

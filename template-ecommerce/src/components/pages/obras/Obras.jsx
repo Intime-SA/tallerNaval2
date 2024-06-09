@@ -28,6 +28,7 @@ import FormattedDate from "./fechas/FormattedDate";
 import ClienteName from "./clientes/ClienteName";
 import HorasAcumuladas from "./horas/HorasAcumuladas";
 import GastosAcumulados from "./gastos/GastosAcumulados";
+import { useNavigate } from "react-router-dom";
 
 function createData(
   id,
@@ -53,53 +54,6 @@ function createData(
   };
 }
 
-const rows = [
-  createData(1, "Cupcake", 305, 3.7, 67, 4.3, "Nueva", 4500450, 0, 0),
-  createData(2, "Donut", 452, 25.0, 51, 4.9, "Nueva", 4500450, 0),
-  createData(3, "Eclair", 262, 16.0, 24, 6.0, "Nueva", 4500450, 0),
-  createData(4, "Frozen yoghurt", 159, 6.0, 24, 4.0, "Nueva", 4500450, 0),
-  createData(5, "Gingerbread", 356, 16.0, 49, 3.9, "Nueva", 4500450, 0),
-  createData(6, "Honeycomb", 408, 3.2, 87, 6.5, "Nueva", 4500450, 0),
-  createData(7, "Ice cream sandwich", 237, 9.0, 37, 4.3, "Nueva", 4500450, 0),
-  createData(8, "Jelly Bean", 375, 0.0, 94, 0.0, "Nueva", 4500450, 0),
-  createData(9, "KitKat", 518, 26.0, 65, 7.0, "Nueva", 4500450, 0),
-  createData(10, "Lollipop", 392, 0.2, 98, 0.0, "Nueva", 4500450, 0),
-  createData(11, "Marshmallow", 318, 0, 81, 2.0, "Nueva", 4500450, 0),
-  createData(12, "Nougat", 360, 19.0, 9, 37.0, "Nueva", 4500450, 0),
-  createData(13, "Oreo", 437, 18.0, 63, 4.0, "Nueva", 4500450, 0),
-];
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
 const estadoRender = (estado) => {
   if (estado === "Nueva") {
     return (
@@ -193,7 +147,7 @@ const headCells = [
     id: "montoActual",
     numeric: true,
     disablePadding: false,
-    label: "Monto Actual",
+    label: "Presupuesto Inicial",
   },
 
   {
@@ -219,6 +173,7 @@ function EnhancedTableHead(props) {
     rowCount,
     onRequestSort,
   } = props;
+
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -384,6 +339,8 @@ export default function Obras() {
 
   const [open, setOpen] = React.useState(false);
 
+  const navigate = useNavigate();
+
   const handleClick = () => {
     setOpen(!open);
   };
@@ -443,15 +400,18 @@ export default function Obras() {
                 return (
                   <TableRow
                     hover
-                    onClick={() => handleClickSelect(row.id)}
+                    onClick={() => navigate(`/obra/${row.id}`)}
                     role="checkbox"
                     tabIndex={-1}
                     key={row.id}
-                    sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer", position: "relative" }}
                   >
-                    <TableCell padding="checkbox">
+                    <TableCell padding="checkbox" sx={{ zIndex: 1 }}>
                       <Checkbox
-                        onClick={() => handleClickSelect(row.id)}
+                        onClick={(event) => {
+                          event.stopPropagation(); // Evita que el onClick del TableRow se dispare
+                          handleClickSelect(row.id);
+                        }}
                         color="primary"
                         inputProps={{
                           "aria-labelledby": labelId,
@@ -487,13 +447,16 @@ export default function Obras() {
                     <TableCell align="right">
                       <div style={{ zIndex: 0 }}>
                         <Button
-                          onClick={() => handleClick()}
                           id="demo-positioned-button"
                           aria-controls={
                             open ? "demo-positioned-menu" : undefined
                           }
                           aria-haspopup="true"
                           aria-expanded={open ? "true" : undefined}
+                          sx={{ zIndex: 1 }}
+                          onClick={(event) => {
+                            event.stopPropagation(), handleClick();
+                          }}
                         >
                           <span className="material-symbols-outlined">
                             more_vert
@@ -512,109 +475,39 @@ export default function Obras() {
                             horizontal: "right",
                           }}
                         >
-                          {row.status === "pagoRecibido" && (
-                            <MenuItem
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                              /* onClick={() => handleChangeStatus("empaquetada", row.id)} */
+                          <MenuItem
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                            }}
+                            /* onClick={() => handleChangeStatus("empaquetada", row.id)} */
+                          >
+                            <span
+                              style={{ margin: "1rem" }}
+                              class="material-symbols-outlined"
                             >
-                              <span
-                                style={{ margin: "1rem" }}
-                                class="material-symbols-outlined"
-                              >
-                                deployed_code{" "}
-                              </span>
-                              <h6 style={{ marginTop: "0.5rem" }}>
-                                Marcar como empaquetada
-                              </h6>
-                            </MenuItem>
-                          )}
+                              check_circle
+                            </span>
+                            <h6 style={{ marginTop: "0.5rem" }}>Finalizar</h6>
+                          </MenuItem>
 
-                          {row.status !== "nueva" &&
-                            row.status === "empaquetada" && (
-                              <MenuItem
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                }}
-                                /* onClick={() => handleChangeStatus("enviada", row.id)} */
-                              >
-                                <span
-                                  style={{ margin: "1rem" }}
-                                  class="material-symbols-outlined"
-                                >
-                                  local_shipping
-                                </span>
-                                <h6 style={{ marginTop: "0.5rem" }}>
-                                  Notificar envio
-                                </h6>
-                              </MenuItem>
-                            )}
-                          {row.status !== "nueva" &&
-                          row.status !== "pagoRecibido" &&
-                          row.status !== "empaquetada" ? (
-                            <MenuItem
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                              /* onClick={() => handleChangeStatus("archivada", row.id)} */
+                          <MenuItem
+                            style={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                            }}
+                            /* onClick={() => handleChangeStatus("enviada", row.id)} */
+                          >
+                            <span
+                              style={{ margin: "1rem" }}
+                              class="material-symbols-outlined"
                             >
-                              <span
-                                style={{ margin: "1rem" }}
-                                class="material-symbols-outlined"
-                              >
-                                inventory_2
-                              </span>
-                              <h6 style={{ marginTop: "0.5rem" }}>Archivar</h6>
-                            </MenuItem>
-                          ) : (
-                            <div></div>
-                          )}
-
-                          {row.status === "nueva" && (
-                            <MenuItem
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                              /* onClick={() => handleChangeStatus("pagoRecibido", row.id)} */
-                            >
-                              <span
-                                style={{ margin: "1rem" }}
-                                class="material-symbols-outlined"
-                              >
-                                account_balance
-                              </span>
-                              <h6 style={{ marginTop: "0.5rem" }}>
-                                Recibi Pago
-                              </h6>
-                            </MenuItem>
-                          )}
-                          {row.status === "nueva" && (
-                            <MenuItem
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                              /* onClick={() => handleChangeStatus("cancelada", row.id)} */
-                            >
-                              <span
-                                style={{ margin: "1rem" }}
-                                class="material-symbols-outlined"
-                              >
-                                block
-                              </span>
-                              <h6 style={{ marginTop: "0.5rem" }}>Cancelar</h6>
-                            </MenuItem>
-                          )}
+                              block
+                            </span>
+                            <h6 style={{ marginTop: "0.5rem" }}>Cancelar</h6>
+                          </MenuItem>
                         </Menu>
                       </div>
                     </TableCell>
