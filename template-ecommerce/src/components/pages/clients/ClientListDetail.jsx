@@ -183,35 +183,24 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+          sx={{ fontFamily: '"Kanit", sans-serif' }}
           component="th"
           scope="row"
         >
           {row.nombre}
         </TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-          align="center"
-        >
+        <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
           {row.datosFiscales && row.datosFiscales.cuit
             ? row.datosFiscales.cuit
             : null}
         </TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-          align="center"
-        >
+        <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
           {row.datosFiscales && row.datosFiscales.ciudad
             ? row.datosFiscales.ciudad
             : null}
         </TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-        ></TableCell>
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-          align="rigth"
-        >
+        <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}></TableCell>
+        <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="rigth">
           <div
             style={{
               display: "flex",
@@ -257,18 +246,16 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-                    >
+                    <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
                       Email
                     </TableCell>
                     {/*                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{  fontFamily: '"Kanit", sans-serif' }}
                     >
                       Fecha Adhesion
                     </TableCell> */}
                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                       align="right"
                     >
                       Contacto
@@ -279,19 +266,19 @@ function Row(props) {
                 <TableBody>
                   <TableRow /* key={row.fec} */>
                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                       component="th"
                       scope="row"
                     >
                       {row.email}
                     </TableCell>
                     {/*                     <TableCell
-                        sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                        sx={{  fontFamily: '"Kanit", sans-serif' }}
                       >
                         {formattedFechaInicio}
                       </TableCell> */}
                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                       align="right"
                     >
                       <div
@@ -378,21 +365,21 @@ function ClientListDetail({
       style={{ backgroundColor: "rgba(255, 255, 255, 0.6)" }}
     >
       <Table aria-label="collapsible table">
-        <TableHead sx={{ fontFamily: "Roboto Condensed, sans-serif" }}>
-          <TableRow style={{ backgroundColor: "#1976D2" }}>
+        <TableHead sx={{ fontFamily: '"Kanit", sans-serif' }}>
+          <TableRow style={{ backgroundColor: "#121621" }}>
             <TableCell />
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
-              align="center"
+              align="left"
             >
               Cliente
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
@@ -401,7 +388,7 @@ function ClientListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
@@ -410,14 +397,14 @@ function ClientListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
             ></TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
                 textAlign: "center",
               }}

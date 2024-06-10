@@ -80,15 +80,16 @@ export default function ObraDetail({
   return (
     <TableContainer
       sx={{
-        width: isMobile ? "90vw" : 500,
+        width: isMobile ? "90vw" : "auto",
         marginTop: "1rem",
         marginBottom: "1rem",
+        marginRight: "2rem",
       }}
       component={Paper}
     >
       <Table
         sx={{
-          width: isMobile ? "100% " : 500,
+          width: "100% ",
         }}
         aria-label="spanning table"
       >

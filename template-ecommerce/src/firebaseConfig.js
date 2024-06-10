@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
+import { v4 } from "uuid";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBU0pYK9Yv4rs0VMLgfu4tuZclgWWu9gxs",
@@ -39,4 +40,28 @@ export const logOut = () => {
 
 export const forgotPassword = async (email) => {
   await sendPasswordResetEmail(auth, email);
+};
+
+export const uploadFile = async (file) => {
+  try {
+    // Comprimir la imagen antes de cargarla
+
+    // Obtener una referencia al almacenamiento
+    const storageRef = ref(storage, v4());
+
+    // Cargar la imagen comprimida en el almacenamiento
+
+    const subida = await uploadBytes(storageRef, file);
+    console.log(subida);
+
+    // Obtener la URL de descarga de la imagen cargada
+    const url = await getDownloadURL(storageRef);
+
+    // Devolver la URL de descarga de la imagen
+    return url;
+  } catch (error) {
+    // Manejar cualquier error que ocurra durante el proceso de carga
+    console.error("Error al cargar la imagen:", error);
+    throw error;
+  }
 };

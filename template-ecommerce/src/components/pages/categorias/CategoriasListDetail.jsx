@@ -169,7 +169,6 @@ function Row(props) {
   }; */
 
   console.log(row.subcategorias); /* */
-  const subcategoriesArray = Object.entries(row.subcategorias);
 
   return (
     <React.Fragment>
@@ -184,17 +183,14 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+          sx={{ fontFamily: '"Kanit", sans-serif' }}
           component="th"
           scope="row"
         >
-          {row.id}
+          {row.nombre}
         </TableCell>
         {/* */}
-        <TableCell
-          sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-          align="rigth"
-        >
+        <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="rigth">
           <div
             style={{
               display: "flex",
@@ -240,18 +236,16 @@ function Row(props) {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
-                    >
+                    <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
                       Sub-Categorias
                     </TableCell>
                     {/*                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                     >
                       Fecha Adhesion
                     </TableCell> */}
                     {/*                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                       align="right"
                     >
                       Contacto
@@ -262,21 +256,21 @@ function Row(props) {
                 <TableBody>
                   <TableRow /* key={row.fec} */>
                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                       component="th"
                       scope="row"
                     >
-                      {subcategoriesArray.map(([key, value], index) => (
-                        <h5 key={index}>{value}</h5>
+                      {Object.values(row.subcategorias).map((doc) => (
+                        <h5 key={doc.id}>{doc.nombre}</h5>
                       ))}
                     </TableCell>
                     {/*                     <TableCell
-                        sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                        sx={{ fontFamily: '"Kanit", sans-serif' }}
                       >
                         {formattedFechaInicio}
                       </TableCell> */}
                     <TableCell
-                      sx={{ fontFamily: "Roboto Condensed, sans-serif" }}
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
                       align="right"
                     >
                       {/*                       <div
@@ -363,12 +357,12 @@ function CategoriasListDetail({
       style={{ backgroundColor: "rgba(255, 255, 255, 0.6)" }}
     >
       <Table aria-label="collapsible table">
-        <TableHead sx={{ fontFamily: "Roboto Condensed, sans-serif" }}>
-          <TableRow style={{ backgroundColor: "#1976D2", color: "white" }}>
+        <TableHead sx={{ fontFamily: '"Kanit", sans-serif' }}>
+          <TableRow style={{ backgroundColor: "#121621", color: "white" }}>
             <TableCell />
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="left"
@@ -377,7 +371,7 @@ function CategoriasListDetail({
             </TableCell>
             {/*             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
@@ -386,7 +380,7 @@ function CategoriasListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
@@ -395,14 +389,14 @@ function CategoriasListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
             ></TableCell> */}
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
                 textAlign: "center",
               }}

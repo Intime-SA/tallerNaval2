@@ -29,8 +29,6 @@ function Navbar(props) {
 
   const drawer = (
     <div style={{ padding: "5rem", display: "flex", justifyContent: "center" }}>
-      <Toolbar />
-
       <List>
         {menuItems.map(({ id, path, title, Icon }) => {
           return (
@@ -75,7 +73,7 @@ function Navbar(props) {
           backgroundColor: "white",
         }}
       >
-        <Toolbar
+        {/*         <Toolbar
           sx={{
             display: "flex",
             justifyContent: "space-between",
@@ -98,7 +96,7 @@ function Navbar(props) {
           >
             <MenuIcon color="secondary.primary" />
           </IconButton>
-        </Toolbar>
+        </Toolbar> */}
       </AppBar>
       <Box component="nav" aria-label="mailbox folders">
         <Drawer
@@ -133,8 +131,6 @@ function Navbar(props) {
           minHeight: "100vh",
         }}
       >
-        <Toolbar />
-
         <Outlet />
       </div>
     </div>

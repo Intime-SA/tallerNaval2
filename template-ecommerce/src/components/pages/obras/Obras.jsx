@@ -23,12 +23,20 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { Alert, AlertTitle, Button, Menu, MenuItem } from "@mui/material";
 import { db } from "../../../firebaseConfig";
-import { collection, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import FormattedDate from "./fechas/FormattedDate";
 import ClienteName from "./clientes/ClienteName";
 import HorasAcumuladas from "./horas/HorasAcumuladas";
 import GastosAcumulados from "./gastos/GastosAcumulados";
 import { useNavigate } from "react-router-dom";
+import { useMediaQuery } from "@mui/material";
+import { createTheme, useTheme } from "@mui/material/styles";
 
 function createData(
   id,
@@ -55,45 +63,63 @@ function createData(
 }
 
 const estadoRender = (estado) => {
-  if (estado === "Nueva") {
+  if (estado === "enProceso") {
     return (
-      <Alert severity="warning">
-        <AlertTitle style={{ marginTop: "10%", fontSize: "75%" }}>
-          Nueva
-        </AlertTitle>
-        {/* <strong>El pedido ya fue preparado</strong> */}
-      </Alert>
-    );
-  } else if (estado === "enProceso") {
-    return (
-      <Alert style={{ fontSize: "75%" }} size="small" severity="info">
+      <Alert
+        sx={{
+          fontFamily: '"Kanit", sans-serif',
+          fontSize: "120%",
+          fontSize: "120%",
+        }}
+        size="small"
+        variant="filled"
+        severity="info"
+      >
         En Proceso
       </Alert>
     );
-  } else if (estado === "Pausada") {
+  } else if (estado === "pausado") {
     return (
-      <Alert severity="success">
-        <AlertTitle
-          style={{ marginTop: "10%", fontSize: "75%" }}
-          variant="outlined"
-        >
-          En Pausa
-        </AlertTitle>
-        {/* <strong>El pedido fue entregado con exito</strong> */}
+      <Alert
+        sx={{
+          fontFamily: '"Kanit", sans-serif',
+          fontSize: "120%",
+          fontSize: "120%",
+        }}
+        variant="filled"
+        severity="warning"
+      >
+        En Pausa
       </Alert>
     );
-  } else if (estado === "Cancelada") {
+  } else if (estado === "cancelado") {
     return (
-      <Alert variant="outlined" severity="success">
+      <Alert
+        sx={{
+          fontFamily: '"Kanit", sans-serif',
+          fontSize: "120%",
+          fontSize: "120%",
+        }}
+        variant="outlined"
+        severity="success"
+      >
         <AlertTitle style={{ marginTop: "10%", fontSize: "75%" }}>
           Cancelada
         </AlertTitle>
         {/* <strong>El pedido fue entregado con exito</strong> */}
       </Alert>
     );
-  } else if (estado === "Finalizada") {
+  } else if (estado === "finalizado") {
     return (
-      <Alert variant="outlined" severity="error">
+      <Alert
+        sx={{
+          fontFamily: '"Kanit", sans-serif',
+          fontSize: "120%",
+          fontSize: "120%",
+        }}
+        variant="filled"
+        severity="success"
+      >
         Finalizada
       </Alert>
     );
@@ -120,19 +146,19 @@ const headCells = [
     label: "Fecha Inicio",
   },
   {
-    id: "calories",
+    id: "cliente",
     numeric: true,
     disablePadding: false,
-    label: "Cliente",
+    label: "",
   },
   {
-    id: "fat",
+    id: "horas",
     numeric: true,
     disablePadding: false,
     label: "Horas",
   },
   {
-    id: "carbs",
+    id: "gastos",
     numeric: true,
     disablePadding: false,
     label: "Gastos",
@@ -154,7 +180,7 @@ const headCells = [
     id: "status",
     numeric: true,
     disablePadding: false,
-    label: "Estado",
+    label: "",
   },
   {
     id: "accions",
@@ -179,8 +205,8 @@ function EnhancedTableHead(props) {
   };
 
   return (
-    <TableHead>
-      <TableRow>
+    <TableHead style={{ backgroundColor: "#121621", color: "white" }}>
+      <TableRow style={{ backgroundColor: "#121621", color: "white" }}>
         <TableCell padding="checkbox">
           <Checkbox
             color="primary"
@@ -198,11 +224,26 @@ function EnhancedTableHead(props) {
             align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
+            style={{
+              backgroundColor: "#121621",
+              color: "white",
+              width:
+                headCell.id === "horas" ||
+                headCell.id === "status" ||
+                headCell.id === "acciones"
+                  ? "10%"
+                  : "30%", // Ajusta los porcentajes según tus necesidades
+            }}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
+              sx={{
+                fontFamily: '"Kanit", sans-serif',
+                fontSize: "120%",
+                color: "white",
+              }}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -246,8 +287,7 @@ function EnhancedTableToolbar(props) {
     >
       {numSelected > 0 ? (
         <Typography
-          sx={{ flex: "1 1 100%" }}
-          color="inherit"
+          sx={{ flex: "1 1 100%", color: "white" }}
           variant="subtitle1"
           component="div"
         >
@@ -259,24 +299,9 @@ function EnhancedTableToolbar(props) {
           variant="h6"
           id="tableTitle"
           component="div"
-        >
-          PANEL DE CONTROL
-        </Typography>
+        ></Typography>
       )}
-
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      <FilterListIcon />
     </Toolbar>
   );
 }
@@ -290,7 +315,7 @@ export default function Obras() {
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+  const [dense, setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const [arrayObras, setArrayObras] = React.useState([]);
@@ -320,15 +345,6 @@ export default function Obras() {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelected = arrayObras.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
   };
 
   console.log(selected);
@@ -376,8 +392,42 @@ export default function Obras() {
     });
   };
 
+  const handlePausar = async (idObra) => {
+    try {
+      if (idObra) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idObra), {
+          estado: "pausado", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra finalizada con éxito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la obra:", error);
+    }
+  };
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 800, // Define md como 800px
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+
+  const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
   return (
-    <Box sx={{ width: "70%", marginLeft: "20vw" }}>
+    <Box
+      sx={{
+        width: isMiddleMobile ? "90%" : "80%",
+        marginLeft: isMiddleMobile ? "5rem" : "16.5rem",
+      }}
+    >
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
@@ -390,7 +440,6 @@ export default function Obras() {
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
             />
             <TableBody>
@@ -406,7 +455,13 @@ export default function Obras() {
                     key={row.id}
                     sx={{ cursor: "pointer", position: "relative" }}
                   >
-                    <TableCell padding="checkbox" sx={{ zIndex: 1 }}>
+                    <TableCell
+                      padding="checkbox"
+                      sx={{
+                        zIndex: 1,
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
                       <Checkbox
                         onClick={(event) => {
                           event.stopPropagation(); // Evita que el onClick del TableRow se dispare
@@ -424,27 +479,65 @@ export default function Obras() {
                       id={labelId}
                       scope="row"
                       padding="none"
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
                     >
                       <FormattedDate timestamp={row.fechaInicio} />
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                      align="right"
+                    >
                       <ClienteName clienteId={row.cliente}></ClienteName>
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
                       <HorasAcumuladas horasEmpleado={row.horasEmpleado} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
                       <GastosAcumulados obraId={row.id} />
                     </TableCell>
-                    <TableCell align="left">{row.lugar}</TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                      align="left"
+                    >
+                      {row.lugar}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                      align="right"
+                    >
                       {formattedGastos(row.presupuestoInicial)}
                     </TableCell>
 
-                    <TableCell align="right">
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                      align="right"
+                    >
                       {estadoRender(row.estado)}
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      sx={{
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                      align="right"
+                    >
                       <div style={{ zIndex: 0 }}>
                         <Button
                           id="demo-positioned-button"
@@ -453,7 +546,12 @@ export default function Obras() {
                           }
                           aria-haspopup="true"
                           aria-expanded={open ? "true" : undefined}
-                          sx={{ zIndex: 1 }}
+                          sx={{
+                            zIndex: 1,
+
+                            fontFamily: '"Kanit", sans-serif',
+                            fontSize: "120%",
+                          }}
                           onClick={(event) => {
                             event.stopPropagation(), handleClick();
                           }}
@@ -462,6 +560,7 @@ export default function Obras() {
                             more_vert
                           </span>
                         </Button>
+
                         <Menu
                           id="demo-positioned-menu"
                           open={open}
@@ -475,22 +574,27 @@ export default function Obras() {
                             horizontal: "right",
                           }}
                         >
-                          <MenuItem
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-start",
-                              alignItems: "center",
-                            }}
-                            /* onClick={() => handleChangeStatus("empaquetada", row.id)} */
-                          >
-                            <span
-                              style={{ margin: "1rem" }}
-                              class="material-symbols-outlined"
-                            >
-                              check_circle
-                            </span>
-                            <h6 style={{ marginTop: "0.5rem" }}>Finalizar</h6>
-                          </MenuItem>
+                          {row.estado !== "finalizado" &&
+                            row.estado !== "cancelado" && (
+                              <MenuItem
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                                /* onClick={() => handleChangeStatus("empaquetada", row.id)} */
+                              >
+                                <span
+                                  style={{ margin: "1rem" }}
+                                  class="material-symbols-outlined"
+                                >
+                                  check_circle
+                                </span>
+                                <h6 style={{ marginTop: "0.5rem" }}>
+                                  Finalizar
+                                </h6>
+                              </MenuItem>
+                            )}
 
                           <MenuItem
                             style={{
@@ -508,6 +612,29 @@ export default function Obras() {
                             </span>
                             <h6 style={{ marginTop: "0.5rem" }}>Cancelar</h6>
                           </MenuItem>
+                          {row.estado !== "finalizado" &&
+                            row.estado !== "cancelado" &&
+                            row.estado !== "pausado" && (
+                              <MenuItem
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                                sx={{ zIndex: 1 }}
+                                onClick={(event) => {
+                                  event.stopPropagation(), handlePausar(row.id);
+                                }}
+                              >
+                                <span
+                                  style={{ margin: "1rem" }}
+                                  class="material-symbols-outlined"
+                                >
+                                  pause_circle
+                                </span>
+                                <h6 style={{ marginTop: "0.5rem" }}>Pausar</h6>
+                              </MenuItem>
+                            )}
                         </Menu>
                       </div>
                     </TableCell>
@@ -518,10 +645,6 @@ export default function Obras() {
           </Table>
         </TableContainer>
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </Box>
   );
 }

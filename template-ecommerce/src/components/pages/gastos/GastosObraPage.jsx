@@ -73,7 +73,7 @@ export default function GastosObraPage() {
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
-              <TableRow>
+              <TableRow style={{ backgroundColor: "#121621" }}>
                 {columns.map((column) => (
                   <TableCell
                     key={column.id}

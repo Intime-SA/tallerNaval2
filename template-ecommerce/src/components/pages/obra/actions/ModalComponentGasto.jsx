@@ -26,6 +26,7 @@ import DatePickerComponent from "./DatePickerComponent";
 import FadeMenuImpuestos from "./FadeMenuImpuestos";
 import SpanningTable from "./SpanningTable";
 import "./ModalFont.css";
+import AutoCompleteSubCategory from "./AutoCompleteSubCategory";
 
 const style = {
   position: "absolute",
@@ -53,6 +54,7 @@ export default function ModalComponentGasto({
   const handleClose = () => setOpenModalGasto(false);
 
   const [categoria, setCategoria] = React.useState("");
+  const [subCategoria, setSubCategoria] = React.useState("");
   const [proveedor, setProveedor] = React.useState("");
   const [descripcion, setDescripcion] = React.useState("");
   const [monto, setMonto] = React.useState("$0,00");
@@ -117,6 +119,7 @@ export default function ModalComponentGasto({
         fechaGasto: timestampFirestore,
         clienteId: idCliente,
         categoria: categoria,
+        subcategoria: subCategoria,
         proveedorId: proveedor,
         descripcion: descripcion,
         gastoGlobal: false,
@@ -264,10 +267,18 @@ export default function ModalComponentGasto({
           setCategoria={setCategoria}
           categoria={categoria}
         />
+        {categoria && (
+          <AutoCompleteSubCategory
+            setSubCategoria={setSubCategoria}
+            subCategoria={subCategoria}
+            categoria={categoria}
+          />
+        )}
         <AutoCompleteProveedor
           setProveedor={setProveedor}
           proveedor={proveedor}
         />
+
         <TextField
           multiline
           rows={4}

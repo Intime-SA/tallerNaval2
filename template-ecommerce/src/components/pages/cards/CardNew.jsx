@@ -12,8 +12,8 @@ export default function ActionAreaCard({ setOpenModalObra }) {
   return (
     <Card
       sx={{
-        maxWidth: 320,
-        minWidth: 320,
+        maxWidth: 270,
+        minWidth: 270,
         marginBottom: 20,
         marginBottom: 2,
         border: "1px solid #e0e0e0",

@@ -1,12 +1,13 @@
 import Cards from "../cards/Cards";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Obra from "../obra/Obra";
 import CardNew from "../cards/CardNew";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Modal } from "@mui/material";
 import ModalObra from "./ModalObra";
+import { DrawerContext } from "../../context/DrawerContext";
 
 export default function Home() {
   const [arrayClientes, setArrayClientes] = useState([]);
@@ -16,6 +17,8 @@ export default function Home() {
   const [idCliente, setIdCliente] = useState("");
   const [openModalObra, setOpenModalObra] = useState(false);
   const [actualizarObras, setActualizarObras] = useState(false);
+
+  const { setOpenDrawer, openDrawer } = useContext(DrawerContext);
 
   useEffect(() => {
     const consultaClientes = async () => {
@@ -54,7 +57,7 @@ export default function Home() {
     };
 
     consultaObras();
-  }, [actualizarObras]);
+  }, []);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -63,8 +66,9 @@ export default function Home() {
       style={{
         display: "flex",
         justifyContent: isMobile ? "center" : "flex-start",
-        width: "80%",
+        width: openDrawer ? "80%" : "100%",
         marginLeft: isMobile ? "0px" : "5rem",
+        marginLeft: openDrawer ? "5rem" : "0rem",
       }}
     >
       <ModalObra
@@ -98,17 +102,6 @@ export default function Home() {
           />
         </div>
       )}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-      >
-        {/*         {openObra && (
-          <Obra idObra={idObra} obras={arrayObras} idCliente={idCliente} />
-        )} */}
-      </div>
     </div>
   );
 }

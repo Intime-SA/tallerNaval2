@@ -31,7 +31,7 @@ const Obra = () => {
   }, []);
 
   return (
-    <div style={{ width: "80%" }}>
+    <div style={{ width: "100%" }}>
       <Dashboard idObra={id} obras={arrayObras} />
     </div>
   );

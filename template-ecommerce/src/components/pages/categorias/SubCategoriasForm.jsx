@@ -1,28 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Autocomplete } from "@mui/material";
-import { db } from "../../../firebaseConfig";
-import {
-  doc,
-  updateDoc,
-  getDocs,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
+import { TextField, Button } from "@mui/material";
 import { v4 } from "uuid";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
-const CategoriasForm = ({ setOpenForm }) => {
+const SubCategoriasForm = ({ setOpenForm }) => {
   const [categorias, setCategorias] = useState([]);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
-  const [newSubCategory, setNewSubCategory] = useState({
+  const [newCategory, setNewCategory] = useState({
     nombre: "",
     id: "",
     descripcion: "",
+    subcategorias: [],
   });
   const [errors, setErrors] = useState({});
 
+  const fetchCategorias = async () => {
+    try {
+      const collectionRef = collection(db, "categorias");
+      const snapShot = await getDocs(collectionRef);
+      return snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("Error fetching categories: ", error);
+      throw error;
+    }
+  };
+
+  const addCategoria = async (newCategoria, idCategoria) => {
+    try {
+      const docRef = doc(db, "categorias", idCategoria);
+      await setDoc(docRef, newCategoria);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding category: ", error);
+      throw error;
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewSubCategory((prev) => ({
+    setNewCategory((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -31,61 +50,49 @@ const CategoriasForm = ({ setOpenForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!categoriaSeleccionada || !newSubCategory.nombre) {
-      setErrors({
-        ...errors,
-        categoria: !categoriaSeleccionada ? "Seleccione una categoría" : "",
-        nombre: !newSubCategory.nombre ? "Nombre es requerido" : "",
-      });
+    const { nombre } = newCategory;
+    const validationErrors = {};
+    if (!nombre) validationErrors.nombre = "Nombre es requerido";
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
-    const idSubCategoria = v4();
+    const idCategoria = v4();
 
-    const updatedSubcategorias = {
-      ...categoriaSeleccionada.subcategorias,
-      [idSubCategoria]: {
-        nombre: newSubCategory.nombre,
-        id: idSubCategoria,
-        descripcion: newSubCategory.descripcion,
-      },
+    const newCategoria = {
+      ...newCategory,
+      id: idCategoria,
     };
 
-    const categoryRef = doc(db, "categorias", categoriaSeleccionada.id);
-
-    await updateDoc(categoryRef, {
-      subcategorias: updatedSubcategorias,
-      updated_at: serverTimestamp(),
-    });
-
-    setOpenForm(false);
-    setNewSubCategory({
-      nombre: "",
-      id: "",
-      descripcion: "",
-    });
+    try {
+      await addCategoria(newCategoria, idCategoria);
+      setOpenForm(false);
+      setNewCategory({
+        nombre: "",
+        id: "",
+        descripcion: "",
+      });
+    } catch (error) {
+      console.error("Error adding category: ", error);
+    }
   };
-
   const handleReturn = () => {
     setOpenForm(false);
   };
 
   useEffect(() => {
-    const fetchCategorias = async () => {
+    const loadCategorias = async () => {
       try {
-        const collectionRef = collection(db, "categorias");
-        const snapShot = await getDocs(collectionRef);
-        const categoriasList = snapShot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const categoriasList = await fetchCategorias();
         setCategorias(categoriasList);
       } catch (error) {
         console.error("Error fetching categories: ", error);
       }
     };
 
-    fetchCategorias();
+    loadCategorias();
   }, []);
 
   return (
@@ -114,36 +121,14 @@ const CategoriasForm = ({ setOpenForm }) => {
             }}
           >
             <h5 style={{ margin: "1rem", marginBottom: "2rem" }}>
-              Nueva Sub-Categoria
-              <div>
-                <Autocomplete
-                  name="categoria"
-                  disablePortal
-                  id="combo-box-demo"
-                  options={categorias}
-                  getOptionLabel={(option) => option.nombre}
-                  sx={{ width: 300 }}
-                  value={categoriaSeleccionada}
-                  onChange={(event, newValue) =>
-                    setCategoriaSeleccionada(newValue)
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Categoria"
-                      error={!!errors.categoria}
-                      helperText={errors.categoria}
-                    />
-                  )}
-                />
-              </div>
+              Nueva Categoria
             </h5>
             <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
               <TextField
                 name="nombre"
                 variant="outlined"
                 label="Nombre"
-                value={newSubCategory.nombre}
+                value={newCategory.nombre}
                 onChange={handleChange}
                 fullWidth
                 style={{
@@ -160,7 +145,7 @@ const CategoriasForm = ({ setOpenForm }) => {
                 name="descripcion"
                 variant="outlined"
                 label="Descripcion"
-                value={newSubCategory.descripcion}
+                value={newCategory.descripcion}
                 onChange={handleChange}
                 fullWidth
                 style={{
@@ -194,4 +179,4 @@ const CategoriasForm = ({ setOpenForm }) => {
   );
 };
 
-export default CategoriasForm;
+export default SubCategoriasForm;

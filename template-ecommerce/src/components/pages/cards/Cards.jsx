@@ -3,7 +3,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Alert, CardActionArea } from "@mui/material";
+import { Alert, AlertTitle, CardActionArea } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Cards({
@@ -27,14 +27,28 @@ export default function Cards({
     console.log(estado);
     if (estado === "enProceso") {
       return (
-        <Alert variant="filled" severity="info">
+        <Alert style={{ borderRadius: "0px" }} variant="filled" severity="info">
           En proceso
         </Alert>
       );
     } else if (estado === "finalizado") {
       return (
-        <Alert variant="filled" severity="success">
+        <Alert
+          style={{ borderRadius: "0px" }}
+          variant="filled"
+          severity="success"
+        >
           Finalizado
+        </Alert>
+      );
+    } else if (estado === "pausado") {
+      return (
+        <Alert
+          style={{ borderRadius: "0px" }}
+          variant="filled"
+          severity="warning"
+        >
+          En Pausa
         </Alert>
       );
     }
@@ -54,8 +68,8 @@ export default function Cards({
               <Card
                 key={obra.id}
                 sx={{
-                  minWidth: 320,
-                  maxWidth: 320,
+                  minWidth: 270,
+                  maxWidth: 270,
                   marginBottom: 20,
                   marginBottom: 2,
                   border: "1px solid #e0e0e0",
@@ -71,22 +85,43 @@ export default function Cards({
                     image={cliente.imagen ? cliente.imagen : null}
                     alt="Cliente Image"
                   />
-                  <div>{renderEstado(obra.estado)}</div>
-                  <CardContent style={{ minHeight: 150 }}>
-                    <Typography gutterBottom variant="h5" component="div">
+                  <div style={{ borderRadius: "0px" }}>
+                    {renderEstado(obra.estado)}
+                  </div>
+                  <CardContent
+                    style={{
+                      minHeight: 150,
+                      fontFamily: '"Kanit", sans-serif',
+                    }}
+                  >
+                    <Typography
+                      style={{ fontFamily: '"Kanit", sans-serif' }}
+                      gutterBottom
+                      variant="h5"
+                      component="div"
+                    >
                       {cliente.nombre}
                     </Typography>
                     <Typography
+                      style={{ fontFamily: '"Kanit", sans-serif' }}
                       variant="body2"
                       color="text.secondary"
                       fontSize="80%"
                     >
                       {obra.descripcion}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      style={{ fontFamily: '"Kanit", sans-serif' }}
+                      variant="body2"
+                      color="text.secondary"
+                    >
                       {obra.lugar}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      style={{ fontFamily: '"Kanit", sans-serif' }}
+                      variant="body2"
+                      color="text.secondary"
+                    >
                       Presupuesto Estimado: <br />
                       <br />
                       <strong>

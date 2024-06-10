@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
-import { db } from "../../../firebaseConfig";
+import { db, uploadFile } from "../../../firebaseConfig";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const ClientForm = ({ customers, setOpenForm, openForm }) => {
@@ -20,6 +20,9 @@ const ClientForm = ({ customers, setOpenForm, openForm }) => {
     },
   });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState(null);
+  const [isImageUploaded, setIsImageUploaded] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,9 +99,19 @@ const ClientForm = ({ customers, setOpenForm, openForm }) => {
     setOpenForm(false);
   };
 
+  const handleImage = async () => {
+    setIsLoading(true);
+
+    // Subir la imagen comprimida a Firebase
+    const url = await uploadFile(file);
+
+    setNewClient({ ...newClient, imagen: url });
+    setIsLoading(false);
+    setIsImageUploaded(true);
+  };
+
   return (
     <div style={{ width: "100%", zoom: "0.9" }}>
-      <h5 style={{ marginTop: "1rem" }}>Agregar Cliente</h5>
       <div
         style={{
           border: "1px solid #ccc",
@@ -143,6 +156,7 @@ const ClientForm = ({ customers, setOpenForm, openForm }) => {
                 error={!!errors.nombre}
                 helperText={errors.nombre}
               />
+
               {/*               <TextField
                 name="apellido"
                 variant="outlined"
@@ -329,15 +343,46 @@ const ClientForm = ({ customers, setOpenForm, openForm }) => {
               />
             </div>
           </div>
-
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            style={{ marginBottom: "1rem", width: "50%", maxWidth: "200px" }}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between", // Esto distribuirá los elementos a lo largo del contenedor
+              marginTop: "1rem",
+            }}
           >
-            Cargar Cliente
-          </Button>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files[0])}
+              style={{ display: "none" }}
+              id="fileInput"
+            />
+            <label htmlFor="fileInput" style={{ marginRight: "8px" }}>
+              <Button variant="contained" component="span">
+                Cargar Imagen
+              </Button>
+            </label>
+            {file && (
+              <Button
+                variant="contained"
+                onClick={handleImage}
+                disabled={isLoading}
+                style={{ marginRight: "8px" }}
+              >
+                {isLoading ? "Cargando..." : "Subir Imagen"}
+              </Button>
+            )}
+          </div>
+          {isImageUploaded && (
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              style={{ marginBottom: "1rem", width: "50%", maxWidth: "200px" }}
+            >
+              Cargar Cliente
+            </Button>
+          )}
         </form>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>

@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { db } from "../../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import ClientListDetail from "./ClientListDetail";
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 import ClientForm from "./ClientForm";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
+import { Tooltip, useMediaQuery } from "@mui/material";
+import { createTheme, useTheme } from "@mui/material/styles";
+import { DrawerContext } from "../../context/DrawerContext";
 
 const Clients = () => {
   const [customers, setCustomers] = useState([]);
@@ -15,6 +18,20 @@ const Clients = () => {
   const [customersPerPage] = useState(5); // Cantidad de clientes por página
   const [clients, setClients] = useState();
   const [filterValue, setFilterValue] = useState(""); // Estado para almacenar el valor del filtro
+  const { setOpenDrawer, openDrawer } = useContext(DrawerContext);
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 800, // Define md como 800px
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+
+  const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   useEffect(() => {
     let refCollection = collection(db, "clientes");
@@ -90,15 +107,17 @@ const Clients = () => {
         flexDirection: "column",
         fontSize: "2rem",
         position: "relative",
-        width: "70%",
-        marginLeft: "20vw",
+        width: isMiddleMobile ? "90%" : "80%",
+        width: openDrawer ? "80%" : "90%",
+        marginLeft: isMiddleMobile ? "5rem" : "16.5rem",
+        marginLeft: !openDrawer ? "5rem" : "16.5rem",
         marginRight: "20vw",
       }}
     >
       <Box>
         <div style={{ marginBottom: "1rem" }}>
           <Button
-            style={{ marginLeft: "1rem" }}
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
             variant="outlined"
             color="info"
             onClick={exportToExcel}
@@ -112,7 +131,7 @@ const Clients = () => {
             Exportar Lista
           </Button>
           <Button
-            style={{ marginLeft: "1rem" }}
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
             variant="contained"
             color="info"
             onClick={() => setOpenForm(true)}

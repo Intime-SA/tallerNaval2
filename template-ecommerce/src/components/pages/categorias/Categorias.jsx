@@ -1,20 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { db } from "../../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import CategoriasListDetail from "./CategoriasListDetail";
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
 import CategoriasForm from "./CategoriasForm";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
+import { Tooltip, useMediaQuery } from "@mui/material";
+import { createTheme, useTheme } from "@mui/material/styles";
+import SubCategoriasForm from "./SubCategoriasForm";
+import { DrawerContext } from "../../context/DrawerContext";
 
 const Categorias = () => {
   const [customers, setCustomers] = useState([]);
   const [openForm, setOpenForm] = useState(false);
+  const [openForm2, setOpenForm2] = useState(false);
   const [statusDelete, setStatusDelete] = useState(false);
   const [statusEdit, setStatusEdit] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [customersPerPage] = useState(5); // Cantidad de clientes por página
+  const [customersPerPage] = useState(10); // Cantidad de clientes por página
   const [clients, setClients] = useState();
   const [filterValue, setFilterValue] = useState(""); // Estado para almacenar el valor del filtro
+
+  const { setOpenDrawer, openDrawer } = useContext(DrawerContext);
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 800, // Define md como 800px
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+
+  const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   useEffect(() => {
     let refCollection = collection(db, "categorias");
@@ -81,6 +101,16 @@ const Categorias = () => {
   // Cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleNewCategory = () => {
+    setOpenForm2(true);
+    setOpenForm(false);
+  };
+
+  const handleNewSubCategory = () => {
+    setOpenForm(true);
+    setOpenForm2(false);
+  };
+
   return (
     <div
       style={{
@@ -90,15 +120,17 @@ const Categorias = () => {
         flexDirection: "column",
         fontSize: "2rem",
         position: "relative",
-        width: "70%",
-        marginLeft: "20vw",
+        width: isMiddleMobile ? "90%" : "80%",
+        width: openDrawer ? "80%" : "90%",
+        marginLeft: isMiddleMobile ? "5rem" : "16.5rem",
+        marginLeft: !openDrawer ? "5rem" : "16.5rem",
         marginRight: "20vw",
       }}
     >
       <Box>
         <div style={{ marginBottom: "1rem" }}>
           <Button
-            style={{ marginLeft: "1rem" }}
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
             variant="outlined"
             color="info"
             onClick={exportToExcel}
@@ -112,18 +144,32 @@ const Categorias = () => {
             Exportar Lista
           </Button>
           <Button
-            style={{ marginLeft: "1rem" }}
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
             variant="contained"
             color="info"
-            onClick={() => setOpenForm(true)}
+            onClick={handleNewCategory}
           >
             <span
               style={{ marginRight: "0.5rem" }}
               className="material-symbols-outlined"
             >
-              person_add
+              add_comment
             </span>
             Nueva Categoria
+          </Button>
+          <Button
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
+            variant="filled"
+            color="info"
+            onClick={handleNewSubCategory}
+          >
+            <span
+              style={{ marginRight: "0.5rem" }}
+              className="material-symbols-outlined"
+            >
+              docs_add_on
+            </span>
+            Nueva Sub-Categoria
           </Button>
         </div>
         {/* Campo de filtro */}
@@ -158,7 +204,7 @@ const Categorias = () => {
         }}
       />
       <div style={{ width: "100%" }}>
-        {!openForm ? (
+        {!openForm && !openForm2 ? (
           <CategoriasListDetail
             customers={currentCustomers}
             setStatusDelete={setStatusDelete}
@@ -167,12 +213,20 @@ const Categorias = () => {
             setStatusEdit={setStatusEdit}
             statusEdit={statusEdit}
           />
-        ) : (
+        ) : openForm && !openForm2 ? (
           <CategoriasForm
             customers={customers}
             setOpenForm={setOpenForm}
             openForm={openForm}
           />
+        ) : (
+          openForm2 && (
+            <SubCategoriasForm
+              customers={customers}
+              setOpenForm={setOpenForm}
+              openForm={openForm}
+            />
+          )
         )}
       </div>
       <Box

@@ -12,12 +12,20 @@ import Chart from "../charts/Chart";
 import ModalComponent from "../actions/ModalComponent";
 import CircularProgre from "./CircularProgre";
 import ModalComponentGasto from "../actions/ModalComponentGasto";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import "./Dashboard.css";
-import { Button } from "@mui/material";
+import { Alert, Button, Switch } from "@mui/material";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
 import { TableContext } from "../../../context/TableContext";
+import { useNavigate } from "react-router-dom";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -41,10 +49,64 @@ export default function Dashboard({ idObra }) {
   const [arrayHoras, setArrayHoras] = React.useState([]);
   const [arrayGastos, setArrayGastos] = React.useState([]);
   const [idCliente, setIdCliente] = React.useState("");
+  const [obra, setObra] = React.useState([]);
 
   const { proveedores, clientes, obras } = React.useContext(TableContext);
 
   const isMobile = useMediaQuery("(max-width:760px)");
+
+  const navigate = useNavigate();
+
+  const handleFinalizar = async () => {
+    try {
+      if (idObra) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idObra), {
+          estado: "finalizado", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra finalizada con éxito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la obra:", error);
+    }
+  };
+
+  const handleActivar = async () => {
+    try {
+      if (idObra) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idObra), {
+          estado: "enProceso", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra Activada con exito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al activar la obra:", error);
+    }
+  };
+
+  const handlePausar = async () => {
+    try {
+      if (idObra) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idObra), {
+          estado: "pausado", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra finalizada con éxito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la obra:", error);
+    }
+  };
 
   React.useEffect(() => {
     window.scrollTo(0, 0); // Hace scroll hacia arriba al renderizar el componente
@@ -55,6 +117,7 @@ export default function Dashboard({ idObra }) {
       try {
         const obraDoc = await getDoc(doc(db, "obras", idObra));
         if (obraDoc.exists()) {
+          setObra(obraDoc.data());
           const obraDataCliente = obraDoc.data().cliente;
           setIdCliente(obraDataCliente);
 
@@ -268,6 +331,16 @@ export default function Dashboard({ idObra }) {
     XLSX.writeFile(wb, "HorasTrabajadas.xlsx");
   };
 
+  const [checked, setChecked] = React.useState(false);
+  const handleChange = (event) => {
+    const isChecked = event.target.checked;
+    setChecked(isChecked);
+    if (isChecked) {
+      handleActivar();
+      navigate("/");
+    }
+  };
+
   return (
     <Box sx={{ flexGrow: 1, marginLeft: "15vw" }}>
       {openModal && (
@@ -287,6 +360,21 @@ export default function Dashboard({ idObra }) {
           idCliente={idCliente}
           setCambioGastos={setCambioGastos}
         />
+      )}
+      {obra.estado === "finalizado" && (
+        <Alert style={{ margin: "2rem" }} variant="filled" severity="success">
+          Finalizado
+        </Alert>
+      )}
+      {obra.estado === "enProceso" && (
+        <Alert style={{ margin: "2rem" }} variant="filled" severity="info">
+          En Proceso
+        </Alert>
+      )}
+      {obra.estado === "pausado" && (
+        <Alert style={{ margin: "2rem" }} variant="filled" severity="warning">
+          Pausado
+        </Alert>
       )}
       <Grid
         container
@@ -310,11 +398,28 @@ export default function Dashboard({ idObra }) {
             justifyContent: "flex-start",
           }}
         >
-          <Actions
-            setOpenModal={setOpenModal}
-            idObra={idObra}
-            setOpenModalGasto={setOpenModalGasto}
-          />
+          {obra.estado === "enProceso" && (
+            <Actions
+              setOpenModal={setOpenModal}
+              idObra={idObra}
+              setOpenModalGasto={setOpenModalGasto}
+              handleFinalizar={handleFinalizar}
+              handleActivar={handleActivar}
+              handlePausar={handlePausar}
+            />
+          )}
+          {obra.estado === "pausado" && (
+            <div>
+              Activar
+              <Switch
+                checked={checked}
+                onChange={handleChange} // Aquí está la corrección
+                defaultChecked
+              >
+                Activar
+              </Switch>
+            </div>
+          )}
         </Grid>
         <Grid xs={isMobile ? 12 : 8}>
           <div
@@ -356,18 +461,20 @@ export default function Dashboard({ idObra }) {
             justifyContent: "flex-start",
           }}
         >
-          <ListEmpleado
-            idObra={idObra}
-            setCambioHoras={setCambioHoras}
-            idCliente={idCliente}
-            setArrayEmpleados={setArrayEmpleados}
-            arrayEmpleados={arrayEmpleados}
-            actualizarEmpleados={actualizarEmpleados}
-            setOpenProgress={setOpenProgress}
-            openProgress={openProgress}
-            setTotalHorasEmpleado={setTotalHorasEmpleado}
-            setActualizarEmpleados={setActualizarEmpleados}
-          />
+          {obra.estado === "enProceso" && (
+            <ListEmpleado
+              idObra={idObra}
+              setCambioHoras={setCambioHoras}
+              idCliente={idCliente}
+              setArrayEmpleados={setArrayEmpleados}
+              arrayEmpleados={arrayEmpleados}
+              actualizarEmpleados={actualizarEmpleados}
+              setOpenProgress={setOpenProgress}
+              openProgress={openProgress}
+              setTotalHorasEmpleado={setTotalHorasEmpleado}
+              setActualizarEmpleados={setActualizarEmpleados}
+            />
+          )}
         </Grid>
         <Grid
           xs={isMobile ? 12 : 4}

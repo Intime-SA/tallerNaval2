@@ -15,10 +15,38 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import { menuItems } from "../../../router/navigation";
 import { Link } from "react-router-dom";
-
-const drawerWidth = 240;
+import { Button, Slide, Tooltip, useMediaQuery } from "@mui/material";
+import { createTheme, useTheme } from "@mui/material/styles";
+import { DrawerContext } from "../../context/DrawerContext";
 
 export default function DrawerMenu() {
+  const { setOpenDrawer, openDrawer } = React.useContext(DrawerContext);
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 800, // Define md como 800px
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+  const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const [drawerWidth, setDrawerWidth] = React.useState(
+    isMiddleMobile ? 75 : 240
+  );
+
+  React.useEffect(() => {
+    if (openDrawer) {
+      // Si el cajón está abierto, establece el ancho en 60
+      setDrawerWidth(240);
+    } else {
+      // Si el cajón está cerrado, restablece el ancho a su valor original (240 o 60)
+      setDrawerWidth(75);
+    }
+  }, [openDrawer, isMiddleMobile]);
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -26,41 +54,82 @@ export default function DrawerMenu() {
         position="fixed"
         sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}
       >
-        <Toolbar sx={{ backgroundColor: "#121621" }}>
-          <Typography variant="h6" noWrap component="div">
+        <Toolbar
+          sx={{ fontFamily: '"Kanit", sans-serif', backgroundColor: "#121621" }}
+        >
+          <Typography
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            variant="h6"
+            noWrap
+            component="div"
+          >
             Taller Naval
           </Typography>
         </Toolbar>
       </AppBar>
       <Drawer
         sx={{
-          width: drawerWidth,
+          width: drawerWidth, // Establece el ancho del Drawer
           flexShrink: 0,
+          transition: "width 0.5s ease", // Agrega una transición suave al ancho del Drawer
           "& .MuiDrawer-paper": {
-            width: drawerWidth,
+            width: drawerWidth, // Establece el ancho del papel del Drawer
             boxSizing: "border-box",
             backgroundColor: "#121621",
           },
         }}
         variant="permanent"
         anchor="left"
+        open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
       >
         <Toolbar />
+        {openDrawer && (
+          <Button onClick={() => setOpenDrawer(false)}>
+            <span
+              style={{ margin: "1rem", color: "white" }}
+              class="material-symbols-outlined"
+            >
+              arrow_back_ios
+            </span>
+          </Button>
+        )}
+
+        {!openDrawer && (
+          <Button onClick={() => setOpenDrawer(true)}>
+            <span class="material-symbols-outlined">arrow_forward_ios</span>
+          </Button>
+        )}
+
         <Divider />
         <List>
           {menuItems.map(({ id, path, title, Icon }) => (
             <ListItem style={{ color: "white" }} key={id} disablePadding>
               <ListItemButton component={Link} to={path}>
-                <ListItemIcon>
-                  <Icon sx={{ color: "white" }} />
-                </ListItemIcon>
-                <ListItemText primary={title} />
+                {!openDrawer && (
+                  <Tooltip title={title}>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+                  </Tooltip>
+                )}
+                {openDrawer && (
+                  <>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+
+                    <h4 style={{ fontFamily: '"Kanit", sans-serif' }}>
+                      {title}
+                    </h4>
+                  </>
+                )}
               </ListItemButton>
             </ListItem>
           ))}
         </List>
         <Divider />
-        <List>
+        {/*         <List>
           {["Usuarios", "Cuentas", "Reportes"].map((text, index) => (
             <ListItem style={{ color: "white" }} key={text} disablePadding>
               <ListItemButton>
@@ -71,11 +140,11 @@ export default function DrawerMenu() {
                     <MailIcon style={{ color: "white" }} />
                   )}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <h4 style={{ fontFamily: '"Kanit", sans-serif' }}>{text}</h4>
               </ListItemButton>
             </ListItem>
           ))}
-        </List>
+        </List> */}
       </Drawer>
       <Box
         component="main"
