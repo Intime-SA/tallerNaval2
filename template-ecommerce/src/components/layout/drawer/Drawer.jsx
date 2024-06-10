@@ -13,7 +13,12 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { menuItems } from "../../../router/navigation";
+import {
+  menuItems,
+  menuItems2,
+  menuItems3,
+  menuItems4,
+} from "../../../router/navigation";
 import { Link } from "react-router-dom";
 import { Button, Slide, Tooltip, useMediaQuery } from "@mui/material";
 import { createTheme, useTheme } from "@mui/material/styles";
@@ -100,6 +105,33 @@ export default function DrawerMenu() {
             <span class="material-symbols-outlined">arrow_forward_ios</span>
           </Button>
         )}
+        <List>
+          {menuItems3.map(({ id, path, title, Icon }) => (
+            <ListItem style={{ color: "white" }} key={id} disablePadding>
+              <ListItemButton component={Link} to={path}>
+                {!openDrawer && (
+                  <Tooltip title={title}>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+                  </Tooltip>
+                )}
+                {openDrawer && (
+                  <>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+
+                    <h4 style={{ fontFamily: '"Kanit", sans-serif' }}>
+                      {title}
+                    </h4>
+                  </>
+                )}
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
 
         <Divider />
         <List>
@@ -129,6 +161,65 @@ export default function DrawerMenu() {
           ))}
         </List>
         <Divider />
+
+        <br />
+        <List>
+          {menuItems2.map(({ id, path, title, Icon }) => (
+            <ListItem style={{ color: "white" }} key={id} disablePadding>
+              <ListItemButton component={Link} to={path}>
+                {!openDrawer && (
+                  <Tooltip title={title}>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+                  </Tooltip>
+                )}
+                {openDrawer && (
+                  <>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+
+                    <h4 style={{ fontFamily: '"Kanit", sans-serif' }}>
+                      {title}
+                    </h4>
+                  </>
+                )}
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <br />
+
+        <List>
+          {menuItems4.map(({ id, path, title, Icon }) => (
+            <ListItem style={{ color: "white" }} key={id} disablePadding>
+              <ListItemButton component={Link} to={path}>
+                {!openDrawer && (
+                  <Tooltip title={title}>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+                  </Tooltip>
+                )}
+                {openDrawer && (
+                  <>
+                    <ListItemIcon>
+                      <Icon sx={{ color: "white" }} />
+                    </ListItemIcon>
+
+                    <h4 style={{ fontFamily: '"Kanit", sans-serif' }}>
+                      {title}
+                    </h4>
+                  </>
+                )}
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+
         {/*         <List>
           {["Usuarios", "Cuentas", "Reportes"].map((text, index) => (
             <ListItem style={{ color: "white" }} key={text} disablePadding>

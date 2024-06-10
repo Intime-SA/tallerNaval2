@@ -27,14 +27,18 @@ export default function Cards({
     console.log(estado);
     if (estado === "enProceso") {
       return (
-        <Alert style={{ borderRadius: "0px" }} variant="filled" severity="info">
+        <Alert
+          style={{ fontFamily: '"Kanit", sans-serif', borderRadius: "0px" }}
+          variant="filled"
+          severity="info"
+        >
           En proceso
         </Alert>
       );
     } else if (estado === "finalizado") {
       return (
         <Alert
-          style={{ borderRadius: "0px" }}
+          style={{ fontFamily: '"Kanit", sans-serif', borderRadius: "0px" }}
           variant="filled"
           severity="success"
         >
@@ -44,11 +48,21 @@ export default function Cards({
     } else if (estado === "pausado") {
       return (
         <Alert
-          style={{ borderRadius: "0px" }}
+          style={{ fontFamily: '"Kanit", sans-serif', borderRadius: "0px" }}
           variant="filled"
           severity="warning"
         >
           En Pausa
+        </Alert>
+      );
+    } else if (estado === "cancelado") {
+      return (
+        <Alert
+          style={{ fontFamily: '"Kanit", sans-serif', borderRadius: "0px" }}
+          variant="filled"
+          severity="error"
+        >
+          Cancelada
         </Alert>
       );
     }
@@ -85,7 +99,12 @@ export default function Cards({
                     image={cliente.imagen ? cliente.imagen : null}
                     alt="Cliente Image"
                   />
-                  <div style={{ borderRadius: "0px" }}>
+                  <div
+                    style={{
+                      fontFamily: '"Kanit", sans-serif',
+                      borderRadius: "0px",
+                    }}
+                  >
                     {renderEstado(obra.estado)}
                   </div>
                   <CardContent

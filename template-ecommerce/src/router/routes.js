@@ -1,11 +1,16 @@
 import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
+import Compras from "../components/pages/compras/Compras";
+import Cuentas from "../components/pages/cuentas/Cuentas";
+import Egresos from "../components/pages/egresos/Egresos";
 import GastosObraPage from "../components/pages/gastos/GastosObraPage";
 import Home from "../components/pages/home/Home";
+import Ingresos from "../components/pages/ingresos/Ingresos";
 import Obra from "../components/pages/obra/Obra";
 import Obras from "../components/pages/obras/Obras";
 import Proveedores from "../components/pages/proveedores/Proveedores";
+import Ventas from "../components/pages/ventas/Ventas";
 
 export const routes = [
   {
@@ -42,5 +47,30 @@ export const routes = [
     id: "gastosObraPage",
     path: "/gastosObraPage/:id",
     Element: GastosObraPage,
+  },
+  {
+    id: "compras",
+    path: "/compras",
+    Element: Compras,
+  },
+  {
+    id: "ventas",
+    path: "/ventas",
+    Element: Ventas,
+  },
+  {
+    id: "ingresos",
+    path: "/ingresos",
+    Element: Ingresos,
+  },
+  {
+    id: "egresos",
+    path: "/egresos",
+    Element: Egresos,
+  },
+  {
+    id: "cuentasBanco",
+    path: "/cuentasBanco",
+    Element: Cuentas,
   },
 ];

@@ -109,12 +109,10 @@ const estadoRender = (estado) => {
           fontFamily: '"Kanit", sans-serif',
           width: "300px",
         }}
-        variant="outlined"
-        severity="success"
+        variant="filled"
+        severity="error"
       >
-        <AlertTitle style={{ marginTop: "10%", fontSize: "75%" }}>
-          Cancelada
-        </AlertTitle>
+        Cancelada
         {/* <strong>El pedido fue entregado con exito</strong> */}
       </Alert>
     );
@@ -437,18 +435,22 @@ export default function Obras() {
     setOrderBy(property);
   };
 
-  console.log(selected);
-
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const [idMenuBotton, setIdMenuBotton] = React.useState("");
+
+  const handleClick = (id) => {
+    setIdMenuBotton(id);
     setOpen(!open);
+    setOpen2(!open2);
+  };
+
+  const handleClick2 = (id) => {
+    setIdMenuBotton(id);
+    setOpen2(!open2);
   };
 
   const handleClickSelect = (id) => {
@@ -482,22 +484,78 @@ export default function Obras() {
     });
   };
 
-  const handlePausar = async (idObra) => {
+  const handlePausar = async () => {
+    console.log("obra de pausar :" + idMenuBotton);
     try {
-      if (idObra) {
+      if (idMenuBotton) {
         // Lógica adicional para finalizar la obra
         // Por ejemplo, actualizar algún campo en el documento de obra
-        await updateDoc(doc(db, "obras", idObra), {
+        await updateDoc(doc(db, "obras", idMenuBotton), {
           estado: "pausado", // Asegúrate de ajustar el campo y valor según tu esquema
           fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
         });
-        console.log("Obra finalizada con éxito");
+        console.log("Obra Pausada con éxito");
         navigate("/");
       }
     } catch (error) {
       console.error("Error al finalizar la obra:", error);
     }
   };
+
+  const handleActivar = async () => {
+    console.log("obra de pausar :" + idMenuBotton);
+    try {
+      if (idMenuBotton) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idMenuBotton), {
+          estado: "enProceso", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra Activada con éxito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la obra:", error);
+    }
+  };
+
+  const handleCancelar = async () => {
+    console.log("obra de pausar :" + idMenuBotton);
+    try {
+      if (idMenuBotton) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idMenuBotton), {
+          estado: "cancelado", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra Activada con éxito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la obra:", error);
+    }
+  };
+
+  const handleFinalizar = async () => {
+    console.log("obra de pausar :" + idMenuBotton);
+    try {
+      if (idMenuBotton) {
+        // Lógica adicional para finalizar la obra
+        // Por ejemplo, actualizar algún campo en el documento de obra
+        await updateDoc(doc(db, "obras", idMenuBotton), {
+          estado: "finalizado", // Asegúrate de ajustar el campo y valor según tu esquema
+          fechaFinalizacion: serverTimestamp(), // Ejemplo de agregar la fecha de finalización
+        });
+        console.log("Obra Finalizada con éxito");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error al finalizar la obra:", error);
+    }
+  };
+
   const theme = createTheme({
     breakpoints: {
       values: {
@@ -511,6 +569,7 @@ export default function Obras() {
   });
 
   const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
+
   return (
     <Box
       sx={{
@@ -599,15 +658,12 @@ export default function Obras() {
               onRequestSort={handleRequestSort}
             />
             <TableBody>
-              {arrayObras.map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`;
-
+              {arrayObras.map((row) => {
                 return (
                   <TableRow
                     hover
                     onClick={() => navigate(`/obra/${row.id}`)}
                     role="checkbox"
-                    tabIndex={-1}
                     key={row.id}
                     sx={{ cursor: "pointer", position: "relative" }}
                   >
@@ -624,15 +680,11 @@ export default function Obras() {
                           handleClickSelect(row.id);
                         }}
                         color="primary"
-                        inputProps={{
-                          "aria-labelledby": labelId,
-                        }}
                       />
                     </TableCell>
                     <TableCell></TableCell>
                     <TableCell
                       component="th"
-                      id={labelId}
                       scope="row"
                       padding="none"
                       sx={{
@@ -695,54 +747,57 @@ export default function Obras() {
                       align="right"
                     >
                       <div style={{ zIndex: 0 }}>
-                        <Button
-                          id="demo-positioned-button"
-                          aria-controls={
-                            open ? "demo-positioned-menu" : undefined
-                          }
-                          aria-haspopup="true"
-                          aria-expanded={open ? "true" : undefined}
-                          sx={{
-                            zIndex: 1,
+                        {row.estado === "enProceso" && (
+                          <div>
+                            <Button
+                              id="demo-positioned-button"
+                              aria-controls={
+                                open ? "demo-positioned-menu" : undefined
+                              }
+                              aria-haspopup="true"
+                              aria-expanded={open ? "true" : undefined}
+                              sx={{
+                                zIndex: 1,
+                                fontFamily: '"Kanit", sans-serif',
+                                fontSize: "120%",
+                              }}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleClick(row.id);
+                              }}
+                            >
+                              <span className="material-symbols-outlined">
+                                more_vert
+                              </span>
+                            </Button>
 
-                            fontFamily: '"Kanit", sans-serif',
-                            fontSize: "120%",
-                          }}
-                          onClick={(event) => {
-                            event.stopPropagation(), handleClick();
-                          }}
-                        >
-                          <span className="material-symbols-outlined">
-                            more_vert
-                          </span>
-                        </Button>
-
-                        <Menu
-                          id="demo-positioned-menu"
-                          open={open}
-                          onClose={handleClose} // Cierra el menú cuando se selecciona una opción o se hace clic fuera del menú
-                          anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right",
-                          }}
-                          transformOrigin={{
-                            vertical: "top",
-                            horizontal: "right",
-                          }}
-                        >
-                          {row.estado !== "finalizado" &&
-                            row.estado !== "cancelado" && (
+                            <Menu
+                              id="demo-positioned-menu"
+                              open={open}
+                              onClose={handleClose} // Cierra el menú cuando se selecciona una opción o se hace clic fuera del menú
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "right",
+                              }}
+                              transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                              }}
+                            >
                               <MenuItem
                                 style={{
                                   display: "flex",
                                   justifyContent: "flex-start",
                                   alignItems: "center",
                                 }}
-                                /* onClick={() => handleChangeStatus("empaquetada", row.id)} */
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  handleFinalizar();
+                                }}
                               >
                                 <span
                                   style={{ margin: "1rem" }}
-                                  class="material-symbols-outlined"
+                                  className="material-symbols-outlined"
                                 >
                                   check_circle
                                 </span>
@@ -750,48 +805,159 @@ export default function Obras() {
                                   Finalizar
                                 </h6>
                               </MenuItem>
-                            )}
-
-                          <MenuItem
-                            style={{
-                              display: "flex",
-                              justifyContent: "flex-start",
-                              alignItems: "center",
-                            }}
-                            /* onClick={() => handleChangeStatus("enviada", row.id)} */
-                          >
-                            <span
-                              style={{ margin: "1rem" }}
-                              class="material-symbols-outlined"
+                              {row.estado === "enProceso" && (
+                                <div>
+                                  <MenuItem
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "flex-start",
+                                      alignItems: "center",
+                                    }}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      handlePausar();
+                                    }}
+                                  >
+                                    <span
+                                      style={{ margin: "1rem" }}
+                                      className="material-symbols-outlined"
+                                    >
+                                      pause_circle
+                                    </span>
+                                    <h6 style={{ marginTop: "0.5rem" }}>
+                                      Pausar
+                                    </h6>
+                                  </MenuItem>
+                                  <MenuItem
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "flex-start",
+                                      alignItems: "center",
+                                    }}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      handleCancelar();
+                                    }}
+                                  >
+                                    <span
+                                      style={{ margin: "1rem" }}
+                                      class="material-symbols-outlined"
+                                    >
+                                      block
+                                    </span>
+                                    <h6 style={{ marginTop: "0.5rem" }}>
+                                      Cancelar
+                                    </h6>
+                                  </MenuItem>
+                                </div>
+                              )}
+                              {row.estado === "pausado" && (
+                                <MenuItem
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "flex-start",
+                                    alignItems: "center",
+                                  }}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleActivar();
+                                  }}
+                                >
+                                  <span
+                                    style={{ margin: "1rem" }}
+                                    className="material-symbols-outlined"
+                                  >
+                                    pause_circle
+                                  </span>
+                                  <h6 style={{ marginTop: "0.5rem" }}>
+                                    Activar
+                                  </h6>
+                                </MenuItem>
+                              )}
+                            </Menu>
+                          </div>
+                        )}
+                        {row.estado === "pausado" && (
+                          <div>
+                            <Button
+                              id="demo-button"
+                              aria-controls={
+                                open ? "demo-positioned-menu" : undefined
+                              }
+                              aria-haspopup="true"
+                              aria-expanded={open ? "true" : undefined}
+                              sx={{
+                                zIndex: 1,
+                                fontFamily: '"Kanit", sans-serif',
+                                fontSize: "120%",
+                              }}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleClick2(row.id);
+                              }}
                             >
-                              block
-                            </span>
-                            <h6 style={{ marginTop: "0.5rem" }}>Cancelar</h6>
-                          </MenuItem>
-                          {row.estado !== "finalizado" &&
-                            row.estado !== "cancelado" &&
-                            row.estado !== "pausado" && (
+                              <span className="material-symbols-outlined">
+                                more_vert
+                              </span>
+                            </Button>
+
+                            <Menu
+                              id="demo-menu"
+                              open={open2}
+                              onClose={handleClose} // Cierra el menú cuando se selecciona una opción o se hace clic fuera del menú
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "right",
+                              }}
+                              transformOrigin={{
+                                vertical: "top",
+                                horizontal: "right",
+                              }}
+                            >
                               <MenuItem
                                 style={{
                                   display: "flex",
                                   justifyContent: "flex-start",
                                   alignItems: "center",
                                 }}
-                                sx={{ zIndex: 1 }}
                                 onClick={(event) => {
-                                  event.stopPropagation(), handlePausar(row.id);
+                                  event.stopPropagation();
+                                  handleCancelar();
+                                }}
+                              >
+                                <span
+                                  style={{ margin: "1rem" }}
+                                  className="material-symbols-outlined"
+                                >
+                                  pause_circle
+                                </span>
+                                <h6 style={{ marginTop: "0.5rem" }}>
+                                  Cancelar
+                                </h6>
+                              </MenuItem>
+
+                              <MenuItem
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "flex-start",
+                                  alignItems: "center",
+                                }}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  handleActivar();
                                 }}
                               >
                                 <span
                                   style={{ margin: "1rem" }}
                                   class="material-symbols-outlined"
                                 >
-                                  pause_circle
+                                  arrow_circle_up
                                 </span>
-                                <h6 style={{ marginTop: "0.5rem" }}>Pausar</h6>
+                                <h6 style={{ marginTop: "0.5rem" }}>Activar</h6>
                               </MenuItem>
-                            )}
-                        </Menu>
+                            </Menu>
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

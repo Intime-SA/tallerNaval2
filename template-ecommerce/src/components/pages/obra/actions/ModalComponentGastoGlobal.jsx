@@ -4,24 +4,17 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import AutoComplete from "./AutoComplete";
-import { db } from "../../../../firebaseConfig"; // Importa las funciones de Firebase necesarias
+import { db } from "../../../../firebaseConfig";
 import {
   addDoc,
-  arrayUnion,
   collection,
-  doc,
-  getDoc,
-  getDocs,
   serverTimestamp,
   Timestamp,
-  updateDoc,
 } from "firebase/firestore";
 import AutoCompleteCategory from "./AutocompleteCategory";
 import AutoCompleteProveedor from "./AutocompleteProveedor";
 import FedeMenu from "./FedeMenu";
-import { Height } from "@mui/icons-material";
 import { TextField } from "@mui/material";
-import DatePicker from "./DatePickerComponent";
 import DatePickerComponent from "./DatePickerComponent";
 import FadeMenuImpuestos from "./FadeMenuImpuestos";
 import SpanningTable from "./SpanningTable";
@@ -33,23 +26,18 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
-  height: "100vh",
+  width: "90%",
+  maxWidth: 600,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-around",
+  borderRadius: "8px",
 };
 
-export default function ModalComponentGasto({
+export default function ModalComponentGastoGlobal({
   openModalGasto,
   setOpenModalGasto,
-  idObra,
-  idCliente,
-  setCambioGastos,
 }) {
   const handleClose = () => setOpenModalGasto(false);
 
@@ -60,70 +48,49 @@ export default function ModalComponentGasto({
   const [monto, setMonto] = React.useState("$0,00");
   const [impuesto, setImpuesto] = React.useState([]);
   const [tipoComprobante, setTipoComprobante] = React.useState("");
-
   const [numeroComprobante, setNumeroComprobante] = React.useState("");
   const [numeroPuntoVenta, setNumeroPuntoVenta] = React.useState("");
   const [selectedOption2, setSelectedOption2] = React.useState(null);
   const [montoLimpio, setMontoLimpio] = React.useState(null);
-  const [montoLimpioImpuesto, setMontoLimpioImpuesto] = React.useState(null);
   const [openImpuestos, setOpenImpuestos] = React.useState(null);
-
-  console.log(idObra);
 
   const convertirAFirestoreTimestamp = (selectedOption2) => {
     if (selectedOption2) {
       const fechaJavaScript = selectedOption2.$d;
-
-      // Crea un objeto Date de JavaScript a partir de la fecha extraída
       const fechaDate = new Date(fechaJavaScript);
-
-      // Convierte el objeto Date en una marca de tiempo de Firestore
       const timestamp = Timestamp.fromDate(fechaDate);
-
       return timestamp;
     }
-    // Extrae la fecha del objeto M2
   };
 
-  // Obtener la marca de tiempo de Firestore a partir de selectedOption2
   const timestampFirestore = convertirAFirestoreTimestamp(selectedOption2);
 
   function calcularMontoTotal(importe, impuestos) {
-    // Suma los montos de todos los impuestos
     const totalImpuestos = impuestos.reduce(
       (total, impuesto) => total + impuesto.monto,
       0
     );
-
-    // Suma el importe con el total de los impuestos
     const montoTotal = importe + totalImpuestos;
-
     return montoTotal;
   }
-  // Luego, puedes utilizar timestampFirestore para guardar la fecha en Firestore
-  // Por ejemplo, utilizando addDoc como se mostró en la respuesta anterior.
 
-  // Función para cargar el empleado en la obra
-  const cargaGastoObra = async () => {
+  const cargaGastoGlobal = async () => {
     try {
-      // Validar la existencia de las propiedades requeridas
-      if (!categoria || !proveedor || !descripcion) {
+      if (!categoria || !descripcion) {
         console.error("Faltan datos requeridos para cargar el gasto.");
         return;
       }
 
-      // Crear objeto de gasto
       const gasto = {
-        obraId: idObra,
         fechaCarga: serverTimestamp(),
         fechaGasto: timestampFirestore,
-        clienteId: idCliente,
         categoria: categoria,
         subcategoria: subCategoria,
-        proveedorId: proveedor,
+        proveedorId: "",
+        clienteId: "",
         descripcion: descripcion,
-        gastoGlobal: false,
-        gastoObra: true,
+        gastoGlobal: true,
+        gastoObra: false,
         importe: montoLimpio,
         tipoComprobante: tipoComprobante,
         numeroComprobante: numeroComprobante,
@@ -133,85 +100,44 @@ export default function ModalComponentGasto({
       };
       console.log(gasto);
 
-      // Agregar el objeto de gasto a la colección de Firebase
-      const gastoDocRef = await addDoc(collection(db, "gastos"), gasto);
+      await addDoc(collection(db, "gastos"), gasto);
 
-      // Obtener el ID del gasto recién creado
-      const gastoId = gastoDocRef.id;
-
-      // Actualizar el documento de la obra para agregar el ID del gasto al array correspondiente
-      const obraDocRef = doc(db, "obras", idObra);
-      await updateDoc(obraDocRef, {
-        [`gastos.${categoria}`]: arrayUnion(gastoId),
-      });
-
-      // Cerrar el modal después de cargar el gasto
-      setCambioGastos(true);
       setOpenModalGasto(false);
+      window.location.reload();
     } catch (error) {
-      console.error("Error al cargar el gasto en la obra:", error);
+      console.error("Error al cargar el gasto global:", error);
     }
   };
+
   function limpiarYConvertir(numeroConSigno) {
     if (numeroConSigno) {
-      // Eliminar el signo de dólar y los puntos
       const limpio = numeroConSigno.replace(/[$.]/g, "");
-      // Reemplazar comas por puntos para convertir en decimal
       const limpioConPuntos = limpio.replace(",", ".");
-      // Convertir a número decimal
       return parseFloat(limpioConPuntos);
     }
     return 0;
   }
 
   const handleMontoChange = (value) => {
-    // Formatea el valor mientras escribes para que tenga el formato deseado
     const formattedValue = formatNumber(value);
-    // Actualiza el estado con el valor formateado
     setMonto(formattedValue);
-    // Limpia y convierte el valor formateado
     const cleanedValue = limpiarYConvertir(formattedValue);
-    // Actualiza el estado con el valor limpio y convertido
     setMontoLimpio(cleanedValue);
   };
 
   const formatNumber = (value) => {
-    // Si el valor está vacío, devuelve el formato predeterminado
     if (!value) return "$0,00";
-
-    // Elimina cualquier caracter que no sea un número
     const cleanValue = value.replace(/[^\d]/g, "");
-
-    // Convierte el valor a número
     const numberValue = parseFloat(cleanValue);
-
-    // Formatea el valor como moneda
     const formattedValue = new Intl.NumberFormat("es-AR", {
       style: "currency",
       currency: "ARS",
       minimumFractionDigits: 2,
-    }).format(numberValue / 100); // Dividimos por 100 para manejar los centavos correctamente
-
-    // Devuelve el valor formateado
+    }).format(numberValue / 100);
     return formattedValue;
   };
 
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "90%", // Ajusta el ancho según tus necesidades
-    maxWidth: 600, // Limita el ancho máximo
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-    borderRadius: "8px",
-  };
-
   console.log(impuesto);
-
   return (
     <Modal
       open={openModalGasto}
@@ -222,7 +148,8 @@ export default function ModalComponentGasto({
       <Box sx={style}>
         <Box>
           <div>
-            <h6>Gasto Obra ID: #{idObra}</h6>
+            <h6>Gasto Global</h6>
+            <span class="material-symbols-outlined">public</span>
           </div>
         </Box>
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -279,10 +206,6 @@ export default function ModalComponentGasto({
             categoria={categoria}
           />
         )}
-        <AutoCompleteProveedor
-          setProveedor={setProveedor}
-          proveedor={proveedor}
-        />
 
         <TextField
           multiline
@@ -357,7 +280,7 @@ export default function ModalComponentGasto({
           <Button
             variant="contained"
             color="primary"
-            onClick={() => cargaGastoObra()}
+            onClick={() => cargaGastoGlobal()}
           >
             Cargar Gasto
           </Button>
