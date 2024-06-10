@@ -16,48 +16,29 @@ export const TableContextComponent = ({ children }) => {
   const [clientes, setClientes] = useState([]);
   const [obras, setObras] = useState([]);
   const [gastos, setGastos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+
+  const fetchData = async (collectionName, setData) => {
+    try {
+      const ref = collection(db, collectionName);
+      const snapshot = await getDocs(ref);
+      const dataArray = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setData(dataArray);
+    } catch (error) {
+      console.error(`Error fetching ${collectionName}:`, error);
+    }
+  };
 
   useEffect(() => {
     const obtenerDatos = async () => {
-      try {
-        // Obtener proveedores
-        const refProveedores = collection(db, "proveedores");
-        const proveedoresSnapshot = await getDocs(refProveedores);
-        const proveedoresArray = proveedoresSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setProveedores(proveedoresArray);
-
-        // Obtener clientes
-        const refClientes = collection(db, "clientes");
-        const clientesSnapshot = await getDocs(refClientes);
-        const clientesArray = clientesSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setClientes(clientesArray);
-
-        // Obtener obras
-        const refObras = collection(db, "obras");
-        const obrasSnapshot = await getDocs(refObras);
-        const obrasArray = obrasSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setObras(obrasArray);
-
-        // Obtener gastos
-        const refGastos = collection(db, "gastos");
-        const gastosSnapshot = await getDocs(refGastos);
-        const gastosArray = gastosSnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setGastos(gastosArray);
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
+      await fetchData("proveedores", setProveedores);
+      await fetchData("clientes", setClientes);
+      await fetchData("obras", setObras);
+      await fetchData("gastos", setGastos);
+      await fetchData("categorias", setCategorias);
     };
 
     obtenerDatos();
@@ -69,6 +50,7 @@ export const TableContextComponent = ({ children }) => {
     clientes,
     obras,
     gastos,
+    categorias,
   };
 
   return <TableContext.Provider value={data}>{children}</TableContext.Provider>;

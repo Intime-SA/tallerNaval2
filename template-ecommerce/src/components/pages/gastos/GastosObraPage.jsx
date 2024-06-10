@@ -13,16 +13,30 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { TableContext } from "../../context/TableContext";
 import { useParams } from "react-router-dom";
+import { DrawerContext } from "../../context/DrawerContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function GastosObraPage() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const { gastos, proveedores } = React.useContext(TableContext); // Agregado proveedores al contexto
+  const { gastos, proveedores, clientes, categorias } =
+    React.useContext(TableContext); // Agregado proveedores al contexto
   const { id } = useParams(); // Obtener el parámetro "id" de la URL
 
   const [gastosFiltrados, setGastosFiltrados] = React.useState([]);
   const [anchorEl, setAnchorEl] = React.useState(null); // Estado para el elemento anclado
   const [selectedGasto, setSelectedGasto] = React.useState(null); // Estado para el gasto seleccionado
+
+  const [obra, setObra] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  const { openDrawer } = React.useContext(DrawerContext);
+
+  const getNombreCategoria = (idCategoria) => {
+    const categoria = categorias.find((cat) => cat.id === idCategoria);
+    return categoria ? categoria.nombre : "Desconocida";
+  };
 
   React.useEffect(() => {
     if (gastos && id) {
@@ -30,6 +44,27 @@ export default function GastosObraPage() {
       setGastosFiltrados(gastosConId);
     }
   }, [gastos, id]);
+
+  React.useEffect(() => {
+    const fetchObra = async () => {
+      try {
+        const obraDoc = doc(db, "obras", id);
+        const obraSnapshot = await getDoc(obraDoc);
+        if (obraSnapshot.exists()) {
+          setObra(obraSnapshot.data());
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchObra();
+  }, []);
+  console.log(obra);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -66,19 +101,66 @@ export default function GastosObraPage() {
     return proveedor ? proveedor.nombreComercio : "N/A";
   };
 
+  const getNombrecliente = (idcliente) => {
+    const cliente = clientes.find((cat) => cat.id === idcliente);
+    return cliente ? cliente.nombre : "Desconocida";
+  };
+
+  const formatDate = (firestoreTimestamp) => {
+    if (!firestoreTimestamp) return "No disponible"; // Manejar caso de fecha nula
+    const date = new Date(
+      firestoreTimestamp.seconds * 1000 +
+        firestoreTimestamp.nanoseconds / 1000000
+    );
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Los meses son base cero
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
-    <div style={{ marginLeft: "20rem" }}>
-      <h1>Gastos Obra : {id}</h1>
-      <Paper sx={{ width: "80%" }}>
-        <TableContainer sx={{ maxHeight: 440 }}>
+    <div
+      style={{
+        marginLeft: openDrawer ? "20rem" : "6rem",
+        fontFamily: '"Kanit", sans-serif',
+      }}
+    >
+      {obra && (
+        <div style={{ margin: "1rem" }}>
+          <h2>
+            Gastos de Cliente:{" "}
+            {getNombrecliente(obra.cliente) || "No disponible"}
+          </h2>
+          <h6>En la Obra ID: #{id || "No disponible"}</h6>
+          <p>
+            <strong>Lugar:</strong> {obra.lugar || "No disponible"}
+          </p>
+          <p>
+            <strong>Distancia:</strong>{" "}
+            {obra.distancia?.nombre || "No disponible"}
+          </p>
+          <p>
+            <strong>Fecha Inicio:</strong>{" "}
+            {obra.fechaInicio ? formatDate(obra.fechaInicio) : "No disponible"}
+          </p>
+        </div>
+      )}
+
+      <Paper sx={{ width: "95%" }}>
+        <TableContainer>
           <Table stickyHeader aria-label="sticky table">
-            <TableHead>
+            <TableHead style={{ backgroundColor: "#121621" }}>
               <TableRow style={{ backgroundColor: "#121621" }}>
                 {columns.map((column) => (
                   <TableCell
                     key={column.id}
                     align={column.align || "left"}
-                    style={{ minWidth: column.minWidth }}
+                    style={{
+                      backgroundColor: "#121621",
+                      minWidth: column.minWidth,
+                      color: "white",
+                      fontFamily: '"Kanit", sans-serif',
+                    }}
                   >
                     {column.label}
                   </TableCell>
@@ -143,6 +225,7 @@ export default function GastosObraPage() {
                                   display: "flex",
                                   justifyContent: "flex-start",
                                   alignItems: "center",
+                                  fontFamily: '"Kanit", sans-serif',
                                 }}
                               >
                                 <span
@@ -158,6 +241,7 @@ export default function GastosObraPage() {
                                   display: "flex",
                                   justifyContent: "flex-start",
                                   alignItems: "center",
+                                  fontFamily: '"Kanit", sans-serif',
                                 }}
                               >
                                 <span
@@ -174,10 +258,15 @@ export default function GastosObraPage() {
                           </div>
                         );
                       }
+                      // Aplicar la función getNombreCategoria si la columna es "categoria"
+                      if (column.id === "categoria") {
+                        value = getNombreCategoria(value);
+                      }
                       return (
                         <TableCell
                           key={column.id}
                           align={column.align || "left"}
+                          style={{ fontFamily: '"Kanit", sans-serif' }}
                         >
                           {value}
                         </TableCell>

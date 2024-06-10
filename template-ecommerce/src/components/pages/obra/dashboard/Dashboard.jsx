@@ -26,6 +26,7 @@ import { Alert, Button, Switch } from "@mui/material";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
 import { TableContext } from "../../../context/TableContext";
 import { useNavigate } from "react-router-dom";
+import { DrawerContext } from "../../../context/DrawerContext";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -51,7 +52,10 @@ export default function Dashboard({ idObra }) {
   const [idCliente, setIdCliente] = React.useState("");
   const [obra, setObra] = React.useState([]);
 
-  const { proveedores, clientes, obras } = React.useContext(TableContext);
+  const { proveedores, clientes, obras, categorias } =
+    React.useContext(TableContext);
+
+  const { openDrawer } = React.useContext(DrawerContext);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -239,15 +243,70 @@ export default function Dashboard({ idObra }) {
     return cliente ? cliente.nombre : "clientes no encontrado";
   };
 
+  const getNombreCategoria = (idCategoria) => {
+    const categoria = categorias.find((cat) => cat.id === idCategoria);
+    return categoria ? categoria.nombre : "Desconocida";
+  };
+
+  const getNombreSubCategoria = (idCategoria, idSubCategoria) => {
+    const categoria = categorias.find((cat) => cat.id === idCategoria);
+
+    if (categoria && categoria.subcategorias) {
+      const subCategoria = categoria.subcategorias[idSubCategoria];
+
+      return subCategoria ? subCategoria.nombre : "Desconocida";
+    } else {
+      return "Desconocida";
+    }
+  };
+
+  // Ejemplo de uso
+  const nombreSubCategoria = getNombreSubCategoria(
+    "idCategoria",
+    "idSubCategoria"
+  );
+  console.log(nombreSubCategoria);
+
   const exportToExcelGasto = () => {
+    // Encabezados de las columnas para los gastos registrados
+    let header = [
+      "ID Obra",
+      "ID Cliente",
+      "ID Proveedor",
+      "Categoría",
+      "Sub Categoría",
+
+      "Importe Bruto",
+      "Descripción",
+      "¿Gasto Global?",
+      "¿Gasto de Obra?",
+      "Fecha de Gasto",
+      "Fecha de Carga",
+      "Importe Neto",
+    ];
+
+    // Obtener todos los tipos de impuestos presentes en los gastos
+    const allImpuestos = arrayGastos.reduce((types, gasto) => {
+      gasto.impuestos.forEach((impuesto) => {
+        if (!types.includes(impuesto.tipoImpuesto)) {
+          types.push(impuesto.tipoImpuesto);
+        }
+      });
+      return types;
+    }, []);
+
+    // Agregar los tipos de impuestos como encabezados adicionales
+    header = header.concat(allImpuestos);
+
     // Construir los datos para cada gasto registrado
     const data = arrayGastos.map((gasto) => {
-      return [
+      // Inicializar la fila con los valores básicos del gasto
+      let row = [
         gasto.obraId || "",
         obtenerNombreClientes(gasto.clienteId) || "",
         obtenerNombreProveedor(gasto.proveedorId) || "",
-        gasto.categoria || "",
-        gasto.importe || "",
+        getNombreCategoria(gasto.categoria) || "",
+        getNombreSubCategoria(gasto.categoria, gasto.subcategoria) || "",
         gasto.montoTotal || "",
         gasto.descripcion || "",
         gasto.gastoGlobal ? "Sí" : "No",
@@ -258,23 +317,19 @@ export default function Dashboard({ idObra }) {
         gasto.fechaCarga
           ? new Date(gasto.fechaCarga.seconds * 1000).toLocaleString()
           : "",
+        gasto.importe || "",
       ];
-    });
 
-    // Encabezados de las columnas para los gastos registrados
-    const header = [
-      "ID Obra",
-      "ID Cliente",
-      "ID Proveedor",
-      "Categoría",
-      "Importe Neto",
-      "Importe Bruto",
-      "Descripción",
-      "¿Gasto Global?",
-      "¿Gasto de Obra?",
-      "Fecha de Gasto",
-      "Fecha de Carga",
-    ];
+      // Agregar los montos de impuestos en las columnas correspondientes
+      allImpuestos.forEach((tipoImpuesto) => {
+        const impuesto = gasto.impuestos.find(
+          (i) => i.tipoImpuesto === tipoImpuesto
+        );
+        row.push(impuesto ? impuesto.monto : "");
+      });
+
+      return row;
+    });
 
     // Combinar encabezados y datos para los gastos registrados
     const wsData = [header, ...data];
@@ -342,7 +397,7 @@ export default function Dashboard({ idObra }) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, marginLeft: "15vw" }}>
+    <Box sx={{ flexGrow: 1, marginLeft: openDrawer ? "300px" : "100px" }}>
       {openModal && (
         <ModalComponent
           openModal={openModal}

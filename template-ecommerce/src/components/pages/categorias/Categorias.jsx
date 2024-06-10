@@ -22,6 +22,7 @@ const Categorias = () => {
   const [filterValue, setFilterValue] = useState(""); // Estado para almacenar el valor del filtro
 
   const { setOpenDrawer, openDrawer } = useContext(DrawerContext);
+
   const theme = createTheme({
     breakpoints: {
       values: {
@@ -123,7 +124,7 @@ const Categorias = () => {
         width: isMiddleMobile ? "90%" : "80%",
         width: openDrawer ? "80%" : "90%",
         marginLeft: isMiddleMobile ? "5rem" : "16.5rem",
-        marginLeft: !openDrawer ? "5rem" : "16.5rem",
+        marginLeft: !openDrawer ? "6rem" : "16.5rem",
         marginRight: "20vw",
       }}
     >

@@ -2,10 +2,19 @@ import * as React from "react";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
+import { TableContext } from "../../../context/TableContext";
 
 export default function Chart({ idObra, cambioGastos, setCambioGastos }) {
   const [gastos, setGastos] = React.useState([]);
   const [chartData, setChartData] = React.useState([]);
+
+  const { categorias } = React.useContext(TableContext);
+
+  // Función para obtener el nombre de la categoría dado su ID
+  const getNombreCategoria = (idCategoria) => {
+    const categoria = categorias.find((cat) => cat.id === idCategoria);
+    return categoria ? categoria.nombre : "Desconocida";
+  };
 
   React.useEffect(() => {
     const consultaObra = async () => {
@@ -32,10 +41,10 @@ export default function Chart({ idObra, cambioGastos, setCambioGastos }) {
 
         // Convertir los totales en el formato requerido para el gráfico de torta
         const chartData = Object.keys(categoriasTotales).map(
-          (categoria, index) => ({
+          (categoriaId, index) => ({
             id: index,
-            value: categoriasTotales[categoria],
-            label: categoria,
+            value: categoriasTotales[categoriaId],
+            label: getNombreCategoria(categoriaId), // Obtener el nombre de la categoría
           })
         );
 
@@ -47,7 +56,7 @@ export default function Chart({ idObra, cambioGastos, setCambioGastos }) {
 
     consultaObra();
     setCambioGastos(false);
-  }, [idObra, cambioGastos]);
+  }, [idObra, cambioGastos, categorias]);
 
   return <PieChart series={[{ data: chartData }]} width={450} height={200} />;
 }

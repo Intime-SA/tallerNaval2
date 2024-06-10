@@ -68,7 +68,7 @@ export default function Home() {
         justifyContent: isMobile ? "center" : "flex-start",
         width: openDrawer ? "80%" : "100%",
         marginLeft: isMobile ? "0px" : "5rem",
-        marginLeft: openDrawer ? "5rem" : "0rem",
+        marginLeft: openDrawer ? "20rem" : "6rem",
       }}
     >
       <ModalObra
@@ -80,14 +80,13 @@ export default function Home() {
       {!openObra && (
         <div
           style={{
-            width: "80%",
+            width: "90%",
             display: "grid",
             gridTemplateColumns: isMobile
               ? "1fr"
-              : "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "1rem",
+              : "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: "0.5rem",
             justifyContent: "center",
-            marginLeft: "15rem",
           }}
         >
           <CardNew setOpenModalObra={setOpenModalObra} />

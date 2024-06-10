@@ -31,7 +31,7 @@ function ccyFormat(num) {
 }
 function Row(props) {
   const isMobile = useMediaQuery("(max-width:760px)");
-  const { nombrePropiedad, valorPropiedad } = props;
+  const { nombrePropiedad, valorPropiedad, getNombreCategoria } = props;
   const [open, setOpen] = React.useState(false);
   const [gastoData, setGastoData] = React.useState(null);
   const [totalImporte, setTotalImporte] = React.useState(0);
@@ -94,7 +94,7 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row" color="white">
-          {nombrePropiedad}
+          {getNombreCategoria(nombrePropiedad)}
         </TableCell>
         <TableCell align="right">{ccyFormat(totalImporte)}</TableCell>
       </TableRow>
@@ -170,6 +170,12 @@ export default function ObrasGastos({ idObra, cambioGastos }) {
   const [gastos, setGastos] = React.useState();
   const isMobile = useMediaQuery("(max-width:760px)");
   const navigate = useNavigate();
+  const { categorias } = React.useContext(TableContext);
+
+  const getNombreCategoria = (idCategoria) => {
+    const categoria = categorias.find((cat) => cat.id === idCategoria);
+    return categoria ? categoria.nombre : "Desconocida";
+  };
 
   React.useEffect(() => {
     const consultaObra = async () => {
@@ -228,6 +234,7 @@ export default function ObrasGastos({ idObra, cambioGastos }) {
                 nombrePropiedad={nombre}
                 valorPropiedad={valor}
                 index={index}
+                getNombreCategoria={getNombreCategoria}
               />
             ))}
         </TableBody>

@@ -16,6 +16,7 @@ export default function AutoCompleteCategory({ setCategoria, categoria }) {
         const collectionCategory = collection(db, "categorias");
         const categorySnapshot = await getDocs(collectionCategory);
         const categoryData = categorySnapshot.docs.map((doc) => ({
+          ...doc.data(),
           id: doc.id,
         }));
 
@@ -51,7 +52,7 @@ export default function AutoCompleteCategory({ setCategoria, categoria }) {
         >
           {array.map((categoria) => (
             <MenuItem key={categoria.id} value={categoria.id}>
-              {categoria.id}
+              {categoria.nombre}
             </MenuItem>
           ))}
         </Select>

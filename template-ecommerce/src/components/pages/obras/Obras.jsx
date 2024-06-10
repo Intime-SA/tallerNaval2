@@ -21,7 +21,15 @@ import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import { Alert, AlertTitle, Button, Menu, MenuItem } from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { db } from "../../../firebaseConfig";
 import {
   collection,
@@ -37,6 +45,10 @@ import GastosAcumulados from "./gastos/GastosAcumulados";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
 import { createTheme, useTheme } from "@mui/material/styles";
+import { DrawerContext } from "../../context/DrawerContext";
+import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
+import { TableContext } from "../../context/TableContext";
+import ModalObra from "./ModalObra";
 
 function createData(
   id,
@@ -68,8 +80,7 @@ const estadoRender = (estado) => {
       <Alert
         sx={{
           fontFamily: '"Kanit", sans-serif',
-          fontSize: "120%",
-          fontSize: "120%",
+          width: "300px",
         }}
         size="small"
         variant="filled"
@@ -83,8 +94,7 @@ const estadoRender = (estado) => {
       <Alert
         sx={{
           fontFamily: '"Kanit", sans-serif',
-          fontSize: "120%",
-          fontSize: "120%",
+          width: "300px",
         }}
         variant="filled"
         severity="warning"
@@ -97,8 +107,7 @@ const estadoRender = (estado) => {
       <Alert
         sx={{
           fontFamily: '"Kanit", sans-serif',
-          fontSize: "120%",
-          fontSize: "120%",
+          width: "300px",
         }}
         variant="outlined"
         severity="success"
@@ -114,8 +123,7 @@ const estadoRender = (estado) => {
       <Alert
         sx={{
           fontFamily: '"Kanit", sans-serif',
-          fontSize: "120%",
-          fontSize: "120%",
+          width: "300px",
         }}
         variant="filled"
         severity="success"
@@ -241,7 +249,7 @@ function EnhancedTableHead(props) {
               onClick={createSortHandler(headCell.id)}
               sx={{
                 fontFamily: '"Kanit", sans-serif',
-                fontSize: "120%",
+
                 color: "white",
               }}
             >
@@ -311,15 +319,97 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function Obras() {
+  const [obras, setObras] = React.useState([]);
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [openForm, setOpenForm] = React.useState(false);
+  const [currentPage, setCurrentPage] = React.useState(1); // Página actual
+  const [obrasPerPage] = React.useState(5);
+  const [filterValue, setFilterValue] = React.useState("");
+  const [openModalObra, setOpenModalObra] = React.useState(false);
 
   const [arrayObras, setArrayObras] = React.useState([]);
   const [actualizarObras, setActualizarObras] = React.useState(false);
+
+  const { openDrawer } = React.useContext(DrawerContext);
+  const { clientes } = React.useContext(TableContext);
+
+  React.useEffect(() => {
+    let refCollection = collection(db, "obras");
+    getDocs(refCollection)
+      .then((querySnapshot) => {
+        let newArray = [];
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          newArray.push({ ...userData, id: doc.id });
+        });
+        setObras(newArray);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const getNombrecliente = (idcliente) => {
+    const cliente = clientes.find((cat) => cat.id === idcliente);
+    return cliente ? cliente.nombre : "Desconocida";
+  };
+
+  const formatDate = (firestoreTimestamp) => {
+    const date = new Date(
+      firestoreTimestamp.seconds * 1000 +
+        firestoreTimestamp.nanoseconds / 1000000
+    );
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+  const exportToExcel = () => {
+    const data = obras.map((obra) => {
+      const filaPedido = [
+        getNombrecliente(obra.cliente),
+        obra.descripcion,
+        obra.estado,
+        formatDate(obra.fechaInicio),
+        obra.presupuestoInicial,
+        obra.lugar,
+      ];
+      return filaPedido;
+    });
+
+    const header = [
+      "cliente",
+      "descripcion",
+      "estado",
+      "fechaInicio",
+      "presupuestoInicial",
+      "lugar",
+    ];
+
+    const wsData = [header, ...data];
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "MiHojaDeCalculo");
+    XLSX.writeFile(wb, "Obras.xlsx");
+  };
+
+  // Calcular índices del primer y último cliente en la página actual
+  const indexOfLastobra = currentPage * obrasPerPage;
+  const indexOfFirstobra = indexOfLastobra - obrasPerPage;
+
+  // Filtrar los clientes por el valor del campo de filtro
+  const filteredobras = obras.filter((obra) =>
+    `${obra.cliente.toLowerCase()}`.includes(filterValue.toLowerCase())
+  );
+
+  const currentobras = filteredobras.slice(indexOfFirstobra, indexOfLastobra);
+
+  // Cambiar de página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   React.useEffect(() => {
     const consultaObras = async () => {
@@ -424,10 +514,76 @@ export default function Obras() {
   return (
     <Box
       sx={{
-        width: isMiddleMobile ? "90%" : "80%",
-        marginLeft: isMiddleMobile ? "5rem" : "16.5rem",
+        width: openDrawer ? "80%" : "90%",
+        marginLeft: openDrawer ? "16.5rem" : "6rem",
       }}
     >
+      <ModalObra
+        openModalObra={openModalObra}
+        setOpenModalObra={setOpenModalObra}
+        setActualizarObras={setActualizarObras}
+      />
+      <Box>
+        <div style={{ marginBottom: "1rem" }}>
+          <Button
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
+            variant="outlined"
+            color="info"
+            onClick={exportToExcel}
+          >
+            <span
+              style={{ marginRight: "0.5rem" }}
+              className="material-symbols-outlined"
+            >
+              download
+            </span>
+            Exportar Lista
+          </Button>
+          <Button
+            style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
+            variant="contained"
+            color="info"
+            onClick={() => setOpenModalObra(true)}
+          >
+            <span
+              style={{ marginRight: "0.5rem" }}
+              class="material-symbols-outlined"
+            >
+              new_window
+            </span>
+            Nueva Obra
+          </Button>
+        </div>
+        {/* Campo de filtro */}
+      </Box>
+      {/*       <TextField
+        label=""
+        value={filterValue}
+        onChange={(e) => setFilterValue(e.target.value)}
+        variant="outlined"
+        style={{ marginLeft: "10px", padding: "5px", marginBottom: "0.5rem" }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <div
+                style={{
+                  width: "10rem",
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  alignItems: "flex-start",
+                }}
+              >
+                <span
+                  style={{ fontSize: "150%" }}
+                  class="material-symbols-outlined"
+                >
+                  manage_search
+                </span>
+              </div>
+            </InputAdornment>
+          ),
+        }}
+      /> */}
       <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
@@ -528,7 +684,7 @@ export default function Obras() {
                       sx={{
                         fontFamily: '"Kanit", sans-serif',
                       }}
-                      align="right"
+                      align="center"
                     >
                       {estadoRender(row.estado)}
                     </TableCell>

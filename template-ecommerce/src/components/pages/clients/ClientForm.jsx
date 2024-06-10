@@ -374,14 +374,26 @@ const ClientForm = ({ customers, setOpenForm, openForm }) => {
             )}
           </div>
           {isImageUploaded && (
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              style={{ marginBottom: "1rem", width: "50%", maxWidth: "200px" }}
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
             >
-              Cargar Cliente
-            </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="success"
+                style={{
+                  marginBottom: "1rem",
+                  width: "50%",
+                  maxWidth: "200px",
+                }}
+              >
+                Cargar Cliente
+              </Button>
+            </div>
           )}
         </form>
       </div>
