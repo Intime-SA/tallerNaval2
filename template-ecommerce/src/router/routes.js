@@ -10,6 +10,7 @@ import Ingresos from "../components/pages/ingresos/Ingresos";
 import Obra from "../components/pages/obra/Obra";
 import Obras from "../components/pages/obras/Obras";
 import Proveedores from "../components/pages/proveedores/Proveedores";
+import Reportes from "../components/pages/reportes/Reportes";
 import Ventas from "../components/pages/ventas/Ventas";
 
 export const routes = [
@@ -72,5 +73,10 @@ export const routes = [
     id: "cuentasBanco",
     path: "/cuentasBanco",
     Element: Cuentas,
+  },
+  {
+    id: "reportes",
+    path: "/reportes",
+    Element: Reportes,
   },
 ];

@@ -12,6 +12,7 @@ import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 
 export const menuItems = [
   {
@@ -84,5 +85,11 @@ export const menuItems4 = [
     path: "/cuentasBanco",
     title: "Cajas y Cuentas",
     Icon: AccountBalanceIcon,
+  },
+  {
+    id: "reportes",
+    path: "/reportes",
+    title: "Reporte",
+    Icon: AssessmentIcon,
   },
 ];
