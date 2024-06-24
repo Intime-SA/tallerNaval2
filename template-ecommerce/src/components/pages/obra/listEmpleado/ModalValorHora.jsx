@@ -1,13 +1,11 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
 import { db } from "../../../../firebaseConfig";
 
 const style = {
@@ -25,9 +23,10 @@ const style = {
 export default function ModalHoraValor({
   openModal,
   setOpenModal,
-  selectedHora,
   setSelectedHora,
+  selectedHora,
   horaValor,
+  setTipoHora,
 }) {
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
@@ -35,7 +34,27 @@ export default function ModalHoraValor({
   const [preSeleccion, setPreSeleccion] = useState(null);
 
   const handleChange = (event) => {
-    setPreSeleccion(event.target.value);
+    const selectedValue = event.target.value; // Valor seleccionado desde el Select
+    setPreSeleccion(selectedValue); // Guardar el valor seleccionado en el estado local
+
+    // Determinar el tipo de hora seleccionado y pasarlo a setTipoHora
+    let tipoHoraSeleccionado = ""; // Inicializar variable para guardar el tipo de hora
+
+    // Determinar el tipo de hora seleccionado
+    if (selectedValue === horaValor.horaEstandar) {
+      tipoHoraSeleccionado = "horaEstandar";
+    } else if (selectedValue === horaValor.horaExtra) {
+      tipoHoraSeleccionado = "horaExtra";
+    } else if (selectedValue === horaValor.horaFeriado) {
+      tipoHoraSeleccionado = "horaFeriado";
+    } else if (selectedValue === horaValor.horaLargaDistancia) {
+      tipoHoraSeleccionado = "horaLargaDistancia";
+    } else if (selectedValue === horaValor.horaTraslado) {
+      tipoHoraSeleccionado = "horaTraslado";
+    }
+
+    // Llamar a setTipoHora con el tipoHoraSeleccionado
+    setTipoHora(tipoHoraSeleccionado);
   };
 
   const handleConfirm = () => {

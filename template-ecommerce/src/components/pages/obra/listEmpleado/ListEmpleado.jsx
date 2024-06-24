@@ -75,6 +75,7 @@ export default function ListEmpleado({
 
   const [horaValor, setHoraValor] = useState([]);
   const [selectedHora, setSelectedHora] = useState(0);
+  const [tipoHora, setTipoHora] = useState("");
 
   const [actionData, setActionData] = useState(null);
   const [executeActionFlag, setExecuteActionFlag] = useState(false);
@@ -196,6 +197,7 @@ export default function ListEmpleado({
           fechaHora: serverTimestamp(),
           horas: action === "sumar" ? horas : -horas,
           valorHora: action === "sumar" ? selectedHora : -selectedHora,
+          tipoHora: tipoHora,
         });
       } catch (error) {
         console.error(`Error al ${action} horas:`, error);
@@ -246,6 +248,8 @@ export default function ListEmpleado({
         horaValor={horaValor}
         setSelectedHora={setSelectedHora}
         selectedHora={selectedHora}
+        setTipoHora={setTipoHora}
+        tipoHora={tipoHora}
       />
       <Grid item xs={12} md={6}>
         <Box

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -6,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
@@ -15,11 +16,10 @@ export default function ObraDetail({
   cambioHoras,
   setTotalHorasEmpleado,
 }) {
-  const [horasObra, setHorasObra] = React.useState(0);
+  const [horasPorTipo, setHorasPorTipo] = useState({});
+  const [totalValor, setTotalValor] = useState(0);
 
   const isMobile = useMediaQuery("(max-width:760px)");
-
-  const TAX_RATE = 0;
 
   function ccyFormat(num) {
     return num.toLocaleString("es-AR", {
@@ -28,54 +28,61 @@ export default function ObraDetail({
     });
   }
 
-  function priceRow(qty, unit) {
-    return qty * unit;
-  }
-
-  function createRow(desc, qty, unit) {
-    const price = priceRow(qty, unit);
-    return { desc, qty, unit, price };
-  }
-
-  function subtotal(items) {
-    return items.map(({ price }) => price).reduce((sum, i) => sum + i, 0);
-  }
-
-  const rows = [createRow("Horas", horasObra, 25000)];
-
-  const invoiceSubtotal = subtotal(rows);
-  const invoiceTaxes = TAX_RATE * invoiceSubtotal;
-  const invoiceTotal = invoiceTaxes + invoiceSubtotal;
-
-  React.useEffect(() => {
+  useEffect(() => {
     const consultaObra = async () => {
       try {
-        const obraRef = doc(db, "obras", idObra); // Referencia a la obra específica
-        const obraSnapshot = await getDoc(obraRef);
+        const horaRef = collection(db, "horas");
+        const horaSnapshot = await getDocs(horaRef);
 
-        if (obraSnapshot.exists()) {
-          const horasEmpleado = obraSnapshot.data().horasEmpleado;
+        let horasPorTipoLocal = {};
 
-          // Sumar los valores numéricos de las horas del empleado de la obra específica
-          const sumaHoras = Object.values(horasEmpleado).reduce(
-            (acc, curr) => acc + curr,
+        horaSnapshot.forEach((hora) => {
+          if (hora.data().obraId === idObra) {
+            const { horas, tipoHora, valorHora } = hora.data();
+
+            if (!horasPorTipoLocal[tipoHora]) {
+              horasPorTipoLocal[tipoHora] = {
+                totalHoras: 0,
+                totalValor: 0,
+              };
+            }
+
+            if (horas > 0) {
+              // Sumar horas y valorHora
+              horasPorTipoLocal[tipoHora].totalHoras += horas;
+              horasPorTipoLocal[tipoHora].totalValor += horas * valorHora;
+            } else {
+              // Restar horas y valorHora
+              horasPorTipoLocal[tipoHora].totalHoras += horas;
+              horasPorTipoLocal[tipoHora].totalValor -= horas * valorHora; // Restar el valor correspondiente
+            }
+          }
+        });
+
+        // Calculando el total general de valor
+        let totalValorGeneral = 0;
+        Object.values(horasPorTipoLocal).forEach(({ totalValor }) => {
+          totalValorGeneral += totalValor;
+        });
+
+        setHorasPorTipo(horasPorTipoLocal);
+        setTotalValor(totalValorGeneral);
+
+        if (setTotalHorasEmpleado) {
+          // Sumar las horas de todos los tipos
+          const totalHoras = Object.values(horasPorTipoLocal).reduce(
+            (acc, { totalHoras }) => acc + totalHoras,
             0
           );
-
-          // Guardar la suma de horas en horasObra (como un número, no un array)
-          setTotalHorasEmpleado(sumaHoras);
-          setHorasObra(sumaHoras);
-        } else {
-          console.error("No existe la obra con el ID especificado.");
+          setTotalHorasEmpleado(totalHoras);
         }
       } catch (error) {
         console.error("Error fetching Obra:", error);
       }
-      console.log(horasObra);
     };
 
     consultaObra();
-  }, [idObra, cambioHoras]);
+  }, [idObra, cambioHoras, setTotalHorasEmpleado]);
 
   return (
     <TableContainer
@@ -95,39 +102,27 @@ export default function ObraDetail({
       >
         <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>
           <TableRow>
+            <TableCell align="left">Tipo de Hora</TableCell>
             <TableCell align="left">Horas</TableCell>
-            {isMobile ? (
-              <TableCell></TableCell>
-            ) : (
-              <TableCell align="left">Precio</TableCell>
-            )}
-            <TableCell align="right">Suma Total</TableCell>
+            <TableCell align="left">Precio</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.desc}>
-              <TableCell align="left">{row.qty}</TableCell>
-              {isMobile ? (
-                <TableCell></TableCell>
-              ) : (
-                <TableCell align="left">{ccyFormat(row.unit)}</TableCell>
-              )}
-
-              <TableCell align="right">{ccyFormat(row.price)}</TableCell>
-            </TableRow>
-          ))}
-          {/* <TableRow>
-            <TableCell>{`${(TAX_RATE * 100).toFixed()} %`}</TableCell>
-            <TableCell align="right"> </TableCell>
-            <TableCell align="right">{ccyFormat(invoiceTaxes)}</TableCell>
-          </TableRow> */}
+          {Object.entries(horasPorTipo).map(
+            ([tipoHora, { totalHoras, totalValor }]) => (
+              <TableRow key={tipoHora}>
+                <TableCell align="left">{tipoHora}</TableCell>
+                <TableCell align="left">{totalHoras}</TableCell>
+                <TableCell align="left">{ccyFormat(totalValor)}</TableCell>
+              </TableRow>
+            )
+          )}
           <TableRow>
             <TableCell colSpan={2} style={{ fontWeight: "900" }}>
               Total
             </TableCell>
-            <TableCell align="right" style={{ fontWeight: "900" }}>
-              {ccyFormat(invoiceTotal)}
+            <TableCell align="left" style={{ fontWeight: "900" }}>
+              {ccyFormat(totalValor)}
             </TableCell>
           </TableRow>
         </TableBody>
