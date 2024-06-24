@@ -66,7 +66,6 @@ export default function ModalHoraValor({
 
   return (
     <div>
-      <Button onClick={handleOpen}>Abrir modal</Button>
       <Modal
         open={openModal}
         onClose={handleClose}

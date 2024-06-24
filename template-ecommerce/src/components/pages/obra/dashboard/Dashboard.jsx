@@ -51,6 +51,7 @@ export default function Dashboard({ idObra }) {
   const [arrayGastos, setArrayGastos] = React.useState([]);
   const [idCliente, setIdCliente] = React.useState("");
   const [obra, setObra] = React.useState([]);
+  const [totalValor, setTotalValor] = React.useState(0);
 
   const { proveedores, clientes, obras, categorias } =
     React.useContext(TableContext);
@@ -153,7 +154,6 @@ export default function Dashboard({ idObra }) {
 
         // Actualizar el estado totalObra con el total calculado
         setTotalGastos(total);
-        setTotalObra(total); // Usando el valor actualizado de total
       } catch (error) {
         console.error("Error fetching obras:", error);
       }
@@ -220,11 +220,10 @@ export default function Dashboard({ idObra }) {
 
   React.useEffect(() => {
     setTotalObra(totalGastos);
-    let nuevoTotal = totalHorasEmpleado * 25000;
-    console.log(totalHorasEmpleado);
-    console.log(nuevoTotal);
-    setTotalObra(totalGastos + nuevoTotal);
-    setCambioHoras(false);
+    if (totalValor) {
+      setTotalObra(totalGastos + totalValor);
+      setCambioHoras(false);
+    }
   }, [totalGastos, totalHorasEmpleado, cambioHoras]);
 
   const obtenerNombreProveedor = (proveedorId) => {
@@ -396,8 +395,51 @@ export default function Dashboard({ idObra }) {
     }
   };
 
+  const getNombrecliente = (idcliente) => {
+    const cliente = clientes.find((cat) => cat.id === idcliente);
+    return cliente ? cliente.nombre : "Desconocida";
+  };
+
+  function formatDate(date) {
+    if (!date) return "";
+    const d = new Date(date.seconds * 1000);
+    return d.toLocaleString();
+  }
+
   return (
     <Box sx={{ flexGrow: 1, marginLeft: openDrawer ? "300px" : "100px" }}>
+      {obra && (
+        <div
+          style={{
+            marginLeft: openDrawer ? "16.5rem" : "6.5rem",
+            fontFamily: '"Kanit", sans-serif',
+          }}
+        >
+          <h6>En la Obra ID: #{idObra || "No disponible"}</h6>
+          <p>
+            <strong>Lugar:</strong> {obra.lugar || "No disponible"}
+          </p>
+          <p>
+            <strong>Distancia:</strong>{" "}
+            {obra.distancia?.nombre || "No disponible"}
+          </p>
+          <p>
+            <strong>Fecha Inicio:</strong>{" "}
+            {obra.fechaInicio ? formatDate(obra.fechaInicio) : "No disponible"}
+          </p>
+        </div>
+      )}
+      <h5
+        style={{
+          marginLeft: openDrawer ? "16.5rem" : "6.5rem",
+          fontWeight: "200",
+          marginBottom: "1rem",
+          marginTop: "1rem",
+          fontFamily: '"Kanit", sans-serif',
+        }}
+      >
+        {getNombrecliente(obra.cliente)} > {obra.descripcion}
+      </h5>
       {openModal && (
         <ModalComponent
           openModal={openModal}
@@ -417,17 +459,29 @@ export default function Dashboard({ idObra }) {
         />
       )}
       {obra.estado === "finalizado" && (
-        <Alert style={{ margin: "2rem" }} variant="filled" severity="success">
+        <Alert
+          style={{ margin: "2rem", fontFamily: '"Kanit", sans-serif' }}
+          variant="filled"
+          severity="success"
+        >
           Finalizado
         </Alert>
       )}
       {obra.estado === "enProceso" && (
-        <Alert style={{ margin: "2rem" }} variant="filled" severity="info">
+        <Alert
+          style={{ margin: "2rem", fontFamily: '"Kanit", sans-serif' }}
+          variant="filled"
+          severity="info"
+        >
           En Proceso
         </Alert>
       )}
       {obra.estado === "pausado" && (
-        <Alert style={{ margin: "2rem" }} variant="filled" severity="warning">
+        <Alert
+          style={{ margin: "2rem", fontFamily: '"Kanit", sans-serif' }}
+          variant="filled"
+          severity="warning"
+        >
           Pausado
         </Alert>
       )}
@@ -441,6 +495,8 @@ export default function Dashboard({ idObra }) {
           width: isMobile ? "95vw" : "90vw",
           justifyContent: "flex-start",
           alignItems: "flex-start",
+
+          fontFamily: '"Kanit", sans-serif',
         }}
       >
         <Grid
@@ -451,6 +507,7 @@ export default function Dashboard({ idObra }) {
             padding: "0px",
             display: "flex",
             justifyContent: "flex-start",
+            fontFamily: '"Kanit", sans-serif',
           }}
         >
           {obra.estado === "enProceso" && (
@@ -464,7 +521,7 @@ export default function Dashboard({ idObra }) {
             />
           )}
           {obra.estado === "pausado" && (
-            <div>
+            <div style={{ fontFamily: '"Kanit", sans-serif' }}>
               Activar
               <Switch
                 checked={checked}
@@ -491,12 +548,23 @@ export default function Dashboard({ idObra }) {
               boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", // Sombra
             }}
           >
-            <p className="bebas-neue-regular" style={{ color: "green" }}>
+            <p
+              className="bebas-neue-regular"
+              style={{
+                color: "green",
+                fontFamily: '"Kanit", sans-serif',
+                fontWeight: "600",
+              }}
+            >
               TOTAL ACTUAL:{" "}
             </p>
             <p
               className="bebas-neue-regular"
-              style={{ color: "green", fontWeight: "bold" }}
+              style={{
+                color: "green",
+                fontWeight: "bold",
+                fontFamily: '"Kanit", sans-serif',
+              }}
             >
               {totalObra.toLocaleString("es-AR", {
                 style: "currency",
@@ -541,11 +609,11 @@ export default function Dashboard({ idObra }) {
                 exportToExcel();
               }}
               variant="outlined"
-              /* style={{ marginLeft: "1rem" }} */
+              style={{ fontFamily: '"Kanit", sans-serif' }}
             >
               Detalle Horas{" "}
               <span
-                /* style={{ marginLeft: "1rem" }} */
+                style={{ marginLeft: "1rem" }}
                 class="material-symbols-outlined"
               >
                 print
@@ -556,6 +624,8 @@ export default function Dashboard({ idObra }) {
             idObra={idObra}
             cambioHoras={cambioHoras}
             setTotalHorasEmpleado={setTotalHorasEmpleado}
+            setTotalValor={setTotalValor}
+            totalValor={totalValor}
           />
         </Grid>
         <Grid sx={{ textAlign: "right" }} xs={isMobile ? 12 : 4}>
@@ -565,11 +635,11 @@ export default function Dashboard({ idObra }) {
                 exportToExcelGasto();
               }}
               variant="outlined"
-              style={{ marginRight: "1rem" }}
+              style={{ marginRight: "1rem", fontFamily: '"Kanit", sans-serif' }}
             >
               Detalle Gastos{" "}
               <span
-                style={{ marginRight: "1rem" }}
+                style={{ marginLeft: "1rem" }}
                 class="material-symbols-outlined"
               >
                 print
@@ -587,10 +657,25 @@ export default function Dashboard({ idObra }) {
               fontSize: "150%",
               margin: "1rem",
               marginLeft: "0rem",
+              fontFamily: '"Kanit", sans-serif',
             }}
           >
-            <p className="bebas-neue-regular">TOTAL GASTOS: </p>
-            <p className="bebas-neue-regular">
+            <p
+              style={{
+                fontSize: "90%",
+                fontFamily: '"Kanit", sans-serif',
+                fontWeight: 600,
+              }}
+            >
+              TOTAL GASTOS:{" "}
+            </p>
+            <p
+              style={{
+                fontSize: "90%",
+                fontFamily: '"Kanit", sans-serif',
+                fontWeight: 600,
+              }}
+            >
               {totalGastos.toLocaleString("es-AR", {
                 style: "currency",
                 currency: "ARS",

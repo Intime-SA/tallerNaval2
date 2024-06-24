@@ -21,6 +21,7 @@ export default function Actions({
         marginLeft: "2rem",
         width: isMobile ? "85vw" : "60vw",
         height: "2rem",
+        fontFamily: '"Kanit", sans-serif',
       }}
     >
       <div style={{ display: "flex" }}>
@@ -28,7 +29,7 @@ export default function Actions({
           onClick={() => {
             setOpenModal(true);
           }}
-          style={{ fontSize: "60%" }}
+          style={{ fontSize: "60%", fontFamily: '"Kanit", sans-serif' }}
           variant="text"
         >
           <span style={{ margin: "0.5rem" }} class="material-symbols-outlined">
@@ -38,7 +39,7 @@ export default function Actions({
         </Button>
         <Button
           onClick={() => setOpenModalGasto(true)}
-          style={{ fontSize: "60%" }}
+          style={{ fontSize: "60%", fontFamily: '"Kanit", sans-serif' }}
           variant="text"
         >
           <span style={{ margin: "0.5rem" }} class="material-symbols-outlined">
@@ -57,6 +58,7 @@ export default function Actions({
             display: "flex",
             justifyContent: "center",
             paddingRight: "1rem",
+            fontFamily: '"Kanit", sans-serif',
           }}
           color="success"
           variant="outlined"
@@ -75,6 +77,7 @@ export default function Actions({
             display: "flex",
             justifyContent: "center",
             paddingRight: "1rem",
+            fontFamily: '"Kanit", sans-serif',
           }}
           color="warning"
           variant="filled"

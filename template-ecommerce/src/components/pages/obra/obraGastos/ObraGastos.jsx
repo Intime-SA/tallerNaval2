@@ -93,10 +93,26 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row" color="white">
+        <TableCell
+          style={{
+            fontSize: "90%",
+            fontFamily: '"Kanit", sans-serif',
+          }}
+          component="th"
+          scope="row"
+          color="white"
+        >
           {getNombreCategoria(nombrePropiedad)}
         </TableCell>
-        <TableCell align="right">{ccyFormat(totalImporte)}</TableCell>
+        <TableCell
+          style={{
+            fontSize: "90%",
+            fontFamily: '"Kanit", sans-serif',
+          }}
+          align="right"
+        >
+          {ccyFormat(totalImporte)}
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -107,12 +123,38 @@ function Row(props) {
                   sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}
                 >
                   <TableRow>
-                    <TableCell style={{ fontSize: "80%" }}>Fecha</TableCell>
-                    <TableCell style={{ fontSize: "80%" }}>Proveedor</TableCell>
-                    <TableCell align="right" style={{ fontSize: "80%" }}>
+                    <TableCell
+                      style={{
+                        fontSize: "80%",
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
+                      Fecha
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        fontSize: "80%",
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
+                      Proveedor
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                      style={{
+                        fontSize: "80%",
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
                       Total Neto
                     </TableCell>
-                    <TableCell align="right" style={{ fontSize: "80%" }}>
+                    <TableCell
+                      align="right"
+                      style={{
+                        fontSize: "80%",
+                        fontFamily: '"Kanit", sans-serif',
+                      }}
+                    >
                       Total Bruto
                     </TableCell>
                   </TableRow>
@@ -121,19 +163,41 @@ function Row(props) {
                   {gastoData &&
                     Object.keys(gastoData).map((id) => (
                       <TableRow key={id}>
-                        <TableCell style={{ fontSize: "70%" }}>
+                        <TableCell
+                          style={{
+                            fontSize: "70%",
+                            fontFamily: '"Kanit", sans-serif',
+                          }}
+                        >
                           {new Date(
                             gastoData[id].fechaGasto.seconds * 1000
                           ).toLocaleDateString()}{" "}
                           {/* Renderiza la fecha en un formato legible */}
                         </TableCell>
-                        <TableCell style={{ fontSize: "70%" }}>
+                        <TableCell
+                          style={{
+                            fontSize: "70%",
+                            fontFamily: '"Kanit", sans-serif',
+                          }}
+                        >
                           {obtenerNombreProveedor(gastoData[id].proveedorId)}
                         </TableCell>
-                        <TableCell align="right" style={{ fontSize: "70%" }}>
+                        <TableCell
+                          align="right"
+                          style={{
+                            fontSize: "70%",
+                            fontFamily: '"Kanit", sans-serif',
+                          }}
+                        >
                           {ccyFormat(gastoData[id].importe)}
                         </TableCell>
-                        <TableCell align="right" style={{ fontSize: "70%" }}>
+                        <TableCell
+                          align="right"
+                          style={{
+                            fontSize: "70%",
+                            fontFamily: '"Kanit", sans-serif',
+                          }}
+                        >
                           {ccyFormat(gastoData[id].montoTotal)}
                         </TableCell>
                       </TableRow>
@@ -222,8 +286,23 @@ export default function ObrasGastos({ idObra, cambioGastos }) {
                 </Button>
               </Tooltip>
             </TableCell>
-            <TableCell>Categoria</TableCell>
-            <TableCell align="right">TOTAL</TableCell>
+            <TableCell
+              style={{
+                fontSize: "90%",
+                fontFamily: '"Kanit", sans-serif',
+              }}
+            >
+              Categoria
+            </TableCell>
+            <TableCell
+              style={{
+                fontSize: "90%",
+                fontFamily: '"Kanit", sans-serif',
+              }}
+              align="right"
+            >
+              TOTAL
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

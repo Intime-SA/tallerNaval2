@@ -281,6 +281,7 @@ export default function ListEmpleado({
                   backgroundColor: "#f5f5f5", // Color de fondo sutil
                   marginBottom: "1rem",
                   marginLeft: isMobile ? "0px" : "1rem",
+                  fontFamily: '"Kanit", sans-serif',
                 }}
                 key={empleado.id}
               >
@@ -292,15 +293,23 @@ export default function ListEmpleado({
                       width: "3rem",
                       borderRadius: "50px",
                       height: "3rem",
+                      fontFamily: '"Kanit", sans-serif',
                     }}
                   />
                 </ListItemAvatar>
                 <Divider />
                 <ListItemText
-                  style={{ paddingBottom: "5rem" }}
-                  primary={`${empleado.nombre} ${empleado.apellido}`}
-                  secondary={secondary ? empleado.telefono : null}
-                />
+                  style={{
+                    paddingBottom: "5rem",
+                    fontFamily: '"Kanit", sans-serif',
+                  }}
+                >
+                  {" "}
+                  <h5>{`${empleado.nombre} ${empleado.apellido}`}</h5>
+                  <br />
+                </ListItemText>
+                <h6>{secondary ? empleado.telefono : null}</h6>
+
                 <ListItemSecondaryAction
                   style={{
                     width: "200px",
@@ -309,12 +318,14 @@ export default function ListEmpleado({
                     alignItems: "center",
                     marginTop: "3.5rem",
                     marginRight: "1rem",
+                    fontFamily: '"Kanit", sans-serif',
                   }}
                 >
                   <IconButton
                     onClick={() => sumarHoras(idObra, empleado.id, 1)}
                     edge="end"
                     aria-label="delete"
+                    style={{ fontFamily: '"Kanit", sans-serif' }}
                   >
                     <span class="material-symbols-outlined">
                       exposure_plus_1
@@ -332,10 +343,11 @@ export default function ListEmpleado({
                     {loadingEmpleados[empleado.id] ? (
                       <CircularProgress />
                     ) : (
-                      <ListItemText
-                        primary={consultaHoras(idObra, empleado.id)}
-                      />
+                      <ListItemText />
                     )}
+                    <h4 style={{ fontFamily: '"Kanit", sans-serif' }}>
+                      {consultaHoras(idObra, empleado.id)}
+                    </h4>
                   </IconButton>
                   <IconButton
                     onClick={() => restarHoras(idObra, empleado.id, 8)}

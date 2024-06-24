@@ -127,10 +127,6 @@ export default function GastosObraPage() {
     >
       {obra && (
         <div style={{ margin: "1rem" }}>
-          <h2>
-            Gastos de Cliente:{" "}
-            {getNombrecliente(obra.cliente) || "No disponible"}
-          </h2>
           <h6>En la Obra ID: #{id || "No disponible"}</h6>
           <p>
             <strong>Lugar:</strong> {obra.lugar || "No disponible"}
@@ -145,6 +141,22 @@ export default function GastosObraPage() {
           </p>
         </div>
       )}
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+        }}
+      >
+        <h5
+          style={{
+            fontWeight: "200",
+            marginBottom: "1rem",
+          }}
+        >
+          {getNombrecliente(obra.cliente)} > {obra.descripcion}
+        </h5>
+      </div>
 
       <Paper sx={{ width: "95%" }}>
         <TableContainer>

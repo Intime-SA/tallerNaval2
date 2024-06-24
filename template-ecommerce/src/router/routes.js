@@ -6,6 +6,7 @@ import Cuentas from "../components/pages/cuentas/Cuentas";
 import Egresos from "../components/pages/egresos/Egresos";
 import GastosObraPage from "../components/pages/gastos/GastosObraPage";
 import Home from "../components/pages/home/Home";
+import GastosHorasPage from "../components/pages/horas/GastosHorasPage";
 import Ingresos from "../components/pages/ingresos/Ingresos";
 import Obra from "../components/pages/obra/Obra";
 import Obras from "../components/pages/obras/Obras";
@@ -48,6 +49,11 @@ export const routes = [
     id: "gastosObraPage",
     path: "/gastosObraPage/:id",
     Element: GastosObraPage,
+  },
+  {
+    id: "gastosHorasPage",
+    path: "/gastosHorasPage/:id",
+    Element: GastosHorasPage,
   },
   {
     id: "compras",

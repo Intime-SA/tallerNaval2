@@ -366,7 +366,7 @@ function ProveedoresListDetail({
             <TableCell />
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="left"
@@ -375,7 +375,7 @@ function ProveedoresListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
@@ -384,7 +384,7 @@ function ProveedoresListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
@@ -393,14 +393,14 @@ function ProveedoresListDetail({
             </TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
               }}
               align="center"
             ></TableCell>
             <TableCell
               sx={{
-                fontFamily: "Roboto Condensed, sans-serif",
+                fontFamily: '"Kanit", sans-serif',
                 color: "white",
                 textAlign: "center",
               }}

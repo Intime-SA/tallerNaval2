@@ -429,7 +429,6 @@ function ClientListDetail({
           ))}
         </TableBody>
       </Table>
-      <table></table>
     </TableContainer>
   );
 }

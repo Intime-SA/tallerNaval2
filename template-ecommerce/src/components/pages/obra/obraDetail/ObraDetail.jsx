@@ -10,16 +10,21 @@ import Paper from "@mui/material/Paper";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../../firebaseConfig";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Button, Tooltip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function ObraDetail({
   idObra,
   cambioHoras,
   setTotalHorasEmpleado,
+  setTotalValor,
+  totalValor,
 }) {
   const [horasPorTipo, setHorasPorTipo] = useState({});
-  const [totalValor, setTotalValor] = useState(0);
 
   const isMobile = useMediaQuery("(max-width:760px)");
+
+  const navigate = useNavigate();
 
   function ccyFormat(num) {
     return num.toLocaleString("es-AR", {
@@ -102,26 +107,65 @@ export default function ObraDetail({
       >
         <TableHead sx={{ backgroundColor: "rgba(194, 202, 208, 0.72)" }}>
           <TableRow>
-            <TableCell align="left">Tipo de Hora</TableCell>
-            <TableCell align="left">Horas</TableCell>
-            <TableCell align="left">Precio</TableCell>
+            <TableCell align="left">
+              <Tooltip title="Abrir Detalle">
+                <Button onClick={() => navigate(`/gastosHorasPage/${idObra}`)}>
+                  <span class="material-symbols-outlined">open_in_new</span>
+                </Button>
+              </Tooltip>
+            </TableCell>
+            <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="left">
+              Horas
+            </TableCell>
+            <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="left">
+              Precio
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {Object.entries(horasPorTipo).map(
             ([tipoHora, { totalHoras, totalValor }]) => (
               <TableRow key={tipoHora}>
-                <TableCell align="left">{tipoHora}</TableCell>
-                <TableCell align="left">{totalHoras}</TableCell>
-                <TableCell align="left">{ccyFormat(totalValor)}</TableCell>
+                <TableCell
+                  sx={{ fontFamily: '"Kanit", sans-serif' }}
+                  align="left"
+                >
+                  {tipoHora}
+                </TableCell>
+                <TableCell
+                  sx={{ fontFamily: '"Kanit", sans-serif' }}
+                  align="left"
+                >
+                  {totalHoras}
+                </TableCell>
+                <TableCell
+                  sx={{ fontFamily: '"Kanit", sans-serif' }}
+                  align="left"
+                >
+                  {ccyFormat(totalValor)}
+                </TableCell>
               </TableRow>
             )
           )}
           <TableRow>
-            <TableCell colSpan={2} style={{ fontWeight: "900" }}>
-              Total
+            <TableCell
+              colSpan={2}
+              style={{
+                fontWeight: "900",
+                fontWeight: 600,
+                fontFamily: '"Kanit", sans-serif',
+              }}
+            >
+              TOTAL EMPLEADOS
             </TableCell>
-            <TableCell align="left" style={{ fontWeight: "900" }}>
+            <TableCell
+              align="left"
+              style={{
+                fontWeight: "900",
+                fontWeight: 600,
+                fontFamily: '"Kanit", sans-serif',
+              }}
+            >
               {ccyFormat(totalValor)}
             </TableCell>
           </TableRow>
