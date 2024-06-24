@@ -27,6 +27,7 @@ import {
 } from "firebase/firestore";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import ModalHoraValor from "./ModalValorHora";
 
 function generate(element) {
   return [0, 1, 2].map((value) =>
@@ -70,6 +71,13 @@ export default function ListEmpleado({
   const [arrayObras, setArrayObras] = useState([]);
   const [sumaHoras, setSumarHoras] = useState(false);
   const [loadingEmpleados, setLoadingEmpleados] = useState({});
+  const [openModal, setOpenModal] = useState(false);
+
+  const [horaValor, setHoraValor] = useState([]);
+  const [selectedHora, setSelectedHora] = useState(0);
+
+  const [actionData, setActionData] = useState(null);
+  const [executeActionFlag, setExecuteActionFlag] = useState(false);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -140,87 +148,90 @@ export default function ListEmpleado({
     return 0;
   };
 
-  const sumarHoras = async (idObra, empleadoId, horas) => {
+  const sumarHoras = (idObra, empleadoId, horas) => {
     setLoadingEmpleados((prevLoadingEmpleados) => ({
       ...prevLoadingEmpleados,
       [empleadoId]: true,
     }));
-
+    setOpenModal(true);
     setOpenProgress(true);
-    console.log(idCliente);
-    try {
-      // Obtener la referencia de la obra específica
-      const obraRef = doc(db, "obras", idObra);
-      const obraSnapshot = await getDoc(obraRef);
-      const obraData = obraSnapshot.data().horasEmpleado;
-
-      // Verificar si la obra tiene un objeto horasEmpleado
-      console.log(obraData);
-
-      // Sumar horas al empleado
-      obraData[empleadoId] = (obraData[empleadoId] || 0) + horas;
-      console.log(obraData);
-
-      // Actualizar los datos de la obra en la base de datos
-      await updateDoc(obraRef, { horasEmpleado: obraData });
-      setSumarHoras(true);
-      setCambioHoras(true);
-
-      await addDoc(collection(db, "horas"), {
-        clienteId: idCliente, // Reemplazar con el ID real del cliente
-        empleadoId: empleadoId,
-        obraId: idObra,
-        fechaCarga: serverTimestamp(),
-        fechaHora: serverTimestamp(),
-        horas: horas, // O cambiar esto según sea necesario
-      });
-    } catch (error) {
-      console.error("Error al sumar horas:", error);
-    }
-    setOpenProgress(false);
-    setLoadingEmpleados(false);
+    setActionData({ idObra, empleadoId, horas, action: "sumar" });
+    setExecuteActionFlag(true);
   };
 
-  const restarHoras = async (idObra, empleadoId, horas) => {
+  const restarHoras = (idObra, empleadoId, horas) => {
     setLoadingEmpleados((prevLoadingEmpleados) => ({
       ...prevLoadingEmpleados,
       [empleadoId]: true,
     }));
-
+    setOpenModal(true);
     setOpenProgress(true);
-    console.log(idCliente);
-    try {
-      // Obtener la referencia de la obra específica
-      const obraRef = doc(db, "obras", idObra);
-      const obraSnapshot = await getDoc(obraRef);
-      const obraData = obraSnapshot.data().horasEmpleado;
-
-      // Verificar si la obra tiene un objeto horasEmpleado
-      console.log(obraData);
-
-      // Restar horas al empleado
-      obraData[empleadoId] = (obraData[empleadoId] || 0) - horas; // Resta las horas
-      console.log(obraData);
-
-      // Actualizar los datos de la obra en la base de datos
-      await updateDoc(obraRef, { horasEmpleado: obraData });
-      setSumarHoras(true); // Establecer la señal de restar horas a true
-      setCambioHoras(true);
-
-      await addDoc(collection(db, "horas"), {
-        clienteId: idCliente, // Reemplazar con el ID real del cliente
-        empleadoId: empleadoId,
-        obraId: idObra,
-        fechaCarga: serverTimestamp(),
-        fechaHora: serverTimestamp(),
-        horas: -horas, // Usar un valor negativo para restar horas
-      });
-    } catch (error) {
-      console.error("Error al restar horas:", error);
-    }
-    setOpenProgress(false);
-    setLoadingEmpleados(false);
+    setActionData({ idObra, empleadoId, horas, action: "restar" });
+    setExecuteActionFlag(true);
   };
+
+  useEffect(() => {
+    const executeAction = async () => {
+      if (!actionData) return;
+
+      const { idObra, empleadoId, horas, action } = actionData;
+
+      try {
+        const obraRef = doc(db, "obras", idObra);
+        const obraSnapshot = await getDoc(obraRef);
+        const obraData = obraSnapshot.data().horasEmpleado;
+
+        if (action === "sumar") {
+          obraData[empleadoId] = (obraData[empleadoId] || 0) + horas;
+        } else if (action === "restar") {
+          obraData[empleadoId] = (obraData[empleadoId] || 0) - horas;
+        }
+
+        await updateDoc(obraRef, { horasEmpleado: obraData });
+        await addDoc(collection(db, "horas"), {
+          clienteId: idCliente,
+          empleadoId: empleadoId,
+          obraId: idObra,
+          fechaCarga: serverTimestamp(),
+          fechaHora: serverTimestamp(),
+          horas: action === "sumar" ? horas : -horas,
+          valorHora: action === "sumar" ? selectedHora : -selectedHora,
+        });
+      } catch (error) {
+        console.error(`Error al ${action} horas:`, error);
+      } finally {
+        setCambioHoras(true);
+        setOpenProgress(false);
+        setLoadingEmpleados((prevLoadingEmpleados) => ({
+          ...prevLoadingEmpleados,
+          [empleadoId]: false,
+        }));
+        setActionData(null); // Restablecer actionData a null
+        setSelectedHora("");
+        setExecuteActionFlag(false); // Restablecer la bandera de ejecución
+      }
+    };
+
+    if (selectedHora && executeActionFlag) {
+      executeAction();
+    }
+  }, [selectedHora, executeActionFlag, actionData]);
+
+  useEffect(() => {
+    const fetchHoraValor = async () => {
+      const docRef = doc(db, "ajustes", "valoresHoras"); // Reemplaza con los nombres correctos de tu colección y documento
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setHoraValor(docSnap.data());
+        console.log(docSnap.data());
+      } else {
+        console.log("¡No existe tal documento!");
+      }
+    };
+
+    fetchHoraValor();
+  }, []);
 
   return (
     <Box
@@ -229,6 +240,13 @@ export default function ListEmpleado({
         maxWidth: 300,
       }}
     >
+      <ModalHoraValor
+        openModal={openModal}
+        setOpenModal={setOpenModal}
+        horaValor={horaValor}
+        setSelectedHora={setSelectedHora}
+        selectedHora={selectedHora}
+      />
       <Grid item xs={12} md={6}>
         <Box
           sx={{

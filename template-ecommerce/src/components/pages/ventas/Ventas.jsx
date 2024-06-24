@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom";
 import { DrawerContext } from "../../context/DrawerContext";
 import { Box, Button, Tooltip } from "@mui/material";
 import * as XLSX from "xlsx";
+import ModalComponentVenta from "./ModalComponentGastoVenta";
 
 export default function Ventas() {
   const [page, setPage] = React.useState(0);
@@ -52,13 +53,14 @@ export default function Ventas() {
   };
 
   const columns = [
-    { id: "fechaGasto", label: "Fecha Comprobante", minWidth: 150 },
+    { id: "fechaVenta", label: "Fecha Comprobante", minWidth: 150 },
     { id: "concepto", label: "Concepto", minWidth: 100 },
     { id: "tipoComprobante", label: "T. Comprobante", minWidth: 100 },
     { id: "numeroComprobante", label: "N° Comprobante", minWidth: 150 },
     { id: "clienteId", label: "Cliente", minWidth: 150 },
     { id: "montoTotal", label: "Monto Total", minWidth: 100 },
     { id: "impuestos", label: "Impuestos", minWidth: 100 }, // Nueva columna de Impuestos
+    { id: "pago", label: "Saldo", minWidth: 50, align: "center" },
     { id: "acciones", label: "Acciones", minWidth: 50, align: "center" },
   ];
 
@@ -178,6 +180,10 @@ export default function Ventas() {
         fontFamily: '"Kanit", sans-serif',
       }}
     >
+      <ModalComponentVenta
+        openModalVenta={openModalVenta}
+        setOpenModalVenta={setOpenModalVenta}
+      />
       <Box>
         <div style={{ marginBottom: "1rem" }}>
           <Button
@@ -236,7 +242,7 @@ export default function Ventas() {
                 <TableRow hover role="checkbox" tabIndex={-1} key={venta.id}>
                   {columns.map((column) => {
                     let value = venta[column.id];
-                    if (column.id === "fechaGasto") {
+                    if (column.id === "fechaVenta") {
                       value = formatDate(value);
                     } else if (column.id === "proveedorId") {
                       value = renderProveedorNombre(value);
