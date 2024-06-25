@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
@@ -13,7 +13,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Tooltip } from "@mui/material";
 /* import ClientShippingTooltip from "./ClientShippingTooltip"; */
 import {
@@ -29,6 +29,7 @@ import { db } from "../../../firebaseConfig";
 /* import emailjs from "emailjs-com"; */
 /* import EmailModal from "./EmailModal"; */
 import { deleteUser, getAuth } from "firebase/auth";
+import { DrawerContext } from "../../context/DrawerContext";
 
 function Row(props) {
   const {
@@ -40,6 +41,7 @@ function Row(props) {
     editingClientId,
     setStatusEdit,
     statusEdit,
+    navigate,
   } = props;
   const [open, setOpen] = useState(false);
 
@@ -206,6 +208,9 @@ function Row(props) {
             <Button onClick={() => editClient(row.id)}>
               <span class="material-symbols-outlined">edit</span>
             </Button>
+            <Button onClick={() => navigate(`cuentaProveedor/${row.id}`)}>
+              <span class="material-symbols-outlined">search</span>
+            </Button>
             {/*             <Tooltip title={renderShippingData()} arrow>
               <Button>
                 <span class="material-symbols-outlined">local_shipping</span>
@@ -352,81 +357,89 @@ function ProveedoresListDetail({
 }) {
   // Estado para indicar si se está editando el producto
   const [editingClientId, setEditingClientId] = useState(null);
+
+  const { openDrawer } = useContext(DrawerContext);
+
   console.log(customers); // Estado para almacenar el ID del producto que se está editando
+
+  const navigate = useNavigate();
 
   // Aquí se espera la prop products
   return (
-    <TableContainer
-      component={Paper}
-      style={{ backgroundColor: "rgba(255, 255, 255, 0.6)" }}
-    >
-      <Table aria-label="collapsible table">
-        <TableHead sx={{ fontFamily: '"Kanit", sans-serif' }}>
-          <TableRow style={{ backgroundColor: "#121621", color: "white" }}>
-            <TableCell />
-            <TableCell
-              sx={{
-                fontFamily: '"Kanit", sans-serif',
-                color: "white",
-              }}
-              align="left"
-            >
-              Cliente
-            </TableCell>
-            <TableCell
-              sx={{
-                fontFamily: '"Kanit", sans-serif',
-                color: "white",
-              }}
-              align="center"
-            >
-              Cuit
-            </TableCell>
-            <TableCell
-              sx={{
-                fontFamily: '"Kanit", sans-serif',
-                color: "white",
-              }}
-              align="center"
-            >
-              Categoria
-            </TableCell>
-            <TableCell
-              sx={{
-                fontFamily: '"Kanit", sans-serif',
-                color: "white",
-              }}
-              align="center"
-            ></TableCell>
-            <TableCell
-              sx={{
-                fontFamily: '"Kanit", sans-serif',
-                color: "white",
-                textAlign: "center",
-              }}
-            >
-              Acciones
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {customers.map((user) => (
-            <Row
-              key={user.id}
-              row={user}
-              setStatusDelete={setStatusDelete}
-              statusDelete={statusDelete}
-              setEditingClientId={setEditingClientId}
-              setOpenForm={setOpenForm}
-              editingClientId={editingClientId}
-              setStatusEdit={setStatusEdit}
-              statusEdit={statusEdit}
-            />
-          ))}
-        </TableBody>
-      </Table>
-      <table></table>
-    </TableContainer>
+    <div>
+      <TableContainer
+        component={Paper}
+        style={{ backgroundColor: "rgba(255, 255, 255, 0.6)" }}
+      >
+        <Table aria-label="collapsible table">
+          <TableHead sx={{ fontFamily: '"Kanit", sans-serif' }}>
+            <TableRow style={{ backgroundColor: "#121621", color: "white" }}>
+              <TableCell />
+              <TableCell
+                sx={{
+                  fontFamily: '"Kanit", sans-serif',
+                  color: "white",
+                }}
+                align="left"
+              >
+                Cliente
+              </TableCell>
+              <TableCell
+                sx={{
+                  fontFamily: '"Kanit", sans-serif',
+                  color: "white",
+                }}
+                align="center"
+              >
+                Cuit
+              </TableCell>
+              <TableCell
+                sx={{
+                  fontFamily: '"Kanit", sans-serif',
+                  color: "white",
+                }}
+                align="center"
+              >
+                Categoria
+              </TableCell>
+              <TableCell
+                sx={{
+                  fontFamily: '"Kanit", sans-serif',
+                  color: "white",
+                }}
+                align="center"
+              ></TableCell>
+              <TableCell
+                sx={{
+                  fontFamily: '"Kanit", sans-serif',
+                  color: "white",
+                  textAlign: "center",
+                }}
+              >
+                Acciones
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {customers.map((user) => (
+              <Row
+                key={user.id}
+                row={user}
+                setStatusDelete={setStatusDelete}
+                statusDelete={statusDelete}
+                setEditingClientId={setEditingClientId}
+                setOpenForm={setOpenForm}
+                editingClientId={editingClientId}
+                setStatusEdit={setStatusEdit}
+                statusEdit={statusEdit}
+                navigate={navigate}
+              />
+            ))}
+          </TableBody>
+        </Table>
+        <table></table>
+      </TableContainer>
+    </div>
   );
 }
 

@@ -19,6 +19,8 @@ export const TableContextComponent = ({ children }) => {
   const [categorias, setCategorias] = useState([]);
   const [ventas, setVentas] = useState([]);
   const [empleados, setEmpleados] = useState([]);
+  const [egresos, setEgresos] = useState([]);
+  const [cuentas, setCuentas] = useState([]);
 
   const fetchData = async (collectionName, setData) => {
     try {
@@ -43,6 +45,8 @@ export const TableContextComponent = ({ children }) => {
       await fetchData("categorias", setCategorias);
       await fetchData("ventas", setVentas);
       await fetchData("empleados", setEmpleados);
+      await fetchData("egresos", setEgresos);
+      await fetchData("cuentas", setCuentas);
     };
 
     obtenerDatos();
@@ -57,6 +61,8 @@ export const TableContextComponent = ({ children }) => {
     categorias,
     ventas,
     empleados,
+    egresos,
+    cuentas,
   };
 
   return <TableContext.Provider value={data}>{children}</TableContext.Provider>;

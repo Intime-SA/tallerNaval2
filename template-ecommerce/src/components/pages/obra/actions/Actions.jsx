@@ -18,8 +18,8 @@ export default function Actions({
       direction="row"
       justifyContent="space-between"
       sx={{
-        marginLeft: "2rem",
-        width: isMobile ? "85vw" : "60vw",
+        marginLeft: "1rem",
+        width: isMobile ? "80vw" : "100%",
         height: "2rem",
         fontFamily: '"Kanit", sans-serif',
       }}

@@ -501,7 +501,7 @@ export default function Dashboard({ idObra }) {
       >
         <Grid
           item
-          xs={10}
+          xs={12}
           sx={{
             margin: "0px",
             padding: "0px",
@@ -533,12 +533,12 @@ export default function Dashboard({ idObra }) {
             </div>
           )}
         </Grid>
-        <Grid xs={isMobile ? 12 : 8}>
+        <Grid xs={isMobile ? 12 : 12}>
           <div
             style={{
               display: "flex",
               justifyContent: isMobile ? "space-between" : "space-around",
-              width: isMobile ? "90vw" : "100%",
+              width: "100%",
               alignItems: "flex-end",
               fontSize: "150%",
               margin: "1rem",

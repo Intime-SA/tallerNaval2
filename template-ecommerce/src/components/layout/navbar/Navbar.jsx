@@ -9,7 +9,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
-
+import * as React from "react";
 import { Link, Outlet } from "react-router-dom";
 import "./Navbar.css";
 import { useState } from "react";
@@ -17,6 +17,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { menuItems } from "../../../router/navigation";
 import DrawerMenu from "../drawer/Drawer";
 import { Drawer } from "@mui/material";
+import { Button, Slide, Tooltip, useMediaQuery } from "@mui/material";
+import { createTheme, useTheme } from "@mui/material/styles";
+import { DrawerContext } from "../../context/DrawerContext";
 const drawerWidth = 200;
 
 function Navbar(props) {
@@ -26,6 +29,23 @@ function Navbar(props) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const { setOpenDrawer, openDrawer } = React.useContext(DrawerContext);
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 800, // Define md como 800px
+        lg: 1200,
+        xl: 1536,
+      },
+    },
+  });
+  const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const [drawerWidth, setDrawerWidth] = React.useState(
+    isMiddleMobile ? 75 : 240
+  );
 
   const drawer = (
     <div style={{ padding: "5rem", display: "flex", justifyContent: "center" }}>
@@ -73,7 +93,7 @@ function Navbar(props) {
           backgroundColor: "white",
         }}
       >
-        {/*         <Toolbar
+        <Toolbar
           sx={{
             display: "flex",
             justifyContent: "space-between",
@@ -96,7 +116,7 @@ function Navbar(props) {
           >
             <MenuIcon color="secondary.primary" />
           </IconButton>
-        </Toolbar> */}
+        </Toolbar>
       </AppBar>
       <Box component="nav" aria-label="mailbox folders">
         <Drawer
@@ -119,7 +139,7 @@ function Navbar(props) {
         >
           {drawer}
         </Drawer>
-        <DrawerMenu />
+        {!isMiddleMobile && <DrawerMenu />}
       </Box>
       <div
         component="main"
