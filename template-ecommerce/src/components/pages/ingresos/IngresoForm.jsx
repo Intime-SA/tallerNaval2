@@ -6,16 +6,16 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { TableContext } from "../../context/TableContext";
 
-const EgresoForm = () => {
+const IngresoForm = () => {
   const [cuenta, setCuenta] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [fechaEgreso, setFechaEgreso] = useState("");
+  const [fechaIngreso, setFechaIngreso] = useState("");
   const [monto, setMonto] = useState("");
   const [numeroComprobante, setNumeroComprobante] = useState("");
-  const [proveedor, setProveedor] = useState(null);
+  const [cliente, setCliente] = useState(null);
   const [tipoComprobante, setTipoComprobante] = useState("");
 
-  const { proveedores, cuentas } = useContext(TableContext);
+  const { clientes, cuentas } = useContext(TableContext);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -26,30 +26,30 @@ const EgresoForm = () => {
     }
 
     try {
-      const nuevoEgreso = {
+      const nuevoIngreso = {
         cuenta: cuenta.id,
         descripcion,
-        fechaEgreso: new Date(fechaEgreso),
+        fechaIngreso: new Date(fechaIngreso),
         monto: Number(monto),
         numeroComprobante,
-        proveedorId: proveedor.id,
+        clienteId: cliente.id,
         tipoComprobante: tipoComprobante.id,
       };
 
-      const docRef = await addDoc(collection(db, "egresos"), nuevoEgreso);
+      const docRef = await addDoc(collection(db, "ingresos"), nuevoIngreso);
 
-      // Limpiar los campos después de agregar el egreso
+      // Limpiar los campos después de agregar el ingreso
       setCuenta("");
       setDescripcion("");
-      setFechaEgreso("");
+      setFechaIngreso("");
       setMonto("");
       setNumeroComprobante("");
-      setProveedor(null);
+      setCliente(null);
       setTipoComprobante("");
 
-      console.log("Egreso agregado correctamente con ID: ", docRef.id);
+      console.log("Ingreso agregado correctamente con ID: ", docRef.id);
     } catch (error) {
-      console.error("Error al agregar el egreso:", error);
+      console.error("Error al agregar el ingreso:", error);
     }
   };
 
@@ -66,18 +66,18 @@ const EgresoForm = () => {
   return (
     <form
       onSubmit={handleFormSubmit}
-      style={{ maxWidth: "1000px", marginLeft: "1rem", marginTop: "1.5rem" }}
+      style={{ maxWidth: "1000px", marginLeft: "1rem", marginTop: "2rem" }}
     >
       <Autocomplete
-        id="proveedor-select"
-        options={proveedores}
-        getOptionLabel={(option) => option.nombreComercio}
-        onChange={(event, value) => setProveedor(value)}
-        value={proveedor}
+        id="cliente-select"
+        options={clientes}
+        getOptionLabel={(option) => option.nombre}
+        onChange={(event, value) => setCliente(value)}
+        value={cliente}
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Seleccionar proveedor"
+            label="Seleccionar Cliente"
             variant="outlined"
           />
         )}
@@ -92,7 +92,7 @@ const EgresoForm = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Seleccionar Cuenta Origen"
+            label="Seleccionar Cuenta Ingreso"
             variant="outlined"
           />
         )}
@@ -117,12 +117,12 @@ const EgresoForm = () => {
         margin="normal"
       />
       <TextField
-        label="Fecha de Egreso"
+        label="Fecha de Ingreso"
         variant="outlined"
         type="datetime-local"
         fullWidth
-        value={fechaEgreso}
-        onChange={(e) => setFechaEgreso(e.target.value)}
+        value={fechaIngreso}
+        onChange={(e) => setFechaIngreso(e.target.value)}
         margin="normal"
         InputLabelProps={{
           shrink: true,
@@ -149,10 +149,10 @@ const EgresoForm = () => {
         margin="normal"
       />
       <Button type="submit" variant="contained" color="primary">
-        Agregar Egreso
+        Agregar Ingreso
       </Button>
     </form>
   );
 };
 
-export default EgresoForm;
+export default IngresoForm;

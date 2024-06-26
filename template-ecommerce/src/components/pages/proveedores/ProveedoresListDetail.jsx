@@ -205,9 +205,9 @@ function Row(props) {
               justifyContent: "center",
             }}
           >
-            <Button onClick={() => editClient(row.id)}>
+            {/*             <Button onClick={() => editClient(row.id)}>
               <span class="material-symbols-outlined">edit</span>
-            </Button>
+            </Button> */}
             <Button onClick={() => navigate(`cuentaProveedor/${row.id}`)}>
               <span class="material-symbols-outlined">search</span>
             </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
@@ -15,7 +15,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-import { deleteUser, getAuth } from "firebase/auth";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { TableContext } from "../../context/TableContext";
@@ -25,28 +24,28 @@ function Row(props) {
     row,
     setStatusDelete,
     statusDelete,
-    setEditingEgresoId,
+    setEditingIngresoId,
     setOpenForm,
-    editingEgresoId,
+    editingIngresoId,
     setStatusEdit,
     statusEdit,
   } = props;
   const [open, setOpen] = useState(false);
 
-  const { proveedores, cuentas } = React.useContext(TableContext); // Agregado proveedores al contexto
+  const { clientes, cuentas } = useContext(TableContext); // Agregado clientes al contexto
 
-  const deleteEgreso = async (id) => {
+  const deleteIngreso = async (id) => {
     try {
-      await deleteDoc(doc(db, "egresos", id));
+      await deleteDoc(doc(db, "ingresos", id));
       setStatusDelete(!statusDelete);
-      console.log(`Egreso ${id} eliminado correctamente.`);
+      console.log(`Ingreso ${id} eliminado correctamente.`);
     } catch (error) {
-      console.error("Error deleting egreso: ", error);
+      console.error("Error deleting ingreso: ", error);
     }
   };
 
-  const editEgreso = (id) => {
-    setEditingEgresoId(id);
+  const editIngreso = (id) => {
+    setEditingIngresoId(id);
     setOpenForm(true); // Asumiendo que se abre un formulario para editar
     setStatusEdit(!statusEdit);
   };
@@ -63,9 +62,9 @@ function Row(props) {
     return `${day}/${month}/${year}`;
   };
 
-  const renderProveedorNombre = (proveedorId) => {
-    const proveedor = proveedores.find((p) => p.id === proveedorId);
-    return proveedor ? proveedor.nombreComercio : "N/A";
+  const renderClienteNombre = (clienteId) => {
+    const cliente = clientes.find((c) => c.id === clienteId);
+    return cliente ? cliente.nombre : "N/A";
   };
 
   const renderCuentaNombre = (cuentaId) => {
@@ -90,7 +89,7 @@ function Row(props) {
           component="th"
           scope="row"
         >
-          {renderProveedorNombre(row.proveedorId)}
+          {renderClienteNombre(row.clienteId)}
         </TableCell>
         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
           {row.monto.toLocaleString("es-AR", {
@@ -99,7 +98,7 @@ function Row(props) {
           })}
         </TableCell>
         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
-          {formatDate(row.fechaEgreso)}
+          {formatDate(row.fechaIngreso)}
         </TableCell>
         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
           {renderCuentaNombre(row.cuenta)}
@@ -111,7 +110,7 @@ function Row(props) {
               justifyContent: "center",
             }}
           >
-            <Button onClick={() => deleteEgreso(row.id)}>
+            <Button onClick={() => deleteIngreso(row.id)}>
               <span className="material-symbols-outlined">delete</span>
             </Button>
           </div>
@@ -168,7 +167,6 @@ function Row(props) {
                     >
                       {row.tipoComprobante}
                     </TableCell>
-
                     <TableCell
                       sx={{ fontFamily: '"Kanit", sans-serif' }}
                       align="right"
@@ -195,15 +193,15 @@ Row.propTypes = {
   }).isRequired,
 };
 
-function EgresosListDetail({
-  egresos,
+function IngresosListDetail({
+  ingresos,
   setStatusDelete,
   statusDelete,
   setOpenForm,
   setStatusEdit,
   statusEdit,
 }) {
-  const [editingEgresoId, setEditingEgresoId] = useState(null);
+  const [editingIngresoId, setEditingIngresoId] = useState(null);
 
   return (
     <TableContainer
@@ -218,7 +216,7 @@ function EgresosListDetail({
             <TableCell
               sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
             >
-              Proveedor
+              Cliente
             </TableCell>
 
             <TableCell
@@ -260,15 +258,15 @@ function EgresosListDetail({
           </TableRow>
         </TableHead>
         <TableBody>
-          {egresos.map((egreso) => (
+          {ingresos.map((ingreso) => (
             <Row
-              key={egreso.id}
-              row={egreso}
+              key={ingreso.id}
+              row={ingreso}
               setStatusDelete={setStatusDelete}
               statusDelete={statusDelete}
-              setEditingEgresoId={setEditingEgresoId}
+              setEditingIngresoId={setEditingIngresoId}
               setOpenForm={setOpenForm}
-              editingEgresoId={editingEgresoId}
+              editingIngresoId={editingIngresoId}
               setStatusEdit={setStatusEdit}
               statusEdit={statusEdit}
             />
@@ -279,8 +277,8 @@ function EgresosListDetail({
   );
 }
 
-EgresosListDetail.propTypes = {
-  egresos: PropTypes.array.isRequired,
+IngresosListDetail.propTypes = {
+  ingresos: PropTypes.array.isRequired,
   setStatusDelete: PropTypes.func.isRequired,
   statusDelete: PropTypes.bool.isRequired,
   setOpenForm: PropTypes.func.isRequired,
@@ -288,4 +286,4 @@ EgresosListDetail.propTypes = {
   statusEdit: PropTypes.bool.isRequired,
 };
 
-export default EgresosListDetail;
+export default IngresosListDetail;

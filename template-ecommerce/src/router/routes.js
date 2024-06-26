@@ -2,6 +2,7 @@ import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
 import Compras from "../components/pages/compras/Compras";
+import CuentaCliente from "../components/pages/cuentas/CuentaCliente";
 import CuentaProveedor from "../components/pages/cuentas/CuentaProveedor";
 import Cuentas from "../components/pages/cuentas/Cuentas";
 import Egresos from "../components/pages/egresos/Egresos";
@@ -85,6 +86,11 @@ export const routes = [
     id: "cuentaProveedor",
     path: "proveedores/cuentaProveedor/:id",
     Element: CuentaProveedor,
+  },
+  {
+    id: "cuentaCliente",
+    path: "clientes/cuentaCliente/:id",
+    Element: CuentaCliente,
   },
   {
     id: "reportes",

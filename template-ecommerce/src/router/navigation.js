@@ -86,10 +86,4 @@ export const menuItems4 = [
     title: "Cajas y Cuentas",
     Icon: AccountBalanceIcon,
   },
-  {
-    id: "reportes",
-    path: "/reportes",
-    title: "Reporte",
-    Icon: AssessmentIcon,
-  },
 ];

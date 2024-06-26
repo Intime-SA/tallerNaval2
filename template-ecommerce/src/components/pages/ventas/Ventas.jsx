@@ -59,8 +59,7 @@ export default function Ventas() {
     { id: "numeroComprobante", label: "N° Comprobante", minWidth: 150 },
     { id: "clienteId", label: "Cliente", minWidth: 150 },
     { id: "montoTotal", label: "Monto Total", minWidth: 100 },
-    { id: "impuestos", label: "Impuestos", minWidth: 100 }, // Nueva columna de Impuestos
-    { id: "pago", label: "Saldo", minWidth: 50, align: "center" },
+    { id: "impuestos", label: "Impuestos", minWidth: 100 },
     { id: "acciones", label: "Acciones", minWidth: 50, align: "center" },
   ];
 

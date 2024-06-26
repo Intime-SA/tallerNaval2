@@ -13,7 +13,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Tooltip } from "@mui/material";
 /* import ClientShippingTooltip from "./ClientShippingTooltip"; */
 import {
@@ -40,6 +40,7 @@ function Row(props) {
     editingClientId,
     setStatusEdit,
     statusEdit,
+    navigate,
   } = props;
   const [open, setOpen] = useState(false);
 
@@ -207,8 +208,8 @@ function Row(props) {
               justifyContent: "center",
             }}
           >
-            <Button onClick={() => editClient(row.id)}>
-              <span class="material-symbols-outlined">edit</span>
+            <Button onClick={() => navigate(`cuentaCliente/${row.id}`)}>
+              <span class="material-symbols-outlined">search</span>
             </Button>
             {/*             <Tooltip title={renderShippingData()} arrow>
               <Button>
@@ -358,6 +359,7 @@ function ClientListDetail({
   const [editingClientId, setEditingClientId] = useState(null);
   console.log(customers); // Estado para almacenar el ID del producto que se está editando
 
+  const navigate = useNavigate();
   // Aquí se espera la prop products
   return (
     <TableContainer
@@ -425,6 +427,7 @@ function ClientListDetail({
               editingClientId={editingClientId}
               setStatusEdit={setStatusEdit}
               statusEdit={statusEdit}
+              navigate={navigate}
             />
           ))}
         </TableBody>
