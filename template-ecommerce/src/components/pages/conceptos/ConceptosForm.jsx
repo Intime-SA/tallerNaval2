@@ -10,10 +10,10 @@ import {
 } from "firebase/firestore";
 import { v4 } from "uuid";
 
-const CategoriasForm = ({ setOpenForm }) => {
-  const [categorias, setCategorias] = useState([]);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
-  const [newSubCategory, setNewSubCategory] = useState({
+const ConceptosForm = ({ setOpenForm }) => {
+  const [conceptos, setConceptos] = useState([]);
+  const [conceptoSeleccionado, setConceptoSeleccionado] = useState(null);
+  const [newSubConcepto, setNewSubConcepto] = useState({
     nombre: "",
     id: "",
     descripcion: "",
@@ -22,7 +22,7 @@ const CategoriasForm = ({ setOpenForm }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewSubCategory((prev) => ({
+    setNewSubConcepto((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -31,35 +31,35 @@ const CategoriasForm = ({ setOpenForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!categoriaSeleccionada || !newSubCategory.nombre) {
+    if (!conceptoSeleccionado || !newSubConcepto.nombre) {
       setErrors({
         ...errors,
-        categoria: !categoriaSeleccionada ? "Seleccione una categoría" : "",
-        nombre: !newSubCategory.nombre ? "Nombre es requerido" : "",
+        concepto: !conceptoSeleccionado ? "Seleccione un concepto" : "",
+        nombre: !newSubConcepto.nombre ? "Nombre es requerido" : "",
       });
       return;
     }
 
-    const idSubCategoria = v4();
+    const idSubConcepto = v4();
 
-    const updatedSubcategorias = {
-      ...categoriaSeleccionada.subcategorias,
-      [idSubCategoria]: {
-        nombre: newSubCategory.nombre,
-        id: idSubCategoria,
-        descripcion: newSubCategory.descripcion,
+    const updatedSubconceptos = {
+      ...conceptoSeleccionado.subconceptos,
+      [idSubConcepto]: {
+        nombre: newSubConcepto.nombre,
+        id: idSubConcepto,
+        descripcion: newSubConcepto.descripcion,
       },
     };
 
-    const categoryRef = doc(db, "categorias", categoriaSeleccionada.id);
+    const conceptoRef = doc(db, "conceptos", conceptoSeleccionado.id);
 
-    await updateDoc(categoryRef, {
-      subcategorias: updatedSubcategorias,
+    await updateDoc(conceptoRef, {
+      subconceptos: updatedSubconceptos,
       updated_at: serverTimestamp(),
     });
 
     setOpenForm(false);
-    setNewSubCategory({
+    setNewSubConcepto({
       nombre: "",
       id: "",
       descripcion: "",
@@ -71,21 +71,21 @@ const CategoriasForm = ({ setOpenForm }) => {
   };
 
   useEffect(() => {
-    const fetchCategorias = async () => {
+    const fetchConceptos = async () => {
       try {
-        const collectionRef = collection(db, "categorias");
+        const collectionRef = collection(db, "conceptos");
         const snapShot = await getDocs(collectionRef);
-        const categoriasList = snapShot.docs.map((doc) => ({
+        const conceptosList = snapShot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setCategorias(categoriasList);
+        setConceptos(conceptosList);
       } catch (error) {
-        console.error("Error fetching categories: ", error);
+        console.error("Error fetching conceptos: ", error);
       }
     };
 
-    fetchCategorias();
+    fetchConceptos();
   }, []);
 
   return (
@@ -119,30 +119,31 @@ const CategoriasForm = ({ setOpenForm }) => {
                 fontFamily: '"Kanit", sans-serif',
               }}
             >
-              Nueva Sub-Categoria
+              Nuevo Sub-Concepto
             </h5>
-            <div>
+            <div
+              style={{
+                margin: "1rem",
+                fontFamily: '"Kanit", sans-serif',
+              }}
+            >
               <Autocomplete
-                name="categoria"
+                name="concepto"
                 disablePortal
                 id="combo-box-demo"
-                options={categorias}
+                options={conceptos}
                 getOptionLabel={(option) => option.nombre}
-                sx={{
-                  width: 300,
-                  margin: "1rem",
-                  fontFamily: '"Kanit", sans-serif',
-                }}
-                value={categoriaSeleccionada}
+                sx={{ width: 300 }}
+                value={conceptoSeleccionado}
                 onChange={(event, newValue) =>
-                  setCategoriaSeleccionada(newValue)
+                  setConceptoSeleccionado(newValue)
                 }
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Categoria"
-                    error={!!errors.categoria}
-                    helperText={errors.categoria}
+                    label="Concepto"
+                    error={!!errors.concepto}
+                    helperText={errors.concepto}
                     InputLabelProps={{
                       shrink: true,
                     }}
@@ -162,7 +163,7 @@ const CategoriasForm = ({ setOpenForm }) => {
                 name="nombre"
                 variant="outlined"
                 label="Nombre"
-                value={newSubCategory.nombre}
+                value={newSubConcepto.nombre}
                 onChange={handleChange}
                 fullWidth
                 style={{
@@ -186,7 +187,7 @@ const CategoriasForm = ({ setOpenForm }) => {
                 name="descripcion"
                 variant="outlined"
                 label="Descripcion"
-                value={newSubCategory.descripcion}
+                value={newSubConcepto.descripcion}
                 onChange={handleChange}
                 fullWidth
                 style={{
@@ -219,11 +220,17 @@ const CategoriasForm = ({ setOpenForm }) => {
               fontFamily: '"Kanit", sans-serif',
             }}
           >
-            Cargar Categoria
+            Cargar Sub-Concepto
           </Button>
         </form>
       </div>
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          fontFamily: '"Kanit", sans-serif',
+        }}
+      >
         <Button
           style={{ fontFamily: '"Kanit", sans-serif' }}
           variant="contained"
@@ -236,4 +243,4 @@ const CategoriasForm = ({ setOpenForm }) => {
   );
 };
 
-export default CategoriasForm;
+export default ConceptosForm;

@@ -15,7 +15,7 @@ const Egresos = () => {
   const [statusDelete, setStatusDelete] = useState(false); // Estado para actualizar la eliminación de egresos
   const [statusEdit, setStatusEdit] = useState(false); // Estado para actualizar la edición de egresos
   const [currentPage, setCurrentPage] = useState(1); // Página actual de la paginación
-  const [egresosPerPage] = useState(5); // Cantidad de egresos por página
+  const [egresosPerPage] = useState(50); // Cantidad de egresos por página
   const [filterValue, setFilterValue] = useState(""); // Estado para almacenar el valor del filtro de búsqueda
   const { setOpenDrawer, openDrawer } = useContext(DrawerContext); // Contexto del cajón de la aplicación
   const theme = createTheme({
@@ -36,20 +36,26 @@ const Egresos = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "egresos")); // Obtiene los documentos de la colección "egresos"
+        const querySnapshot = await getDocs(collection(db, "egresos"));
         let newArray = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           newArray.push({ ...data, id: doc.id });
         });
-        setEgresos(newArray); // Actualiza el estado con la lista de egresos
+
+        // Ordenar newArray de más reciente a más antiguo basado en la fecha
+        newArray.sort(
+          (a, b) => b.fechaEgreso.toDate() - a.fechaEgreso.toDate()
+        );
+
+        setEgresos(newArray);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    fetchData(); // Llama a la función fetchData al cargar el componente
-  }, [statusDelete, openForm, statusEdit]); // Dependencias que activan la carga de datos
 
+    fetchData();
+  }, [statusDelete, openForm, statusEdit]);
   // Calcula los índices del primer y último egreso en la página actual
   const indexOfLastEgreso = currentPage * egresosPerPage;
   const indexOfFirstEgreso = indexOfLastEgreso - egresosPerPage;
@@ -144,6 +150,9 @@ const Egresos = () => {
           </Button>
         </div>
         {/* Campo de filtro */}
+        <h6 style={{ fontFamily: '"Kanit", sans-serif', fontWeight: "300" }}>
+          Buscar por Descripcion...
+        </h6>
         <TextField
           label=""
           value={filterValue}

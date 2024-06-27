@@ -42,6 +42,9 @@ const Ingresos = () => {
           const data = doc.data();
           newArray.push({ ...data, id: doc.id });
         });
+        newArray.sort(
+          (a, b) => b.fechaIngreso.toDate() - a.fechaIngreso.toDate()
+        );
         setIngresos(newArray); // Actualiza el estado con la lista de ingresos
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -143,6 +146,9 @@ const Ingresos = () => {
             Nuevo Ingreso
           </Button>
         </div>
+        <h6 style={{ fontFamily: '"Kanit", sans-serif', fontWeight: "300" }}>
+          Buscar por Descripcion...
+        </h6>
         {/* Campo de filtro */}
         <TextField
           label=""

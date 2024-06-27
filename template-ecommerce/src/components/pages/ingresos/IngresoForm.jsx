@@ -137,6 +137,15 @@ const IngresoForm = () => {
             variant="outlined"
             error={!!errors.cliente}
             helperText={errors.cliente}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              ...params.InputProps,
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
         )}
       />
@@ -154,6 +163,15 @@ const IngresoForm = () => {
             variant="outlined"
             error={!!errors.cuenta}
             helperText={errors.cuenta}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              ...params.InputProps,
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
         )}
       />
@@ -171,6 +189,15 @@ const IngresoForm = () => {
             variant="outlined"
             error={!!errors.tipoComprobante}
             helperText={errors.tipoComprobante}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              ...params.InputProps,
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
         )}
       />
@@ -183,6 +210,14 @@ const IngresoForm = () => {
         margin="normal"
         error={!!errors.descripcion}
         helperText={errors.descripcion}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          style: {
+            fontFamily: '"Kanit", sans-serif',
+          },
+        }}
       />
       <TextField
         label="Fecha de Ingreso"
@@ -197,6 +232,14 @@ const IngresoForm = () => {
         }}
         error={!!errors.fechaIngreso}
         helperText={errors.fechaIngreso}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          style: {
+            fontFamily: '"Kanit", sans-serif',
+          },
+        }}
       />
       <TextField
         id="monto"
@@ -209,6 +252,14 @@ const IngresoForm = () => {
         margin="normal"
         error={!!errors.monto}
         helperText={errors.monto}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          style: {
+            fontFamily: '"Kanit", sans-serif',
+          },
+        }}
       />
       <TextField
         label="Número de Comprobante"
@@ -219,8 +270,21 @@ const IngresoForm = () => {
         margin="normal"
         error={!!errors.numeroComprobante}
         helperText={errors.numeroComprobante}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          style: {
+            fontFamily: '"Kanit", sans-serif',
+          },
+        }}
       />
-      <Button type="submit" variant="contained" color="primary">
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        style={{ fontFamily: '"Kanit", sans-serif' }}
+      >
         Agregar Ingreso
       </Button>
     </form>

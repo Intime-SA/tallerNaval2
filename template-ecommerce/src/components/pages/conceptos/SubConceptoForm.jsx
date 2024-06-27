@@ -1,28 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { TextField, Button, Autocomplete } from "@mui/material";
-import { db } from "../../../firebaseConfig";
-import {
-  doc,
-  updateDoc,
-  getDocs,
-  collection,
-  serverTimestamp,
-} from "firebase/firestore";
+import { TextField, Button } from "@mui/material";
 import { v4 } from "uuid";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
-const CategoriasForm = ({ setOpenForm }) => {
-  const [categorias, setCategorias] = useState([]);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
-  const [newSubCategory, setNewSubCategory] = useState({
+const SubConceptosForm = ({ setOpenForm }) => {
+  const [conceptos, setConceptos] = useState([]);
+  const [newConcepto, setNewConcepto] = useState({
     nombre: "",
     id: "",
     descripcion: "",
+    subconceptos: {},
   });
   const [errors, setErrors] = useState({});
 
+  const fetchConceptos = async () => {
+    try {
+      const collectionRef = collection(db, "conceptos");
+      const snapShot = await getDocs(collectionRef);
+      return snapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("Error fetching concepts: ", error);
+      throw error;
+    }
+  };
+
+  const addConcepto = async (newConcepto, idConcepto) => {
+    try {
+      const docRef = doc(db, "conceptos", idConcepto);
+      await setDoc(docRef, newConcepto);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error adding concept: ", error);
+      throw error;
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewSubCategory((prev) => ({
+    setNewConcepto((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -31,61 +50,53 @@ const CategoriasForm = ({ setOpenForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!categoriaSeleccionada || !newSubCategory.nombre) {
-      setErrors({
-        ...errors,
-        categoria: !categoriaSeleccionada ? "Seleccione una categoría" : "",
-        nombre: !newSubCategory.nombre ? "Nombre es requerido" : "",
-      });
+    const { nombre } = newConcepto;
+    const validationErrors = {};
+    if (!nombre) validationErrors.nombre = "Nombre es requerido";
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
-    const idSubCategoria = v4();
+    const idConcepto = v4();
 
-    const updatedSubcategorias = {
-      ...categoriaSeleccionada.subcategorias,
-      [idSubCategoria]: {
-        nombre: newSubCategory.nombre,
-        id: idSubCategoria,
-        descripcion: newSubCategory.descripcion,
-      },
+    const newConceptoData = {
+      ...newConcepto,
+      id: idConcepto,
     };
 
-    const categoryRef = doc(db, "categorias", categoriaSeleccionada.id);
-
-    await updateDoc(categoryRef, {
-      subcategorias: updatedSubcategorias,
-      updated_at: serverTimestamp(),
-    });
-
-    setOpenForm(false);
-    setNewSubCategory({
-      nombre: "",
-      id: "",
-      descripcion: "",
-    });
+    try {
+      await addConcepto(newConceptoData, idConcepto);
+      setOpenForm(false);
+      setNewConcepto({
+        nombre: "",
+        id: "",
+        descripcion: "",
+        subconceptos: {
+          nombre: "",
+          descripcion: "",
+        },
+      });
+    } catch (error) {
+      console.error("Error adding concept: ", error);
+    }
   };
-
   const handleReturn = () => {
     setOpenForm(false);
   };
 
   useEffect(() => {
-    const fetchCategorias = async () => {
+    const loadConceptos = async () => {
       try {
-        const collectionRef = collection(db, "categorias");
-        const snapShot = await getDocs(collectionRef);
-        const categoriasList = snapShot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setCategorias(categoriasList);
+        const conceptosList = await fetchConceptos();
+        setConceptos(conceptosList);
       } catch (error) {
-        console.error("Error fetching categories: ", error);
+        console.error("Error fetching concepts: ", error);
       }
     };
 
-    fetchCategorias();
+    loadConceptos();
   }, []);
 
   return (
@@ -116,53 +127,18 @@ const CategoriasForm = ({ setOpenForm }) => {
             <h5
               style={{
                 margin: "1rem",
+                marginBottom: "2rem",
                 fontFamily: '"Kanit", sans-serif',
               }}
             >
-              Nueva Sub-Categoria
+              Nuevo Concepto
             </h5>
-            <div>
-              <Autocomplete
-                name="categoria"
-                disablePortal
-                id="combo-box-demo"
-                options={categorias}
-                getOptionLabel={(option) => option.nombre}
-                sx={{
-                  width: 300,
-                  margin: "1rem",
-                  fontFamily: '"Kanit", sans-serif',
-                }}
-                value={categoriaSeleccionada}
-                onChange={(event, newValue) =>
-                  setCategoriaSeleccionada(newValue)
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Categoria"
-                    error={!!errors.categoria}
-                    helperText={errors.categoria}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      style: {
-                        fontFamily: '"Kanit", sans-serif',
-                      },
-                    }}
-                  />
-                )}
-              />
-            </div>
-
             <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
               <TextField
                 name="nombre"
                 variant="outlined"
                 label="Nombre"
-                value={newSubCategory.nombre}
+                value={newConcepto.nombre}
                 onChange={handleChange}
                 fullWidth
                 style={{
@@ -186,7 +162,7 @@ const CategoriasForm = ({ setOpenForm }) => {
                 name="descripcion"
                 variant="outlined"
                 label="Descripcion"
-                value={newSubCategory.descripcion}
+                value={newConcepto.descripcion}
                 onChange={handleChange}
                 fullWidth
                 style={{
@@ -219,11 +195,17 @@ const CategoriasForm = ({ setOpenForm }) => {
               fontFamily: '"Kanit", sans-serif',
             }}
           >
-            Cargar Categoria
+            Cargar Concepto
           </Button>
         </form>
       </div>
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          fontFamily: '"Kanit", sans-serif',
+        }}
+      >
         <Button
           style={{ fontFamily: '"Kanit", sans-serif' }}
           variant="contained"
@@ -236,4 +218,4 @@ const CategoriasForm = ({ setOpenForm }) => {
   );
 };
 
-export default CategoriasForm;
+export default SubConceptosForm;

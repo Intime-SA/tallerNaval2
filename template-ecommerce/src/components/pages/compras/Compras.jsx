@@ -197,6 +197,20 @@ export default function Compras() {
   // Cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const [sortedGastos, setSortedGastos] = React.useState([]);
+
+  React.useEffect(() => {
+    // Clonamos los gastos para no mutar el estado original
+    const sortedGastos = [...gastos];
+
+    // Ordenar newArray de más reciente a más antiguo basado en la fecha
+    sortedGastos.sort((a, b) => b.fechaGasto.toDate() - a.fechaGasto.toDate());
+
+    // Aquí puedes hacer algo con los gastos ordenados, como establecerlos en un estado local
+    console.log("Gastos ordenados:", sortedGastos);
+    setSortedGastos(sortedGastos);
+  }, [gastos]);
+
   return (
     <div
       style={{
@@ -266,7 +280,7 @@ export default function Compras() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {gastos
+              {sortedGastos
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((gasto) => (
                   <TableRow hover role="checkbox" tabIndex={-1} key={gasto.id}>

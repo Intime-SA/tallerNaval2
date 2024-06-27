@@ -33,7 +33,7 @@ function Row(props) {
   } = props;
   const [open, setOpen] = useState(false);
 
-  const { proveedores, cuentas } = React.useContext(TableContext); // Agregado proveedores al contexto
+  const { proveedores, cuentas, conceptos } = React.useContext(TableContext); // Agregado proveedores al contexto
 
   const deleteEgreso = async (id) => {
     try {
@@ -65,12 +65,17 @@ function Row(props) {
 
   const renderProveedorNombre = (proveedorId) => {
     const proveedor = proveedores.find((p) => p.id === proveedorId);
-    return proveedor ? proveedor.nombreComercio : "N/A";
+    return proveedor ? proveedor.nombreComercio : "";
+  };
+
+  const renderConceptoNombre = (conceptoId) => {
+    const concepto = conceptos.find((p) => p.id === conceptoId);
+    return concepto ? concepto.nombre : "";
   };
 
   const renderCuentaNombre = (cuentaId) => {
     const cuenta = cuentas.find((c) => c.id === cuentaId);
-    return cuenta ? cuenta.nombre : "N/A";
+    return cuenta ? cuenta.nombre : "";
   };
 
   return (
@@ -98,6 +103,13 @@ function Row(props) {
           scope="row"
         >
           {renderProveedorNombre(row.proveedorId)}
+        </TableCell>
+        <TableCell
+          sx={{ fontFamily: '"Kanit", sans-serif' }}
+          component="th"
+          scope="row"
+        >
+          {renderConceptoNombre(row.conceptoPagoId)}
         </TableCell>
         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
           {row.monto.toLocaleString("es-AR", {
@@ -233,6 +245,11 @@ function EgresosListDetail({
             >
               Proveedor
             </TableCell>
+            <TableCell
+              sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
+            >
+              Concepto Pago
+            </TableCell>
 
             <TableCell
               sx={{
@@ -259,7 +276,7 @@ function EgresosListDetail({
               }}
               align="center"
             >
-              Cuenta
+              Cuenta (Origen)
             </TableCell>
             <TableCell
               sx={{

@@ -14,6 +14,8 @@ import AddCardIcon from "@mui/icons-material/AddCard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import ArticleIcon from "@mui/icons-material/Article";
+import ListAltIcon from "@mui/icons-material/ListAlt";
 
 export const menuItems = [
   {
@@ -34,6 +36,12 @@ export const menuItems = [
     path: "/categorias",
     title: "Categorias",
     Icon: ClassIcon,
+  },
+  {
+    id: "conceptos",
+    path: "/conceptos",
+    title: "Conceptos de Pago",
+    Icon: ListAltIcon,
   },
 ];
 

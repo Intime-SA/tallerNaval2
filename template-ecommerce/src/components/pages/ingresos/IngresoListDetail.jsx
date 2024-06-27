@@ -255,7 +255,7 @@ function IngresosListDetail({
               }}
               align="center"
             >
-              Cuenta
+              Cuenta (Acreditacion)
             </TableCell>
             <TableCell
               sx={{

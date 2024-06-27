@@ -1,24 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import { db } from "../../../firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
-import CategoriasListDetail from "./CategoriasListDetail";
 import { Box, Button, InputAdornment, TextField } from "@mui/material";
-import CategoriasForm from "./CategoriasForm";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
 import { Tooltip, useMediaQuery } from "@mui/material";
-import { createTheme, useTheme } from "@mui/material/styles";
-import SubCategoriasForm from "./SubCategoriasForm";
+import { createTheme } from "@mui/material/styles";
 import { DrawerContext } from "../../context/DrawerContext";
+import ConceptosForm from "./ConceptosForm";
+import ConceptosListDetail from "./ConceptosListDetail";
+import SubConceptosForm from "./SubConceptoForm";
 
-const Categorias = () => {
-  const [customers, setCustomers] = useState([]);
+const Conceptos = () => {
+  const [concepts, setConcepts] = useState([]);
   const [openForm, setOpenForm] = useState(false);
   const [openForm2, setOpenForm2] = useState(false);
   const [statusDelete, setStatusDelete] = useState(false);
   const [statusEdit, setStatusEdit] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const [customersPerPage] = useState(10); // Cantidad de clientes por página
-  const [clients, setClients] = useState();
+  const [conceptsPerPage] = useState(10); // Cantidad de conceptos por página
+  const [totalConcepts, setTotalConcepts] = useState();
   const [filterValue, setFilterValue] = useState(""); // Estado para almacenar el valor del filtro
 
   const { setOpenDrawer, openDrawer } = useContext(DrawerContext);
@@ -38,76 +38,63 @@ const Categorias = () => {
   const isMiddleMobile = useMediaQuery(theme.breakpoints.down("lg"));
 
   useEffect(() => {
-    let refCollection = collection(db, "categorias");
+    let refCollection = collection(db, "conceptos");
     getDocs(refCollection)
       .then((querySnapshot) => {
         let newArray = [];
         querySnapshot.forEach((doc) => {
-          const userData = doc.data();
-          newArray.push({ ...userData, id: doc.id });
+          const conceptData = doc.data();
+          newArray.push({ ...conceptData, id: doc.id });
         });
-        setCustomers(newArray);
+        setConcepts(newArray);
       })
       .catch((err) => console.log(err));
   }, [statusDelete, openForm, statusEdit]);
 
   useEffect(() => {
-    if (customers) {
-      setClients(customers.length);
+    if (concepts) {
+      setTotalConcepts(concepts.length);
     }
-  }, [customers]);
+  }, [concepts]);
 
   const exportToExcel = () => {
-    const data = customers.map((customer) => {
-      const filaPedido = [
-        customer.roll,
-        customer.telefono,
-        customer.email,
-        customer.name,
-        customer.apellido,
-      ];
-      return filaPedido;
+    const data = concepts.map((concept) => {
+      const filaConcepto = [concept.descripcion, concept.nombre];
+      return filaConcepto;
     });
 
-    const header = [
-      "Roll",
-      "Telefono",
-      "Correo Electronico",
-      "Nombre",
-      "Apellido",
-    ];
+    console.log(concepts);
+
+    const header = ["Descripción", "Nombre"];
 
     const wsData = [header, ...data];
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "MiHojaDeCalculo");
-    XLSX.writeFile(wb, "Clientes.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Conceptos");
+    XLSX.writeFile(wb, "Conceptos.xlsx");
   };
 
-  // Calcular índices del primer y último cliente en la página actual
-  const indexOfLastCustomer = currentPage * customersPerPage;
-  const indexOfFirstCustomer = indexOfLastCustomer - customersPerPage;
+  const indexOfLastConcept = currentPage * conceptsPerPage;
+  const indexOfFirstConcept = indexOfLastConcept - conceptsPerPage;
 
-  // Filtrar los clientes por el valor del campo de filtro
-  const filteredCustomers = customers.filter((customer) =>
-    `${customer.nombre.toLowerCase()}`.includes(filterValue.toLowerCase())
+  const filteredConcepts = concepts.filter((concept) =>
+    `${concept.nombre.toLowerCase()}`.includes(filterValue.toLowerCase())
   );
 
-  const currentCustomers = filteredCustomers.slice(
-    indexOfFirstCustomer,
-    indexOfLastCustomer
+  const currentConcepts = filteredConcepts.slice(
+    indexOfFirstConcept,
+    indexOfLastConcept
   );
 
-  // Cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleNewCategory = () => {
+  const handleNewConcept = () => {
     setOpenForm2(true);
     setOpenForm(false);
   };
 
-  const handleNewSubCategory = () => {
+  const handleNewSubConcept = () => {
     setOpenForm(true);
     setOpenForm2(false);
   };
@@ -148,7 +135,7 @@ const Categorias = () => {
             style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
             variant="contained"
             color="info"
-            onClick={handleNewCategory}
+            onClick={handleNewConcept}
           >
             <span
               style={{ marginRight: "0.5rem" }}
@@ -156,13 +143,13 @@ const Categorias = () => {
             >
               add_comment
             </span>
-            Nueva Categoria
+            Nuevo Concepto
           </Button>
           <Button
             style={{ marginLeft: "1rem", fontFamily: '"Kanit", sans-serif' }}
             variant="filled"
             color="info"
-            onClick={handleNewSubCategory}
+            onClick={handleNewSubConcept}
           >
             <span
               style={{ marginRight: "0.5rem" }}
@@ -170,10 +157,9 @@ const Categorias = () => {
             >
               docs_add_on
             </span>
-            Nueva Sub-Categoria
+            Nuevo Sub-Concepto
           </Button>
         </div>
-        {/* Campo de filtro */}
       </Box>
 
       <TextField
@@ -195,7 +181,7 @@ const Categorias = () => {
               >
                 <span
                   style={{ fontSize: "150%" }}
-                  class="material-symbols-outlined"
+                  className="material-symbols-outlined"
                 >
                   manage_search
                 </span>
@@ -206,8 +192,8 @@ const Categorias = () => {
       />
       <div style={{ width: "100%" }}>
         {!openForm && !openForm2 ? (
-          <CategoriasListDetail
-            customers={currentCustomers}
+          <ConceptosListDetail
+            concepts={currentConcepts}
             setStatusDelete={setStatusDelete}
             statusDelete={statusDelete}
             setOpenForm={setOpenForm}
@@ -215,15 +201,15 @@ const Categorias = () => {
             statusEdit={statusEdit}
           />
         ) : openForm && !openForm2 ? (
-          <CategoriasForm
-            customers={customers}
+          <ConceptosForm
+            concepts={concepts}
             setOpenForm={setOpenForm}
             openForm={openForm}
           />
         ) : (
           openForm2 && (
-            <SubCategoriasForm
-              customers={customers}
+            <SubConceptosForm
+              concepts={concepts}
               setOpenForm={setOpenForm}
               openForm={openForm}
             />
@@ -242,18 +228,18 @@ const Categorias = () => {
           onClick={() => paginate(currentPage - 1)}
           style={{ margin: "1rem" }}
         >
-          <span class="material-symbols-outlined">navigate_before</span>
+          <span className="material-symbols-outlined">navigate_before</span>
         </Button>
         <Button
           variant="contained"
           onClick={() => paginate(currentPage + 1)}
           style={{ margin: "1rem" }}
         >
-          <span class="material-symbols-outlined">navigate_next</span>
+          <span className="material-symbols-outlined">navigate_next</span>
         </Button>
       </Box>
     </div>
   );
 };
 
-export default Categorias;
+export default Conceptos;

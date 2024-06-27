@@ -17,6 +17,8 @@ import { DrawerContext } from "../../context/DrawerContext";
 import { Box, Button, Tooltip } from "@mui/material";
 import * as XLSX from "xlsx";
 import ModalComponentVenta from "./ModalComponentGastoVenta";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../../firebaseConfig";
 
 export default function Ventas() {
   const [page, setPage] = React.useState(0);
@@ -30,8 +32,21 @@ export default function Ventas() {
   const [customersPerPage] = React.useState(5);
   const [loading, setLoading] = React.useState(true);
   const [openModalVenta, setOpenModalVenta] = React.useState(false);
+  const [sortedGastos, setSortedGastos] = React.useState([]);
 
   const { openDrawer } = React.useContext(DrawerContext);
+
+  React.useEffect(() => {
+    // Clonamos los gastos para no mutar el estado original
+    const sortedGastos = [...ventas];
+
+    // Ordenar newArray de más reciente a más antiguo basado en la fecha
+    sortedGastos.sort((a, b) => b.fechaVenta.toDate() - a.fechaVenta.toDate());
+
+    // Aquí puedes hacer algo con los gastos ordenados, como establecerlos en un estado local
+    console.log("Gastos ordenados:", sortedGastos);
+    setSortedGastos(sortedGastos);
+  }, [ventas]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -167,6 +182,19 @@ export default function Ventas() {
     }
   };
 
+  const [statusDelete, setStatusDelete] = React.useState(false); // Estado para actualizar la eliminación de egresos
+
+  const deleteVentas = async (id) => {
+    try {
+      await deleteDoc(doc(db, "ventas", id));
+      setStatusDelete(!statusDelete);
+      console.log(`Egreso ${id} eliminado correctamente.`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting egreso: ", error);
+    }
+  };
+
   const currentVentas = ventas.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
@@ -268,54 +296,9 @@ export default function Ventas() {
                         {column.id === "acciones" ? (
                           <>
                             <Tooltip title="Más acciones">
-                              <IconButton
-                                onClick={(event) =>
-                                  handleMenuClick(event, venta)
-                                }
+                              <Button
+                                onClick={() => deleteVentas(venta.id)}
                                 size="small"
-                              >
-                                <MoreVertIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Menu
-                              id="demo-positioned-menu"
-                              anchorEl={anchorEl}
-                              open={Boolean(anchorEl)}
-                              onClose={handleClose}
-                              anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "right",
-                              }}
-                              transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                              }}
-                            >
-                              <MenuItem
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                  fontFamily: '"Kanit", sans-serif',
-                                }}
-                                onClick={handleClose}
-                              >
-                                <span
-                                  className="material-symbols-outlined"
-                                  style={{ marginRight: "0.5rem" }}
-                                >
-                                  edit
-                                </span>
-                                Editar
-                              </MenuItem>
-                              <MenuItem
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                  fontFamily: '"Kanit", sans-serif',
-                                }}
-                                onClick={handleClose}
                               >
                                 <span
                                   className="material-symbols-outlined"
@@ -323,9 +306,8 @@ export default function Ventas() {
                                 >
                                   delete
                                 </span>
-                                Eliminar
-                              </MenuItem>
-                            </Menu>
+                              </Button>
+                            </Tooltip>
                           </>
                         ) : (
                           value

@@ -120,15 +120,23 @@ function Row(props) {
           component="th"
           scope="row"
         >
-          {row.nombre}
+          <strong>{row.nombre}</strong>
         </TableCell>
-        <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="right">
+        <TableCell
+          sx={{ fontFamily: '"Kanit", sans-serif' }}
+          component="th"
+          scope="row"
+          align="center"
+        >
+          {row.descripcion}
+        </TableCell>
+        {/*         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="right">
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Button onClick={() => editClient(row.id)}>
               <span className="material-symbols-outlined">edit</span>
             </Button>
           </div>
-        </TableCell>
+        </TableCell> */}
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -143,7 +151,7 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
-                      Sub-Categorias
+                      Sub-Conceptos
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -154,8 +162,17 @@ function Row(props) {
                       component="th"
                       scope="row"
                     >
-                      {Object.values(row.subcategorias).map((doc) => (
+                      {Object.values(row.subconceptos).map((doc) => (
                         <h5 key={doc.id}>{doc.nombre}</h5>
+                      ))}
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontFamily: '"Kanit", sans-serif' }}
+                      component="th"
+                      scope="row"
+                    >
+                      {Object.values(row.subconceptos).map((doc) => (
+                        <h5 key={doc.id}>{doc.descripcion}</h5>
                       ))}
                     </TableCell>
                   </TableRow>
@@ -185,8 +202,8 @@ function Row(props) {
   );
 }
 
-function CategoriasListDetail({
-  customers,
+function ConceptosListDetail({
+  concepts,
   setStatusDelete,
   statusDelete,
   setOpenForm,
@@ -208,7 +225,7 @@ function CategoriasListDetail({
               sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
               align="left"
             >
-              Categoria
+              Conceptos
             </TableCell>
             <TableCell
               sx={{
@@ -217,12 +234,12 @@ function CategoriasListDetail({
                 textAlign: "center",
               }}
             >
-              Acciones
+              Descripcion
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {customers.map((user) => (
+          {concepts.map((user) => (
             <Row
               key={user.id}
               row={user}
@@ -241,8 +258,8 @@ function CategoriasListDetail({
   );
 }
 
-CategoriasListDetail.propTypes = {
-  customers: PropTypes.array.isRequired,
+ConceptosListDetail.propTypes = {
+  concepts: PropTypes.array.isRequired,
 };
 
-export default CategoriasListDetail;
+export default ConceptosListDetail;

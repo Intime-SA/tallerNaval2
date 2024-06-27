@@ -79,8 +79,12 @@ export default function ModalComponent({
             selectedEmployee={selectedEmployee}
             setSelectedEmployeeName={setSelectedEmployeeName}
           />
-          <h6 style={{ margin: "1rem" }}>{selectedEmployeeName}</h6>
-          <h6 style={{ margin: "1rem" }}>ID: #{selectedEmployee}</h6>
+          <h5 style={{ margin: "1rem", fontFamily: '"Kanit", sans-serif' }}>
+            {selectedEmployeeName}
+          </h5>
+          <h5 style={{ margin: "1rem", fontFamily: '"Kanit", sans-serif' }}>
+            ID: #{selectedEmployee}
+          </h5>
           <div
             style={{
               width: "100%",
@@ -89,12 +93,18 @@ export default function ModalComponent({
             }}
           >
             <Button
+              style={{ fontFamily: '"Kanit", sans-serif' }}
               variant="contained"
               onClick={() => cargaEmpleadoObra(idObra)} // Llama a la función cargaEmpleadoObra al hacer clic en el botón
             >
               CARGAR EMPLEADO
             </Button>
-            <Button onClick={handleClose}>CERRAR</Button>
+            <Button
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              onClick={handleClose}
+            >
+              CERRAR
+            </Button>
           </div>
         </Box>
       </Modal>

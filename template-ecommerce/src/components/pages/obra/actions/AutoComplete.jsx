@@ -60,7 +60,10 @@ export default function AutoComplete({
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">
+        <InputLabel
+          style={{ fontFamily: '"Kanit", sans-serif' }}
+          id="demo-simple-select-label"
+        >
           Seleccionar Empleado
         </InputLabel>
         <Select
@@ -69,9 +72,14 @@ export default function AutoComplete({
           value={selectedEmployee}
           label="Seleccionar Empleado"
           onChange={handleChange}
+          style={{ fontFamily: '"Kanit", sans-serif' }}
         >
           {array.map((empleado) => (
-            <MenuItem key={empleado.id} value={empleado.id}>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              key={empleado.id}
+              value={empleado.id}
+            >
               {empleado.nombre} {empleado.apellido}
             </MenuItem>
           ))}

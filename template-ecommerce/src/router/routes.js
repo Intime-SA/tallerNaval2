@@ -2,8 +2,10 @@ import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
 import Compras from "../components/pages/compras/Compras";
+import Conceptos from "../components/pages/conceptos/Conceptos";
 import AgregarCuenta from "../components/pages/cuentas/AgregarCuenta";
 import CuentaCliente from "../components/pages/cuentas/CuentaCliente";
+import CuentaMovimientos from "../components/pages/cuentas/CuentaMovimientos";
 import CuentaProveedor from "../components/pages/cuentas/CuentaProveedor";
 import Cuentas from "../components/pages/cuentas/Cuentas";
 import Egresos from "../components/pages/egresos/Egresos";
@@ -44,6 +46,11 @@ export const routes = [
     id: "categorias",
     path: "/categorias",
     Element: Categorias,
+  },
+  {
+    id: "conceptos",
+    path: "/conceptos",
+    Element: Conceptos,
   },
   {
     id: "obras",
@@ -94,6 +101,11 @@ export const routes = [
     id: "cuentaCliente",
     path: "clientes/cuentaCliente/:id",
     Element: CuentaCliente,
+  },
+  {
+    id: "cuentaMovimientos",
+    path: "cuentasBanco/cuentaMovimientos/:id",
+    Element: CuentaMovimientos,
   },
   {
     id: "agregarCuenta",

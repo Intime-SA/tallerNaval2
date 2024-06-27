@@ -120,7 +120,13 @@ const SubCategoriasForm = ({ setOpenForm }) => {
               width: "100%",
             }}
           >
-            <h5 style={{ margin: "1rem", marginBottom: "2rem" }}>
+            <h5
+              style={{
+                margin: "1rem",
+                marginBottom: "2rem",
+                fontFamily: '"Kanit", sans-serif',
+              }}
+            >
               Nueva Categoria
             </h5>
             <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
@@ -136,7 +142,14 @@ const SubCategoriasForm = ({ setOpenForm }) => {
                   width: "50%",
                   maxWidth: "200px",
                 }}
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  style: {
+                    fontFamily: '"Kanit", sans-serif',
+                  },
+                }}
                 error={!!errors.nombre}
                 helperText={errors.nombre}
               />
@@ -153,7 +166,14 @@ const SubCategoriasForm = ({ setOpenForm }) => {
                   width: "100%",
                   maxWidth: "400px",
                 }}
-                InputLabelProps={{ shrink: true }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  style: {
+                    fontFamily: '"Kanit", sans-serif',
+                  },
+                }}
                 error={!!errors.descripcion}
                 helperText={errors.descripcion}
               />
@@ -164,14 +184,23 @@ const SubCategoriasForm = ({ setOpenForm }) => {
             type="submit"
             variant="contained"
             color="primary"
-            style={{ marginBottom: "1rem", width: "50%", maxWidth: "200px" }}
+            style={{
+              fontFamily: '"Kanit", sans-serif',
+              marginBottom: "1rem",
+              width: "50%",
+              maxWidth: "200px",
+            }}
           >
             Cargar Categoria
           </Button>
         </form>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <Button variant="contained" onClick={handleReturn}>
+        <Button
+          style={{ fontFamily: '"Kanit", sans-serif' }}
+          variant="contained"
+          onClick={handleReturn}
+        >
           Volver
         </Button>
       </div>

@@ -67,7 +67,7 @@ const Cuentas = () => {
               paddingBottom: "1rem",
             }}
           >
-            <Button onClick={() => navigate(`agregarCuenta/${cuenta.id}`)}>
+            <Button onClick={() => navigate(`cuentaMovimientos/${cuenta.id}`)}>
               <span className="material-symbols-outlined">search</span>
             </Button>
           </div>

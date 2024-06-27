@@ -73,7 +73,12 @@ export default function ModalHoraValor({
         aria-describedby="modal-descripcion"
       >
         <Box sx={style}>
-          <Typography id="modal-titulo" variant="h6" component="h2">
+          <Typography
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            id="modal-titulo"
+            variant="h6"
+            component="h2"
+          >
             Seleccionar Valor de Hora
           </Typography>
           <Select
@@ -82,17 +87,45 @@ export default function ModalHoraValor({
             value={preSeleccion}
             onChange={handleChange}
             fullWidth
+            style={{ fontFamily: '"Kanit", sans-serif' }}
           >
-            <MenuItem value={horaValor.horaEstandar}>Hora Estándar</MenuItem>
-            <MenuItem value={horaValor.horaExtra}>Hora Extra</MenuItem>
-            <MenuItem value={horaValor.horaFeriado}>Hora Feriado</MenuItem>
-            <MenuItem value={horaValor.horaLargaDistancia}>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              value={horaValor.horaEstandar}
+            >
+              Hora Estándar
+            </MenuItem>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              value={horaValor.horaExtra}
+            >
+              Hora Extra
+            </MenuItem>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              value={horaValor.horaFeriado}
+            >
+              Hora Feriado
+            </MenuItem>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              value={horaValor.horaLargaDistancia}
+            >
               Hora Larga Distancia
             </MenuItem>
-            <MenuItem value={horaValor.horaTraslado}>Hora Traslado</MenuItem>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              value={horaValor.horaTraslado}
+            >
+              Hora Traslado
+            </MenuItem>
           </Select>
           {preSeleccion && (
-            <Typography id="modal-descripcion" sx={{ mt: 2 }}>
+            <Typography
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              id="modal-descripcion"
+              sx={{ mt: 2 }}
+            >
               Valor de Hora Seleccionado:{" "}
               {preSeleccion.toLocaleString("es-AR", {
                 style: "currency",
@@ -106,7 +139,7 @@ export default function ModalHoraValor({
               variant="contained"
               color="primary"
               onClick={handleConfirm}
-              sx={{ mt: 2 }}
+              sx={{ mt: 2, fontFamily: '"Kanit", sans-serif' }}
             >
               Confirmar Selección
             </Button>
