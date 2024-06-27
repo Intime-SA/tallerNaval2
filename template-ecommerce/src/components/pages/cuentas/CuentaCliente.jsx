@@ -16,7 +16,8 @@ function formatDate(timestamp) {
 }
 
 export default function CuentaCliente() {
-  const { ingresos, ventas, clientes } = React.useContext(TableContext);
+  const { ingresos, ventas, clientes, cuentas } =
+    React.useContext(TableContext);
   const { id } = useParams();
   const { openDrawer } = React.useContext(DrawerContext);
 
@@ -45,6 +46,11 @@ export default function CuentaCliente() {
   const renderClienteNombre = (clienteId) => {
     const cliente = clientes.find((c) => c.id === clienteId);
     return cliente ? cliente.nombre : "N/A";
+  };
+
+  const renderCuentaNombre = (cuentaId) => {
+    const cuenta = cuentas.find((c) => c.id === cuentaId);
+    return cuenta ? cuenta.nombre : "N/A";
   };
 
   return (
@@ -79,6 +85,18 @@ export default function CuentaCliente() {
                 sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
                 align="right"
               >
+                Cuenta (Ingreso)
+              </TableCell>
+              <TableCell
+                sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
+                align="right"
+              >
+                Tipo Comprobante
+              </TableCell>
+              <TableCell
+                sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
+                align="right"
+              >
                 N. Comprobante
               </TableCell>
               <TableCell
@@ -91,7 +109,7 @@ export default function CuentaCliente() {
                 sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
                 align="right"
               >
-                Pagos
+                Cobros (ingresos)
               </TableCell>
               <TableCell
                 sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
@@ -133,12 +151,34 @@ export default function CuentaCliente() {
                     sx={{
                       fontFamily: '"Kanit", sans-serif',
                       backgroundColor:
+                        entry.type === "venta" ? "#f1e7e7" : "#b3ffb3", // Green for gasto, Red for egreso
+                    }}
+                    align="right"
+                  >
+                    {renderCuentaNombre(entry.cuenta)}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontFamily: '"Kanit", sans-serif',
+                      backgroundColor:
+                        entry.type === "venta" ? "#f1e7e7" : "#b3ffb3", // Green for gasto, Red for egreso
+                    }}
+                    align="right"
+                  >
+                    {entry.tipoComprobante}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontFamily: '"Kanit", sans-serif',
+                      backgroundColor:
                         entry.type === "venta" ? "#f1e7e7" : "#b3ffb3", // Green for venta, Red for ingreso
                     }}
                     align="right"
                   >
-                    {entry.numeroComprobante}
-                    {entry.type === "ingreso" ? ` + ${entry.cuenta}` : ""}
+                    {entry.type === "ingreso"
+                      ? `INGRESO #${entry.numberOrder} // REF`
+                      : ""}
+                    {entry.numeroPuntoVenta} - {entry.numeroComprobante}
                   </TableCell>
                   <TableCell
                     sx={{

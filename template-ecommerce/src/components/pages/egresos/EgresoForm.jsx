@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Button from "@mui/material/Button";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, runTransaction, doc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { TableContext } from "../../context/TableContext";
 
@@ -14,19 +14,62 @@ const EgresoForm = () => {
   const [numeroComprobante, setNumeroComprobante] = useState("");
   const [proveedor, setProveedor] = useState(null);
   const [tipoComprobante, setTipoComprobante] = useState("");
+  const [numberOrder, setNumberOrder] = useState();
+  const [montoFormateado, setMontoFormateado] = useState(0);
+
+  const [errors, setErrors] = useState({});
 
   const { proveedores, cuentas } = useContext(TableContext);
 
+  useEffect(() => {
+    const traerId = async () => {
+      try {
+        const refContador = doc(db, "contador", "contadorIngreso");
+
+        await runTransaction(db, async (transaction) => {
+          const docContador = await transaction.get(refContador);
+          const nuevoValor = docContador.data().autoincremental + 1;
+
+          transaction.update(refContador, { autoincremental: nuevoValor });
+          setNumberOrder(nuevoValor);
+        });
+      } catch (error) {
+        console.error("Error al obtener el nuevo ID:", error);
+      }
+    };
+
+    traerId();
+  }, []);
+
+  const validate = () => {
+    let tempErrors = {};
+
+    if (!cuenta) tempErrors.cuenta = "Este campo es obligatorio.";
+    if (!descripcion) tempErrors.descripcion = "Este campo es obligatorio.";
+    if (!fechaEgreso) tempErrors.fechaEgreso = "Este campo es obligatorio.";
+    if (!monto || isNaN(monto))
+      tempErrors.monto =
+        "Por favor, introduce un valor numérico válido para el monto.";
+    if (!numeroComprobante)
+      tempErrors.numeroComprobante = "Este campo es obligatorio.";
+    if (!proveedor) tempErrors.proveedor = "Este campo es obligatorio.";
+    if (!tipoComprobante)
+      tempErrors.tipoComprobante = "Este campo es obligatorio.";
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
+
     // Validación del monto
-    if (isNaN(monto) || monto === "") {
-      alert("Por favor, introduce un valor numérico válido para el monto.");
-      return;
-    }
 
     try {
       const nuevoEgreso = {
+        numberOrder: numberOrder,
         cuenta: cuenta.id,
         descripcion,
         fechaEgreso: new Date(fechaEgreso),
@@ -48,17 +91,30 @@ const EgresoForm = () => {
       setTipoComprobante("");
 
       console.log("Egreso agregado correctamente con ID: ", docRef.id);
+      window.location.reload();
     } catch (error) {
       console.error("Error al agregar el egreso:", error);
     }
   };
 
   const handleMontoChange = (e) => {
-    const value = e.target.value;
-    // Solo permitir valores numéricos y decimales
+    const value = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
     if (/^\d*\.?\d*$/.test(value)) {
-      setMonto(value);
+      const numericValue = Number(value); // Convertir a número
+      setMonto((numericValue / 100).toFixed(2)); // Almacenar el número con dos decimales
+
+      // Formatear el número sin símbolo de moneda
+      const formateador = new Intl.NumberFormat("es-AR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+
+      setMontoFormateado(formateador.format(numericValue / 100)); // Formatear el valor numérico
     }
+  };
+
+  const handleInput = (e) => {
+    e.target.value = e.target.value.replace(/[$.,]/g, "");
   };
 
   const tipos = [{ id: "Efectivo" }, { id: "Transferencia" }, { id: "Cheque" }];
@@ -129,16 +185,16 @@ const EgresoForm = () => {
         }}
       />
       <TextField
+        id="monto"
         label="Monto"
+        value={montoFormateado}
         variant="outlined"
         fullWidth
-        value={monto}
         onChange={handleMontoChange}
+        onInput={handleInput} // Validar entrada
         margin="normal"
-        inputProps={{
-          inputMode: "decimal",
-          pattern: "[0-9]*[.,]?[0-9]+",
-        }}
+        error={!!errors.monto}
+        helperText={errors.monto}
       />
       <TextField
         label="Número de Comprobante"

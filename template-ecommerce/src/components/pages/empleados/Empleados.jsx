@@ -6,28 +6,30 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 
-const Cuentas = () => {
-  const { cuentas } = useContext(TableContext);
+const Empleados = () => {
+  const { empleados } = useContext(TableContext); // Asegúrate de que TableContext proporciona empleados
   const navigate = useNavigate();
 
   return (
     <div style={{ marginLeft: "16.5rem", marginTop: "2rem", width: "80%" }}>
       <div
         style={{
+          width: "100%",
           display: "flex",
           justifyContent: "flex-end",
-          marginBottom: "1.5rem",
+          fontFamily: '"Kanit", sans-serif',
         }}
       >
         <Button
           variant="contained"
-          style={{ fontFamily: '"Kanit", sans-serif' }}
-          onClick={() => navigate("agregarCuenta")}
+          color="primary"
+          onClick={() => navigate("/agregarEmpleado")}
+          style={{ margin: "1rem", fontFamily: '"Kanit", sans-serif' }}
         >
-          Agregar Cuenta
+          Agregar Empleado
         </Button>
       </div>
-      {cuentas.map((cuenta, index) => (
+      {empleados.map((empleado, index) => (
         <Card key={index} elevation={3} sx={{ marginBottom: "1.5rem" }}>
           <CardContent>
             <Typography
@@ -35,46 +37,38 @@ const Cuentas = () => {
               gutterBottom
               style={{ fontFamily: '"Kanit", sans-serif' }}
             >
-              Cuenta {index + 1}
+              {empleado.nombre} {empleado.apellido}
             </Typography>
+
             <Typography
               variant="body1"
               gutterBottom
-              style={{ fontFamily: '"Kanit", sans-serif', marginTop: "1rem" }}
+              style={{ fontFamily: '"Kanit", sans-serif' }}
             >
-              Nombre: {cuenta.nombre}
+              Teléfono: {empleado.telefono}
             </Typography>
             <Typography
               variant="body1"
               gutterBottom
               style={{ fontFamily: '"Kanit", sans-serif' }}
             >
-              Tipo: {cuenta.tipo}
+              Fecha de Alta:{" "}
+              {new Date(empleado.fechaAlta.seconds * 1000).toLocaleString(
+                "es-AR"
+              )}
             </Typography>
             <Typography
               variant="body1"
               gutterBottom
               style={{ fontFamily: '"Kanit", sans-serif' }}
             >
-              CBU: {cuenta.cbu}
+              Obras Activas: {empleado.obrasActivas.join(", ")}
             </Typography>
           </CardContent>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              paddingRight: "1rem",
-              paddingBottom: "1rem",
-            }}
-          >
-            <Button onClick={() => navigate(`agregarCuenta/${cuenta.id}`)}>
-              <span className="material-symbols-outlined">search</span>
-            </Button>
-          </div>
         </Card>
       ))}
     </div>
   );
 };
 
-export default Cuentas;
+export default Empleados;

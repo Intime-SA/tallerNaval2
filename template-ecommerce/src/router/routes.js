@@ -2,10 +2,13 @@ import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
 import Compras from "../components/pages/compras/Compras";
+import AgregarCuenta from "../components/pages/cuentas/AgregarCuenta";
 import CuentaCliente from "../components/pages/cuentas/CuentaCliente";
 import CuentaProveedor from "../components/pages/cuentas/CuentaProveedor";
 import Cuentas from "../components/pages/cuentas/Cuentas";
 import Egresos from "../components/pages/egresos/Egresos";
+import AgregarEmpleado from "../components/pages/empleados/AgregarEmpleados";
+import Empleados from "../components/pages/empleados/Empleados";
 import GastosObraPage from "../components/pages/gastos/GastosObraPage";
 import Home from "../components/pages/home/Home";
 import GastosHorasPage from "../components/pages/horas/GastosHorasPage";
@@ -93,8 +96,23 @@ export const routes = [
     Element: CuentaCliente,
   },
   {
+    id: "agregarCuenta",
+    path: "cuentasBanco/agregarCuenta",
+    Element: AgregarCuenta,
+  },
+  {
     id: "reportes",
     path: "/reportes",
     Element: Reportes,
+  },
+  {
+    id: "empleados",
+    path: "/empleados",
+    Element: Empleados,
+  },
+  {
+    id: "agregarEmpleado",
+    path: "/agregarEmpleado",
+    Element: AgregarEmpleado,
   },
 ];

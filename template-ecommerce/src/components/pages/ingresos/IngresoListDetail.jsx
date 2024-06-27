@@ -89,6 +89,13 @@ function Row(props) {
           component="th"
           scope="row"
         >
+          {row.numberOrder}
+        </TableCell>
+        <TableCell
+          sx={{ fontFamily: '"Kanit", sans-serif' }}
+          component="th"
+          scope="row"
+        >
           {renderClienteNombre(row.clienteId)}
         </TableCell>
         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
@@ -212,7 +219,11 @@ function IngresosListDetail({
         <TableHead sx={{ fontFamily: '"Kanit", sans-serif' }}>
           <TableRow style={{ backgroundColor: "#121621", color: "white" }}>
             <TableCell />
-
+            <TableCell
+              sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
+            >
+              ID #
+            </TableCell>
             <TableCell
               sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
             >

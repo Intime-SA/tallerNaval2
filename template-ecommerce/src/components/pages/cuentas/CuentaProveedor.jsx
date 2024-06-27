@@ -73,6 +73,12 @@ export default function CuentaProveedor() {
                 sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
                 align="right"
               >
+                Tipo Comprobante
+              </TableCell>
+              <TableCell
+                sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
+                align="right"
+              >
                 N. Comprobante
               </TableCell>
               <TableCell
@@ -131,8 +137,20 @@ export default function CuentaProveedor() {
                     }}
                     align="right"
                   >
-                    {entry.numeroComprobante}
-                    {entry.type === "egreso" ? ` + ${entry.cuenta}` : ""}
+                    {entry.tipoComprobante}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontFamily: '"Kanit", sans-serif',
+                      backgroundColor:
+                        entry.type === "gasto" ? "#f1e7e7" : "#b3ffb3", // Green for gasto, Red for egreso
+                    }}
+                    align="right"
+                  >
+                    {entry.type === "egreso"
+                      ? `EGRESO #${entry.numberOrder} // REF`
+                      : ""}
+                    {entry.numeroPuntoVenta} - {entry.numeroComprobante}
                   </TableCell>
                   <TableCell
                     sx={{

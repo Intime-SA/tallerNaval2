@@ -13,6 +13,7 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import AddCardIcon from "@mui/icons-material/AddCard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 
 export const menuItems = [
   {
@@ -85,5 +86,11 @@ export const menuItems4 = [
     path: "/cuentasBanco",
     title: "Cajas y Cuentas",
     Icon: AccountBalanceIcon,
+  },
+  {
+    id: "empleados",
+    path: "/empleados",
+    title: "Empleados",
+    Icon: SupervisedUserCircleIcon,
   },
 ];
