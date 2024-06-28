@@ -6,8 +6,11 @@ import Modal from "@mui/material/Modal";
 import {
   addDoc,
   collection,
+  getDocs,
+  query,
   serverTimestamp,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import AutoCompleteCategory from "../obra/actions/AutocompleteCategory";
 import { TextField } from "@mui/material";
@@ -52,8 +55,8 @@ export default function ModalComponentVenta({
   const [selectedOption2, setSelectedOption2] = React.useState(null);
   const [montoLimpio, setMontoLimpio] = React.useState(null);
   const [openImpuestos, setOpenImpuestos] = React.useState(null);
-  const [obrasId, setObrasId] = React.useState("");
-  const { gastos } = React.useContext(TableContext);
+  const [obrasId, setObrasId] = React.useState([]);
+  const { gastos, ventas } = React.useContext(TableContext);
 
   const handleClose = () => setOpenModalVenta(false);
 
@@ -169,6 +172,131 @@ export default function ModalComponentVenta({
   };
 
   console.log(impuesto);
+  console.log(ventas);
+
+  const sumarMontosPorObraId = (obraId) => {
+    try {
+      let totalMonto = 0;
+
+      ventas.forEach((doc) => {
+        if (doc.obraId.includes(obraId)) {
+          totalMonto += doc.montoTotal;
+        }
+      });
+
+      return totalMonto;
+    } catch (error) {
+      console.error("Error al sumar los montos: ", error);
+      throw new Error("Error al sumar los montos");
+    }
+  };
+
+  const [cambioHoras, setCambioHoras] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const [arrayEmpleados, setArrayEmpleados] = React.useState([]);
+  const [actualizarEmpleados, setActualizarEmpleados] = React.useState(false);
+  const [openProgress, setOpenProgress] = React.useState(false);
+  const [openModalGasto, setOpenModalGasto] = React.useState(false);
+  const [cambioGastos, setCambioGastos] = React.useState(false);
+  const [totalGastos, setTotalGastos] = React.useState(0);
+  const [totalHorasEmpleado, setTotalHorasEmpleado] = React.useState(0);
+  const [totalObra, setTotalObra] = React.useState(0);
+  const [arrayHoras, setArrayHoras] = React.useState([]);
+  const [arrayGastos, setArrayGastos] = React.useState([]);
+  const [idCliente, setIdCliente] = React.useState("");
+  const [obra, setObra] = React.useState([]);
+  const [totalValor, setTotalValor] = React.useState(0);
+
+  const [changeState, setChangeState] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchObras = async () => {
+      try {
+        const gastosCollection = collection(db, "gastos");
+        const gastoSnap = await getDocs(gastosCollection);
+        let total = 0;
+
+        gastoSnap.forEach((gasto) => {
+          const gastoData = gasto.data();
+          if (gastoData.obraId === obrasId[0]) {
+            total += gastoData.montoTotal; // Suponiendo que "importe" es la propiedad que contiene el importe del gasto
+          }
+        });
+
+        // Actualizar el estado totalObra con el total calculado
+        setTotalGastos(total);
+      } catch (error) {
+        console.error("Error fetching obras:", error);
+      }
+    };
+
+    fetchObras();
+  }, [cambioGastos, changeState]);
+
+  React.useEffect(() => {
+    const consultaHoras = async () => {
+      try {
+        const collectionHoras = collection(db, "horas");
+        const horasSnapshot = await getDocs(collectionHoras);
+        const horasData = [];
+
+        for (const doc of horasSnapshot.docs) {
+          horasData.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        }
+
+        // Filtrar horasData por obraId igual a obrasId[0]
+        const horasFiltradas = horasData.filter(
+          (hora) => hora.obraId === obrasId[0]
+        );
+
+        setArrayHoras(horasFiltradas);
+      } catch (error) {
+        console.error("error: ", error);
+      }
+    };
+
+    consultaHoras();
+  }, [cambioHoras, changeState]);
+
+  React.useEffect(() => {
+    const consultaGastos = async () => {
+      try {
+        const collectionGastos = collection(db, "gastos");
+        const GastosSnapshot = await getDocs(collectionGastos);
+        const GastosData = [];
+
+        for (const doc of GastosSnapshot.docs) {
+          GastosData.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        }
+
+        // Filtrar GastosData por obraId igual a obrasId[0]
+        const GastosFiltradas = GastosData.filter(
+          (gasto) => gasto.obraId === obrasId[0]
+        );
+
+        setArrayGastos(GastosFiltradas);
+      } catch (error) {
+        console.error("error: ", error);
+      }
+    };
+
+    consultaGastos();
+  }, [cambioGastos, changeState]);
+
+  React.useEffect(() => {
+    setTotalObra(totalGastos);
+    if (totalValor) {
+      setTotalObra(totalGastos + totalValor);
+      setCambioHoras(false);
+    }
+  }, [totalGastos, obrasId]);
+
   return (
     <Modal
       open={openModalVenta}
@@ -210,6 +338,14 @@ export default function ModalComponentVenta({
             value={numeroPuntoVenta}
             onChange={(e) => setNumeroPuntoVenta(e.target.value)}
             sx={{ width: "7rem" }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
           <span
             className="material-symbols-outlined"
@@ -224,12 +360,30 @@ export default function ModalComponentVenta({
             value={numeroComprobante}
             sx={{ width: "20rem" }}
             onChange={(e) => setNumeroComprobante(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
         </Box>
 
-        <AutoCompleteCliente setCliente={setCliente} cliente={cliente} />
+        <AutoCompleteCliente
+          changeState={changeState}
+          setChangeState={setChangeState}
+          setCliente={setCliente}
+          cliente={cliente}
+        />
 
-        <AutoCompleteObras setObrasId={setObrasId} cliente={cliente} />
+        <AutoCompleteObras
+          changeState={changeState}
+          setChangeState={setChangeState}
+          setObrasId={setObrasId}
+          cliente={cliente}
+        />
         {/*         <AutoCompleteCategory setConcepto={setConcepto} concepto={concepto} />
         {concepto && (
           <AutoCompleteSubCategory
@@ -238,6 +392,41 @@ export default function ModalComponentVenta({
             Concepto={Concepto}
           />
         )} */}
+        {obrasId.length > 0 && (
+          <div>
+            <h5
+              style={{
+                fontWeight: "200",
+                fontFamily: '"Kanit", sans-serif',
+                margin: "0.5rem",
+              }}
+            >
+              Ventas asociadas a la obra:{" "}
+              <strong>
+                {" "}
+                {sumarMontosPorObraId(obrasId[0]).toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                })}
+              </strong>
+            </h5>
+            <h5
+              style={{
+                fontWeight: "200",
+                fontFamily: '"Kanit", sans-serif',
+                margin: "0.5rem",
+              }}
+            >
+              Presupuesto Actual de obra:{" "}
+              <strong>
+                {totalObra.toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                })}
+              </strong>
+            </h5>
+          </div>
+        )}
 
         <TextField
           multiline
@@ -249,6 +438,14 @@ export default function ModalComponentVenta({
           variant="outlined"
           fullWidth
           sx={{ marginBottom: "1rem", marginTop: "2rem" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <TextField
           id="monto"
@@ -257,6 +454,14 @@ export default function ModalComponentVenta({
           value={monto}
           onChange={(e) => handleMontoChange(e.target.value)}
           sx={{ marginBottom: "1rem" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <div
           style={{
@@ -313,10 +518,15 @@ export default function ModalComponentVenta({
             variant="contained"
             color="primary"
             onClick={() => cargaVentaGlobal()}
+            style={{ fontFamily: '"Kanit", sans-serif' }}
           >
             Cargar Venta
           </Button>
-          <Button variant="outlined" onClick={handleClose}>
+          <Button
+            variant="outlined"
+            onClick={handleClose}
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+          >
             Cerrar
           </Button>
         </Box>

@@ -6,7 +6,12 @@ import Stack from "@mui/material/Stack";
 import { InputBase } from "@mui/material";
 import { TableContext } from "../../../context/TableContext";
 
-export default function AutoCompleteObras({ setObrasId, cliente }) {
+export default function AutoCompleteObras({
+  setObrasId,
+  cliente,
+  changeState,
+  setChangeState,
+}) {
   const [selectedObras, setSelectedObras] = React.useState([]);
   const { obras, clientes } = React.useContext(TableContext);
 
@@ -15,6 +20,7 @@ export default function AutoCompleteObras({ setObrasId, cliente }) {
     const selectedIds = values.map((obra) => obra.id);
     setObrasId(selectedIds);
     console.log(selectedIds);
+    setChangeState(!changeState);
   };
 
   const renderClienteNombre = (clienteId) => {
@@ -53,6 +59,14 @@ export default function AutoCompleteObras({ setObrasId, cliente }) {
               boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.1)",
             }}
             placeholder={selectedObras.length > 0 ? "" : " Selecciona obras"}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
         )}
       />

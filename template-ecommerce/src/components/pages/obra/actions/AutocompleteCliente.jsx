@@ -9,10 +9,16 @@ import { db } from "../../../../firebaseConfig";
 import { Autocomplete, TextField } from "@mui/material";
 import { TableContext } from "../../../context/TableContext";
 
-export default function AutoCompleteCliente({ setCliente, cliente }) {
+export default function AutoCompleteCliente({
+  setCliente,
+  cliente,
+  changeState,
+  setChangeState,
+}) {
   const { clientes } = React.useContext(TableContext);
   const handleChange = (event, newValue) => {
-    setCliente(newValue ? newValue.id : ""); // Guardar solo el ID del Cliente seleccionado
+    setCliente(newValue ? newValue.id : "");
+    setChangeState(!changeState); // Guardar solo el ID del Cliente seleccionado
   };
 
   return (
