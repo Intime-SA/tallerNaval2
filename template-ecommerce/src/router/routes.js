@@ -1,3 +1,4 @@
+import AdministracionAjustes from "../components/pages/administracion/AdministracionAjustes";
 import Categorias from "../components/pages/categorias/Categorias";
 import ClientForm from "../components/pages/clients/ClientForm";
 import Clients from "../components/pages/clients/Clients";
@@ -126,5 +127,10 @@ export const routes = [
     id: "agregarEmpleado",
     path: "/agregarEmpleado",
     Element: AgregarEmpleado,
+  },
+  {
+    id: "administracionAjustes",
+    path: "/administracionAjustes",
+    Element: AdministracionAjustes,
   },
 ];

@@ -18,15 +18,29 @@ export default function SpanningTable({ impuesto }) {
       <Table sx={{ minWidth: 300 }} aria-label="spanning table">
         <TableHead>
           <TableRow>
-            <TableCell>Tipo de Impuesto</TableCell>
-            <TableCell align="right">Monto</TableCell>
+            <TableCell style={{ fontFamily: '"Kanit", sans-serif' }}>
+              Tipo de Impuesto
+            </TableCell>
+            <TableCell
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              align="right"
+            >
+              Monto
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {impuestosArray.map((impuesto, index) => (
             <TableRow key={index}>
-              <TableCell>{impuesto.tipoImpuesto}</TableCell>
-              <TableCell align="right">{impuesto.monto.toFixed(2)}</TableCell>
+              <TableCell style={{ fontFamily: '"Kanit", sans-serif' }}>
+                {impuesto.tipoImpuesto}
+              </TableCell>
+              <TableCell
+                style={{ fontFamily: '"Kanit", sans-serif' }}
+                align="right"
+              >
+                {impuesto.monto.toFixed(2)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

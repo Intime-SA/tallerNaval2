@@ -74,6 +74,14 @@ const AgregarEmpleado = () => {
           value={apellido}
           onChange={(e) => setApellido(e.target.value)}
           margin="normal"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <TextField
           label="Nombre"
@@ -82,6 +90,14 @@ const AgregarEmpleado = () => {
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           margin="normal"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <TextField
           label="Fecha de Alta"
@@ -94,6 +110,11 @@ const AgregarEmpleado = () => {
           InputLabelProps={{
             shrink: true,
           }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
 
         <TextField
@@ -103,6 +124,14 @@ const AgregarEmpleado = () => {
           value={telefono}
           onChange={(e) => setTelefono(e.target.value)}
           margin="normal"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <div
           style={{

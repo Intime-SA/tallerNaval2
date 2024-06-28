@@ -67,7 +67,7 @@ export default function FadeMenuImpuestos({
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
           onClick={handleClick}
-          style={{ marginTop: "1rem" }}
+          style={{ marginTop: "1rem", fontFamily: '"Kanit", sans-serif' }}
         >
           {tipoImpuesto ? (
             tipoImpuesto
@@ -86,33 +86,65 @@ export default function FadeMenuImpuestos({
           open={open}
           onClose={handleClose}
           TransitionComponent={Fade}
+          style={{ fontFamily: '"Kanit", sans-serif' }}
         >
-          <MenuItem onClick={() => handleImpuestos("ticket")}>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("ticket")}
+          >
             Ticket (exento)
           </MenuItem>
-          <MenuItem onClick={() => handleImpuestos("IVA27")}>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("IVA27")}
+          >
             IVA 27,00%
           </MenuItem>
-          <MenuItem onClick={() => handleImpuestos("IVA21")}>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("IVA21")}
+          >
             IVA 21,00%
           </MenuItem>
-          <MenuItem onClick={() => handleImpuestos("IVA10")}>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("IVA10")}
+          >
             IVA 10,50%
           </MenuItem>
-          <MenuItem onClick={() => handleImpuestos("IVA2")}>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("IVA2")}
+          >
             IVA 02,50%
           </MenuItem>
-          <MenuItem onClick={() => handleImpuestos("IIBB")}>IIBB</MenuItem>
-          <MenuItem onClick={() => handleImpuestos("PERCEPCION")}>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("IIBB")}
+          >
+            IIBB
+          </MenuItem>
+          <MenuItem
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            onClick={() => handleImpuestos("PERCEPCION")}
+          >
             Percepción
           </MenuItem>
         </Menu>
         <TextField
-          style={{ marginTop: "1rem" }}
           id="impuesto"
           variant="standard"
           value={impuestoMonto}
           onChange={(e) => handleMontoChangeImpuesto(e.target.value)}
+          style={{ fontFamily: '"Kanit", sans-serif', marginTop: "1rem" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <Button
           id="fade-button"
@@ -120,7 +152,7 @@ export default function FadeMenuImpuestos({
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
           onClick={handleAddImpuesto}
-          style={{ marginTop: "1rem" }}
+          style={{ fontFamily: '"Kanit", sans-serif', marginTop: "1rem" }}
         >
           <span className="material-symbols-outlined">add_circle</span>
         </Button>

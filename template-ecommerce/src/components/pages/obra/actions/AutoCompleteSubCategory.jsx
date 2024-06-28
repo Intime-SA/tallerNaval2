@@ -42,7 +42,10 @@ export default function AutoCompleteSubCategory({
   return (
     <Box sx={{ minWidth: 120, margin: "1rem" }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">
+        <InputLabel
+          style={{ fontFamily: '"Kanit", sans-serif' }}
+          id="demo-simple-select-label"
+        >
           Seleccionar Sub-Categoria
         </InputLabel>
         <Select
@@ -51,9 +54,14 @@ export default function AutoCompleteSubCategory({
           value={subCategoria}
           label="Seleccionar Sub-Categoria"
           onChange={handleChange}
+          style={{ fontFamily: '"Kanit", sans-serif' }}
         >
           {Object.values(subCategorias).map((subCategoria) => (
-            <MenuItem key={subCategoria.id} value={subCategoria.id}>
+            <MenuItem
+              style={{ fontFamily: '"Kanit", sans-serif' }}
+              key={subCategoria.id}
+              value={subCategoria.id}
+            >
               {subCategoria.nombre}
             </MenuItem>
           ))}

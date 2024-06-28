@@ -14,7 +14,13 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { TableContext } from "../../context/TableContext";
 import { useParams } from "react-router-dom";
 import { DrawerContext } from "../../context/DrawerContext";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { Box, Button, Tooltip } from "@mui/material";
 import * as XLSX from "xlsx"; // Importa la biblioteca XLSX
@@ -199,6 +205,7 @@ export default function Compras() {
 
   const [sortedGastos, setSortedGastos] = React.useState([]);
 
+  const [statusDelete, setStatusDelete] = React.useState(false); // Estado para actualizar la eliminación de egresos
   React.useEffect(() => {
     // Clonamos los gastos para no mutar el estado original
     const sortedGastos = [...gastos];
@@ -209,7 +216,18 @@ export default function Compras() {
     // Aquí puedes hacer algo con los gastos ordenados, como establecerlos en un estado local
     console.log("Gastos ordenados:", sortedGastos);
     setSortedGastos(sortedGastos);
-  }, [gastos]);
+  }, [gastos, statusDelete]);
+
+  const deleteCompras = async (id) => {
+    try {
+      await deleteDoc(doc(db, "gastos", id));
+      setStatusDelete(!statusDelete);
+      console.log(`Compra ${id} eliminado correctamente.`);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting compra: ", error);
+    }
+  };
 
   return (
     <div
@@ -360,63 +378,19 @@ export default function Compras() {
                       if (column.id === "acciones") {
                         value = (
                           <div style={{ zIndex: 0 }}>
-                            <IconButton
+                            <Button
                               aria-label="more"
                               aria-controls="demo-positioned-menu"
                               aria-haspopup="true"
-                              onClick={(event) => handleMenuClick(event, gasto)}
+                              onClick={() => deleteCompras(gasto.id)}
                             >
-                              <MoreVertIcon />
-                            </IconButton>
-                            <Menu
-                              id="demo-positioned-menu"
-                              anchorEl={anchorEl}
-                              open={Boolean(anchorEl)}
-                              onClose={handleClose}
-                              anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "right",
-                              }}
-                              transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                              }}
-                            >
-                              <MenuItem
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                  fontFamily: '"Kanit", sans-serif',
-                                }}
+                              <span
+                                style={{ margin: "1rem" }}
+                                className="material-symbols-outlined"
                               >
-                                <span
-                                  style={{ margin: "1rem" }}
-                                  className="material-symbols-outlined"
-                                >
-                                  search
-                                </span>
-                                <h6 style={{ marginTop: "0.5rem" }}>Ver</h6>
-                              </MenuItem>
-                              <MenuItem
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                  fontFamily: '"Kanit", sans-serif',
-                                }}
-                              >
-                                <span
-                                  style={{ margin: "1rem" }}
-                                  className="material-symbols-outlined"
-                                >
-                                  delete
-                                </span>
-                                <h6 style={{ marginTop: "0.5rem" }}>
-                                  Eliminar
-                                </h6>
-                              </MenuItem>
-                            </Menu>
+                                delete
+                              </span>
+                            </Button>
                           </div>
                         );
                       }

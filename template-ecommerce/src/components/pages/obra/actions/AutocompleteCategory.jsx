@@ -40,7 +40,10 @@ export default function AutoCompleteCategory({ setCategoria, categoria }) {
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">
+        <InputLabel
+          style={{ fontFamily: '"Kanit", sans-serif' }}
+          id="demo-simple-select-label"
+        >
           Seleccionar Categoria
         </InputLabel>
         <Select
@@ -49,9 +52,29 @@ export default function AutoCompleteCategory({ setCategoria, categoria }) {
           value={categoria} // Establecer el valor seleccionado
           label="Seleccionar Empleado"
           onChange={handleChange}
+          style={{ fontFamily: '"Kanit", sans-serif' }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         >
           {array.map((categoria) => (
-            <MenuItem key={categoria.id} value={categoria.id}>
+            <MenuItem
+              InputLabelProps={{
+                shrink: true,
+              }}
+              InputProps={{
+                style: {
+                  fontFamily: '"Kanit", sans-serif',
+                },
+              }}
+              key={categoria.id}
+              value={categoria.id}
+            >
               {categoria.nombre}
             </MenuItem>
           ))}

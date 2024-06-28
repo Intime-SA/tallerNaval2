@@ -33,6 +33,7 @@ const style = {
   boxShadow: 24,
   p: 4,
   borderRadius: "8px",
+  zoom: "0.8",
 };
 
 export default function ModalComponentGastoGlobal({
@@ -179,6 +180,14 @@ export default function ModalComponentGastoGlobal({
             value={numeroPuntoVenta}
             onChange={(e) => setNumeroPuntoVenta(e.target.value)}
             sx={{ width: "7rem" }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
           <span
             className="material-symbols-outlined"
@@ -193,6 +202,14 @@ export default function ModalComponentGastoGlobal({
             value={numeroComprobante}
             sx={{ width: "20rem" }}
             onChange={(e) => setNumeroComprobante(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            InputProps={{
+              style: {
+                fontFamily: '"Kanit", sans-serif',
+              },
+            }}
           />
         </Box>
         <AutoCompleteCategory
@@ -217,6 +234,14 @@ export default function ModalComponentGastoGlobal({
           variant="outlined"
           fullWidth
           sx={{ marginBottom: "1rem", marginTop: "2rem" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <TextField
           id="monto"
@@ -225,6 +250,14 @@ export default function ModalComponentGastoGlobal({
           value={monto}
           onChange={(e) => handleMontoChange(e.target.value)}
           sx={{ marginBottom: "1rem" }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          InputProps={{
+            style: {
+              fontFamily: '"Kanit", sans-serif',
+            },
+          }}
         />
         <div
           style={{
@@ -281,10 +314,15 @@ export default function ModalComponentGastoGlobal({
             variant="contained"
             color="primary"
             onClick={() => cargaGastoGlobal()}
+            style={{ fontFamily: '"Kanit", sans-serif' }}
           >
             Cargar Gasto
           </Button>
-          <Button variant="outlined" onClick={handleClose}>
+          <Button
+            style={{ fontFamily: '"Kanit", sans-serif' }}
+            variant="outlined"
+            onClick={handleClose}
+          >
             Cerrar
           </Button>
         </Box>

@@ -16,6 +16,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
 import ArticleIcon from "@mui/icons-material/Article";
 import ListAltIcon from "@mui/icons-material/ListAlt";
+import EditIcon from "@mui/icons-material/EditNote";
 
 export const menuItems = [
   {
@@ -42,6 +43,12 @@ export const menuItems = [
     path: "/conceptos",
     title: "Conceptos de Pago",
     Icon: ListAltIcon,
+  },
+  {
+    id: "ajustes",
+    path: "/administracionAjustes",
+    title: "Ajustes",
+    Icon: EditIcon,
   },
 ];
 

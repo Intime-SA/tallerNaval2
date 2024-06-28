@@ -33,7 +33,7 @@ export default function FadeMenu({
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         onClick={handleClick}
-        style={{ marginTop: "1rem" }}
+        style={{ marginTop: "1rem", fontFamily: '"Kanit", sans-serif' }}
       >
         {tipoComprobante ? (
           tipoComprobante
@@ -52,6 +52,7 @@ export default function FadeMenu({
         open={open}
         onClose={handleClose}
         TransitionComponent={Fade}
+        style={{ fontFamily: '"Kanit", sans-serif' }}
       >
         <MenuItem onClick={() => handleImpuestos("ticket")}>
           Ticket (excento)
