@@ -27,12 +27,16 @@ export default function AutoCompleteObras({
     const cliente = clientes.find((c) => c.id === clienteId);
     return cliente ? cliente.nombre : "N/A";
   };
-  console.log(cliente);
-  console.log(obras);
 
   const obrasEnProceso = obras.filter(
     (obra) => obra.estado === "enProceso" && obra.cliente === cliente
   );
+
+  React.useEffect(() => {
+    setSelectedObras([]); // Limpiar el estado de selectedObras cuando cambia el cliente
+    setObrasId([]); // Limpiar el estado de obrasId cuando cambia el cliente
+  }, [cliente, setObrasId]);
+
   return (
     <Stack spacing={3} sx={{ width: "100%" }}>
       <Autocomplete

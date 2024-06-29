@@ -30,7 +30,7 @@ import { TableContext } from "../../context/TableContext";
 function formatDate(date) {
   if (!date) return "";
   const d = new Date(date.seconds * 1000);
-  return d.toLocaleString();
+  return d.toLocaleDateString("es-ES"); // Formato DD/MM/YYYY para el idioma español
 }
 
 function Row(props) {
@@ -114,6 +114,9 @@ function Row(props) {
                       Fecha Carga
                     </TableCell>
                     <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
+                      Fecha Trabajo
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
                       Horas
                     </TableCell>
                     <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
@@ -129,6 +132,9 @@ function Row(props) {
                     <TableRow key={index}>
                       <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
                         {formatDate(detail.fechaCarga)}
+                      </TableCell>
+                      <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
+                        {formatDate(detail.fechaHora)}
                       </TableCell>
                       <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }}>
                         {detail.horas}
@@ -177,6 +183,7 @@ export default function GastosHorasPage() {
         acc[curr.empleadoId][curr.tipoHora] =
           (acc[curr.empleadoId][curr.tipoHora] || 0) + curr.horas;
         acc[curr.empleadoId].details.push({
+          fechaHora: curr.fechaHora,
           fechaCarga: curr.fechaCarga,
           horas: curr.horas,
           valorHora: curr.valorHora,

@@ -53,7 +53,7 @@ export default function Dashboard({ idObra }) {
   const [obra, setObra] = React.useState([]);
   const [totalValor, setTotalValor] = React.useState(0);
 
-  const { proveedores, clientes, obras, categorias } =
+  const { proveedores, clientes, obras, categorias, empleados } =
     React.useContext(TableContext);
 
   const { openDrawer } = React.useContext(DrawerContext);
@@ -234,6 +234,16 @@ export default function Dashboard({ idObra }) {
     return proveedor ? proveedor.nombreComercio : "Proveedor no encontrado";
   };
 
+  const obtenerNombrEmpleados = (EmpleadosId) => {
+    // Busca elEmpleados con elEmpleadosId proporcionado
+    const empleado = empleados.find((empleado) => empleado.id === EmpleadosId);
+
+    // Si se encuentra elEmpleados, devuelve su nombre, de lo contrario, devuelve un valor por defecto
+    return empleado
+      ? empleado.nombre + " " + empleado.apellido
+      : "Empleados no encontrado";
+  };
+
   const obtenerNombreClientes = (clientesId) => {
     // Busca el clientes con el clientesId proporcionado
     const cliente = clientes.find((client) => client.id === clientesId);
@@ -346,31 +356,68 @@ export default function Dashboard({ idObra }) {
     XLSX.writeFile(wb, "GastosRegistrados.xlsx");
   };
 
+  const calcularTotalHora = (valorHora, horas) => {
+    const resultadoHora = valorHora * horas;
+    return resultadoHora;
+  };
+
   const exportToExcel = () => {
     // Construir los datos para cada hora registrada
     const data = arrayHoras.map((hora) => {
       return [
         hora.obraId || "",
-        hora.empleadoId || "",
-        hora.clienteId || "",
+        obtenerNombrEmpleados(hora.empleadoId) || "",
+        obtenerNombreClientes(hora.clienteId) || "",
+        hora.valorHora || "",
+        hora.tipoHora || "",
         hora.horas || "",
+        calcularTotalHora(hora.valorHora, hora.horas) || "",
         hora.fechaCarga
           ? new Date(hora.fechaCarga.seconds * 1000).toLocaleString()
+          : "",
+        hora.fechaHora
+          ? new Date(hora.fechaHora.seconds * 1000).toLocaleString()
           : "",
       ];
     });
 
+    // Calcular el total de todos los subtotales
+    const totalSubtotales = data.reduce((acc, row) => {
+      const subtotal = parseFloat(row[6]) || 0;
+      return acc + subtotal;
+    }, 0);
+
     // Encabezados de las columnas para las horas registradas
     const header = [
       "ID Obra",
-      "ID Empleado",
-      "ID Cliente",
+      "Empleado",
+      "Cliente",
+      "Valor Hora",
+      "Tipo Hora",
       "Horas",
+      "SubTotal",
       "Fecha de Carga",
+      "Fecha de Trabajo",
     ];
 
-    // Combinar encabezados y datos para las horas registradas
-    const wsData = [header, ...data];
+    // Fila del total
+    const totalRow = [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "Total",
+      totalSubtotales.toLocaleString("es-AR", {
+        style: "currency",
+        currency: "ARS",
+      }),
+      "",
+      "",
+    ];
+
+    // Combinar encabezados, datos y fila del total
+    const wsData = [header, ...data, totalRow];
 
     // Crear hoja de cálculo para las horas registradas
     const ws = XLSX.utils.aoa_to_sheet(wsData);

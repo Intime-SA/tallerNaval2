@@ -17,6 +17,7 @@ import {
 import { AddCircleOutlined, Delete as DeleteIcon } from "@mui/icons-material";
 import { db } from "../../../../firebaseConfig";
 import {
+  Timestamp,
   addDoc,
   collection,
   doc,
@@ -79,6 +80,10 @@ export default function ListEmpleado({
 
   const [actionData, setActionData] = useState(null);
   const [executeActionFlag, setExecuteActionFlag] = useState(false);
+  const [fechaHora, setFechaHora] = useState(null);
+  const [fechaHoraFormateada, setFechaHoraFormateada] = useState(null);
+
+  const [horaEdit, setHoraEdit] = useState(null);
 
   const isMobile = useMediaQuery("(max-width:760px)");
 
@@ -110,7 +115,7 @@ export default function ListEmpleado({
 
     consultaEmpleados();
     setActualizarEmpleados(false);
-  }, [actualizarEmpleados]);
+  }, [actualizarEmpleados, horaEdit]);
 
   useEffect(() => {
     const consultaObra = async () => {
@@ -149,25 +154,25 @@ export default function ListEmpleado({
     return 0;
   };
 
-  const sumarHoras = (idObra, empleadoId, horas) => {
+  const sumarHoras = (idObra, empleadoId) => {
     setLoadingEmpleados((prevLoadingEmpleados) => ({
       ...prevLoadingEmpleados,
       [empleadoId]: true,
     }));
     setOpenModal(true);
     setOpenProgress(true);
-    setActionData({ idObra, empleadoId, horas, action: "sumar" });
+    setActionData({ idObra, empleadoId, action: "sumar" });
     setExecuteActionFlag(true);
   };
 
-  const restarHoras = (idObra, empleadoId, horas) => {
+  const restarHoras = (idObra, empleadoId) => {
     setLoadingEmpleados((prevLoadingEmpleados) => ({
       ...prevLoadingEmpleados,
       [empleadoId]: true,
     }));
     setOpenModal(true);
     setOpenProgress(true);
-    setActionData({ idObra, empleadoId, horas, action: "restar" });
+    setActionData({ idObra, empleadoId, action: "restar" });
     setExecuteActionFlag(true);
   };
 
@@ -175,7 +180,7 @@ export default function ListEmpleado({
     const executeAction = async () => {
       if (!actionData) return;
 
-      const { idObra, empleadoId, horas, action } = actionData;
+      const { idObra, empleadoId, action } = actionData;
 
       try {
         const obraRef = doc(db, "obras", idObra);
@@ -183,9 +188,9 @@ export default function ListEmpleado({
         const obraData = obraSnapshot.data().horasEmpleado;
 
         if (action === "sumar") {
-          obraData[empleadoId] = (obraData[empleadoId] || 0) + horas;
+          obraData[empleadoId] = (obraData[empleadoId] || 0) + horaEdit;
         } else if (action === "restar") {
-          obraData[empleadoId] = (obraData[empleadoId] || 0) - horas;
+          obraData[empleadoId] = (obraData[empleadoId] || 0) - horaEdit;
         }
 
         await updateDoc(obraRef, { horasEmpleado: obraData });
@@ -194,8 +199,10 @@ export default function ListEmpleado({
           empleadoId: empleadoId,
           obraId: idObra,
           fechaCarga: serverTimestamp(),
-          fechaHora: serverTimestamp(),
-          horas: action === "sumar" ? horas : -horas,
+          fechaHora: fechaHoraFormateada
+            ? fechaHoraFormateada
+            : serverTimestamp(),
+          horas: action === "sumar" ? horaEdit : -horaEdit,
           valorHora: action === "sumar" ? selectedHora : -selectedHora,
           tipoHora: tipoHora,
         });
@@ -235,6 +242,28 @@ export default function ListEmpleado({
     fetchHoraValor();
   }, []);
 
+  const convertirAFirestoreTimestamp = (fechaHora) => {
+    if (fechaHora) {
+      const fechaJavaScript = fechaHora.$d;
+
+      // Crea un objeto Date de JavaScript a partir de la fecha extraída
+      const fechaDate = new Date(fechaJavaScript);
+
+      // Convierte el objeto Date en una marca de tiempo de Firestore
+      const timestamp = Timestamp.fromDate(fechaDate);
+
+      return timestamp;
+    }
+    // Extrae la fecha del objeto M2
+  };
+
+  useEffect(() => {
+    if (fechaHora) {
+      const fechaFormateada = convertirAFirestoreTimestamp(fechaHora);
+      setFechaHoraFormateada(fechaFormateada);
+    }
+  }, [fechaHora]);
+
   return (
     <Box
       sx={{
@@ -250,6 +279,10 @@ export default function ListEmpleado({
         selectedHora={selectedHora}
         setTipoHora={setTipoHora}
         tipoHora={tipoHora}
+        setFechaHora={setFechaHora}
+        fechaHora={fechaHora}
+        setHoraEdit={setHoraEdit}
+        horaEdit={horaEdit}
       />
       <Grid item xs={12} md={6}>
         <Box
@@ -312,7 +345,7 @@ export default function ListEmpleado({
 
                 <ListItemSecondaryAction
                   style={{
-                    width: "200px",
+                    width: "80%",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -321,7 +354,7 @@ export default function ListEmpleado({
                     fontFamily: '"Kanit", sans-serif',
                   }}
                 >
-                  <IconButton
+                  {/*                   <IconButton
                     onClick={() => sumarHoras(idObra, empleado.id, 1)}
                     edge="end"
                     aria-label="delete"
@@ -331,11 +364,11 @@ export default function ListEmpleado({
                       exposure_plus_1
                     </span>
                   </IconButton>
-
+ */}
                   <IconButton
                     edge="end"
                     aria-label="delete"
-                    onClick={() => sumarHoras(idObra, empleado.id, 8)}
+                    onClick={() => sumarHoras(idObra, empleado.id, horaEdit)}
                   >
                     <AddCircleOutlined />
                   </IconButton>
@@ -350,13 +383,13 @@ export default function ListEmpleado({
                     </h4>
                   </IconButton>
                   <IconButton
-                    onClick={() => restarHoras(idObra, empleado.id, 8)}
+                    onClick={() => restarHoras(idObra, empleado.id, horaEdit)}
                     edge="end"
                     aria-label="delete"
                   >
                     <RemoveCircleOutlineIcon />
                   </IconButton>
-                  <IconButton
+                  {/*                   <IconButton
                     onClick={() => restarHoras(idObra, empleado.id, 1)}
                     edge="end"
                     aria-label="delete"
@@ -364,7 +397,7 @@ export default function ListEmpleado({
                     <span class="material-symbols-outlined">
                       exposure_neg_1
                     </span>
-                  </IconButton>
+                  </IconButton> */}
                 </ListItemSecondaryAction>
               </ListItem>
             ))}

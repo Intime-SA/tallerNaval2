@@ -13,7 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import AutoCompleteCategory from "../obra/actions/AutocompleteCategory";
-import { TextField } from "@mui/material";
+import { Divider, TextField } from "@mui/material";
 import DatePickerComponent from "../obra/actions/DatePickerComponent";
 import FadeMenuImpuestos from "../obra/actions/FadeMenuImpuestos";
 import SpanningTable from "../obra/actions/SpanningTable";
@@ -30,13 +30,13 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "90%",
-  maxWidth: 600,
+  width: 600,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
   p: 4,
-  borderRadius: "8px",
+  maxHeight: "80vh", // Limitar la altura máxima del modal
+  overflowY: "auto", // Habilitar el desplazamiento vertical
 };
 
 export default function ModalComponentVenta({
@@ -201,11 +201,13 @@ export default function ModalComponentVenta({
   const [totalGastos, setTotalGastos] = React.useState(0);
   const [totalHorasEmpleado, setTotalHorasEmpleado] = React.useState(0);
   const [totalObra, setTotalObra] = React.useState(0);
-  const [arrayHoras, setArrayHoras] = React.useState([]);
   const [arrayGastos, setArrayGastos] = React.useState([]);
   const [idCliente, setIdCliente] = React.useState("");
   const [obra, setObra] = React.useState([]);
   const [totalValor, setTotalValor] = React.useState(0);
+
+  const [totalValorHoras, setTotalValorHoras] = React.useState(0);
+  const [arrayHoras, setArrayHoras] = React.useState([]);
 
   const [changeState, setChangeState] = React.useState(false);
 
@@ -218,6 +220,7 @@ export default function ModalComponentVenta({
 
         gastoSnap.forEach((gasto) => {
           const gastoData = gasto.data();
+
           if (gastoData.obraId === obrasId[0]) {
             total += gastoData.montoTotal; // Suponiendo que "importe" es la propiedad que contiene el importe del gasto
           }
@@ -252,14 +255,22 @@ export default function ModalComponentVenta({
           (hora) => hora.obraId === obrasId[0]
         );
 
+        // Sumar el valor total multiplicando horas por valorHora
+        const total = horasFiltradas.reduce((acc, hora) => {
+          const valorTotalHora = (hora.horas || 0) * (hora.valorHora || 0);
+          return acc + valorTotalHora;
+        }, 0);
+
+        // Actualizar el estado
         setArrayHoras(horasFiltradas);
+        setTotalValorHoras(total);
       } catch (error) {
-        console.error("error: ", error);
+        console.error("Error: ", error);
       }
     };
 
     consultaHoras();
-  }, [cambioHoras, changeState]);
+  }, [cambioHoras, changeState, obrasId]);
 
   React.useEffect(() => {
     const consultaGastos = async () => {
@@ -307,11 +318,16 @@ export default function ModalComponentVenta({
       <Box sx={style}>
         <Box>
           <div>
-            <h6>Venta Global</h6>
-            <span class="material-symbols-outlined">public</span>
+            <h6>Venta</h6>
           </div>
         </Box>
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <FadeMenu
             setTipoComprobante={setTipoComprobante}
             tipoComprobante={tipoComprobante}
@@ -329,6 +345,7 @@ export default function ModalComponentVenta({
             justifyContent: "space-between",
             alignItems: "center",
             marginBottom: "1rem",
+            marginTop: "1rem",
           }}
         >
           <TextField
@@ -392,6 +409,7 @@ export default function ModalComponentVenta({
             Concepto={Concepto}
           />
         )} */}
+
         {obrasId.length > 0 && (
           <div>
             <h5
@@ -399,31 +417,92 @@ export default function ModalComponentVenta({
                 fontWeight: "200",
                 fontFamily: '"Kanit", sans-serif',
                 margin: "0.5rem",
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               Ventas asociadas a la obra:{" "}
               <strong>
-                {" "}
                 {sumarMontosPorObraId(obrasId[0]).toLocaleString("es-AR", {
                   style: "currency",
                   currency: "ARS",
                 })}
               </strong>
             </h5>
+            <Divider />
             <h5
               style={{
                 fontWeight: "200",
                 fontFamily: '"Kanit", sans-serif',
-                margin: "0.5rem",
+                margin: "0.5rem 0",
               }}
             >
-              Presupuesto Actual de obra:{" "}
-              <strong>
-                {totalObra.toLocaleString("es-AR", {
-                  style: "currency",
-                  currency: "ARS",
-                })}
-              </strong>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Gasto Actual de obra:</span>
+                <strong>
+                  {totalObra.toLocaleString("es-AR", {
+                    style: "currency",
+                    currency: "ARS",
+                  })}
+                </strong>
+              </div>
+              {/* <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Horas Valor/compra Acumulado:</span>
+                <strong>
+                  {totalValorHoras.toLocaleString("es-AR", {
+                    style: "currency",
+                    currency: "ARS",
+                  })}
+                </strong>
+              </div> */}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Horas Valor/Venta Acumulado:</span>
+                <strong>
+                  {(
+                    (totalValorHoras * 25) / 100 +
+                    totalValorHoras
+                  ).toLocaleString("es-AR", {
+                    style: "currency",
+                    currency: "ARS",
+                  })}
+                </strong>
+              </div>
+              <Divider></Divider>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>Saldo Sugerido:</span>
+                <strong>
+                  {(
+                    sumarMontosPorObraId(obrasId[0]) -
+                    totalObra -
+                    ((totalValorHoras * 25) / 100 + totalValorHoras)
+                  ).toLocaleString("es-AR", {
+                    style: "currency",
+                    currency: "ARS",
+                  })}
+                </strong>
+              </div>
             </h5>
           </div>
         )}

@@ -7,6 +7,8 @@ import Modal from "@mui/material/Modal";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { db } from "../../../../firebaseConfig";
+import { TextField } from "@mui/material";
+import DatePickerComponent from "./DatePickerComponent";
 
 const style = {
   position: "absolute",
@@ -27,6 +29,10 @@ export default function ModalHoraValor({
   selectedHora,
   horaValor,
   setTipoHora,
+  setFechaHora,
+  fechaHora,
+  setHoraEdit,
+  horaEdit,
 }) {
   const handleOpen = () => setOpenModal(true);
   const handleClose = () => setOpenModal(false);
@@ -63,6 +69,18 @@ export default function ModalHoraValor({
     handleClose();
     setPreSeleccion(null);
   };
+
+  const [displayValue, setDisplayValue] = useState("");
+
+  const handleChangeHora = (event) => {
+    const { value } = event.target;
+    if (/^\d*\.?\d{0,1}$/.test(value)) {
+      setDisplayValue(value);
+      setHoraEdit(value === "" ? null : parseFloat(value));
+    }
+  };
+
+  console.log(horaEdit);
 
   return (
     <div>
@@ -121,18 +139,45 @@ export default function ModalHoraValor({
             </MenuItem>
           </Select>
           {preSeleccion && (
-            <Typography
-              style={{ fontFamily: '"Kanit", sans-serif' }}
-              id="modal-descripcion"
-              sx={{ mt: 2 }}
-            >
-              Valor de Hora Seleccionado:{" "}
-              {preSeleccion.toLocaleString("es-AR", {
-                style: "currency",
-                currency: "ARS",
-              })}
-            </Typography>
+            <div>
+              <Typography
+                style={{ fontFamily: '"Kanit", sans-serif' }}
+                id="modal-descripcion"
+                sx={{ mt: 2 }}
+              >
+                Valor de Hora Seleccionado:{" "}
+                {preSeleccion.toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                })}
+              </Typography>
+              <Typography
+                style={{ fontFamily: '"Kanit", sans-serif' }}
+                id="modal-descripcion"
+                sx={{ mt: 2 }}
+              >
+                Total:{" "}
+                {(preSeleccion * horaEdit).toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                })}
+              </Typography>
+            </div>
           )}
+
+          <DatePickerComponent
+            setFechaHora={setFechaHora}
+            fechaHora={fechaHora}
+          />
+          <TextField
+            id="filled-basic"
+            label="Cantidad Horas"
+            variant="filled"
+            value={displayValue}
+            onChange={handleChangeHora}
+            inputProps={{ inputMode: "decimal", pattern: "[0-9]*[.,]?[0-9]?" }}
+            style={{ marginTop: "1rem" }}
+          />
 
           {preSeleccion && (
             <Button
