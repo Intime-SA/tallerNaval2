@@ -111,6 +111,13 @@ function Row(props) {
         >
           {renderConceptoNombre(row.conceptoPagoId)}
         </TableCell>
+        <TableCell
+          sx={{ fontFamily: '"Kanit", sans-serif' }}
+          component="th"
+          scope="row"
+        >
+          {row.descripcion}
+        </TableCell>
         <TableCell sx={{ fontFamily: '"Kanit", sans-serif' }} align="center">
           {row.monto.toLocaleString("es-AR", {
             style: "currency",
@@ -249,6 +256,11 @@ function EgresosListDetail({
               sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
             >
               Concepto Pago
+            </TableCell>
+            <TableCell
+              sx={{ fontFamily: '"Kanit", sans-serif', color: "white" }}
+            >
+              Descripcion
             </TableCell>
 
             <TableCell
